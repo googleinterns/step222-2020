@@ -17,7 +17,6 @@ package com.google.lecturechat.data.constants;
 /** Specifies the kind and property names to use for group entities in the datastore database. */
 public enum GroupEntity {
   KIND("Group"),
-  ID_PROPERTY("id"),
   UNIVERSITY_PROPERTY("university"),
   DEGREE_PROPERTY("degree"),
   YEAR_PROPERTY("year"),
