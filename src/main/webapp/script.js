@@ -1,7 +1,7 @@
 let googleAuth;
 
-const API_KEY = 'AIzaSyD3ogMiqyWgGT9cjAI2ZxaNq5xSQP7Cz5E';
-const CLIENT_ID =  '846915115683-52sirhdgpc0752cmavgo0igaes207a5n.apps.googleusercontent.com';
+const API_KEY = '';
+const CLIENT_ID =  '';
 const SCOPE = 'https://www.googleapis.com/auth/calendar';
 
 const CALENDAR_DISCOVERY_URL = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
