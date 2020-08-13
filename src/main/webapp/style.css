@@ -1,0 +1,44 @@
+body {
+  display: table-cell;
+  font-family: Amiri;
+  vertical-align: middle;
+}
+
+body, html {
+  height: 100%;
+}
+
+.headline {
+  font-size: 70px;
+}
+
+html {
+  display: table;
+  margin: auto;
+}
+
+#signInButton {
+  background-color: #4285f4;
+  color: white;
+  margin: auto;
+  width: 180px;
+}
+
+#signInButton:hover {
+  cursor: pointer;
+}
+
+.signInIcon {
+  display: inline-block;
+  height: 45px;
+  vertical-align: middle;
+  width: 45px;
+}
+
+.signInText {
+  display: inline-block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  vertical-align: middle;
+}

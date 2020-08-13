@@ -1,0 +1,31 @@
+a.menu-option:hover {
+  color: #c0c0c0;
+}
+ 
+.main {
+  margin-left: 200px;
+}
+ 
+.menu {
+  background-color: #40798C;
+  color: white;
+  font-size: 25px;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  padding-top: 20px;
+  position: fixed;
+  top: 0;
+  width: 200px;
+}
+ 
+.menu-option {
+  display: block;
+  padding: 6px 6px 6px 6px;
+  text-decoration: none;
+}
+ 
+#sign-out-button {
+  bottom: 0;
+  position: fixed;
+}

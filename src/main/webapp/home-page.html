@@ -1,16 +1,29 @@
 <html>
 <head>
-  <meta name="google-signin-client_id"
-        content="846915115683-52sirhdgpc0752cmavgo0igaes207a5n.apps.googleusercontent.com">
+  <link rel="stylesheet" href="home-style.css">
+  <meta name="google-signin-client_id" content="">
   <script src="script.js"></script>
   <script async defer src="https://apis.google.com/js/api.js"
           onload="loadClient()">
   </script>
 </head>
 <body>
-  <h1>Home page</h1>
-  <button id="sign-out-button" onclick="signOut()">
-    Sign out
-  </button>
+  <div class="menu">
+    <a class="menu-option">
+      Home
+    </a>
+    <a class="menu-option">
+      Profile
+    </a>
+    <a class="menu-option">
+      Settings
+    </a>
+    <a class="menu-option" id="sign-out-button" onclick="signOut()">
+      Sign out
+    </a>
+  </div>
+  <div class="main">
+    <h1>Home page</h1>
+  </div>
 </body>
 </html>

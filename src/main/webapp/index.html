@@ -1,16 +1,23 @@
 <html>
 <head>
-  <meta name="google-signin-client_id"
-        content="846915115683-52sirhdgpc0752cmavgo0igaes207a5n.apps.googleusercontent.com">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Amiri|Roboto">
+  <meta name="google-signin-client_id" content="">
   <script src="script.js"></script>
   <script async defer src="https://apis.google.com/js/api.js"
           onload="loadClient()">
   </script>
 </head>
 <body>
-  <h1>Start page</h1>
-  <button id="sign-in-button" onclick="signIn()">
-    Sign in
-  </button>
+  <p class="headline">
+    LectureChat
+  </p>
+  <div id="signInButton" onclick="signIn()">
+    <image class="signInIcon" src="/images/signin-icon.svg">
+    <p class="signInText">
+      Sign in with Google
+    </p>
+  </div>
 </body>
 </html>
