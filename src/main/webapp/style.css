@@ -17,28 +17,7 @@ html {
   margin: auto;
 }
 
-#signInButton {
-  background-color: #4285f4;
-  color: white;
+.signInButton {
+  display: block;
   margin: auto;
-  width: 180px;
-}
-
-#signInButton:hover {
-  cursor: pointer;
-}
-
-.signInIcon {
-  display: inline-block;
-  height: 45px;
-  vertical-align: middle;
-  width: 45px;
-}
-
-.signInText {
-  display: inline-block;
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  vertical-align: middle;
 }
