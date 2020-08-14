@@ -3,17 +3,17 @@ a#sign-out-button:hover {
   color: #c0c0c0;
 }
 
-.greeting {
-  font-size: 25px;
+body {
+  font-family: Assistant;
 }
 
 #main {
   color: black;
   margin-left: 200px;
 }
- 
+
 #menu {
-  background-color: #40798C;
+  background-color: #008B8B;
   color: white;
   font-size: 25px;
   height: 100%;
