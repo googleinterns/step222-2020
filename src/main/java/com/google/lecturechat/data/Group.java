@@ -15,8 +15,9 @@
 package com.google.lecturechat.data;
 
 import com.google.appengine.api.datastore.Entity;
-import java.util.ArrayList;
 import com.google.lecturechat.data.constants.GroupEntity;
+import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
 
 /** A helper class for passing group data. */
 public final class Group {
@@ -38,11 +39,15 @@ public final class Group {
   }
 
   public Group(Entity groupEntity) {
-    this.id = groupEntity.getKey().getId();
-    this.university = (String) (groupEntity.getProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel()));
-    this.degree = (String) (groupEntity.getProperty(GroupEntity.DEGREE_PROPERTY.getLabel()));
-    this.year = (Long) (groupEntity.getProperty(GroupEntity.YEAR_PROPERTY.getLabel()));
-    this.students = (ArrayList) (groupEntity.getProperty(GroupEntity.STUDENTS_PROPERTY.getLabel()));
-    this.events = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+    if (groupEntity.getKind().equals(GroupEntity.KIND.getLabel())) {
+      this.id = groupEntity.getKey().getId();
+      this.university = (String) (groupEntity.getProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel()));
+      this.degree = (String) (groupEntity.getProperty(GroupEntity.DEGREE_PROPERTY.getLabel()));
+      this.year = (Long) (groupEntity.getProperty(GroupEntity.YEAR_PROPERTY.getLabel()));
+      this.students = (ArrayList) (groupEntity.getProperty(GroupEntity.STUDENTS_PROPERTY.getLabel()));
+      this.events = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+    } else {
+      throw new IllegalArgumentException("Attempted to create group object from entity that is not a group.");
+    }
   }
 }
