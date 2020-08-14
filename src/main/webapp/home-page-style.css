@@ -1,12 +1,18 @@
-a.menu-option:hover {
+a.menu-option:hover,
+a#sign-out-button:hover {
   color: #c0c0c0;
 }
- 
-.main {
+
+.greeting {
+  font-size: 25px;
+}
+
+#main {
+  color: black;
   margin-left: 200px;
 }
  
-.menu {
+#menu {
   background-color: #40798C;
   color: white;
   font-size: 25px;
@@ -18,14 +24,31 @@ a.menu-option:hover {
   top: 0;
   width: 200px;
 }
- 
+
+.menu-options {
+  padding-top: 20px;
+}
+
 .menu-option {
   display: block;
-  padding: 6px 6px 6px 6px;
+  text-align: center;
   text-decoration: none;
 }
- 
+
+.profile-picture {
+  border-radius: 50%;
+  display: block;
+  height: 150px;
+  margin: auto;
+  width: 150px;
+}
+
 #sign-out-button {
   bottom: 0;
+  box-sizing: border-box;
+  padding-bottom: 20px;
+  padding-right: 20px;
   position: fixed;
+  text-align: right;
+  width: 200px;
 }

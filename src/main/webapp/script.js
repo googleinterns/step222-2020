@@ -1,11 +1,9 @@
 let googleAuth;
 
 const API_KEY = '';
-const CLIENT_ID =  '';
-const SCOPE = 'https://www.googleapis.com/auth/calendar';
-
-const CALENDAR_DISCOVERY_URL = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-const DISCOVERY_DOCS = [CALENDAR_DISCOVERY_URL];
+const CLIENT_ID = '';
+const SCOPE = 'profile email';
+const DISCOVERY_DOCS = [];
 
 /**
  * Retrieves the login status and checks if the user has granted the
@@ -38,6 +36,22 @@ function checkSigninStatus(isSignedIn) {
 }
 
 /**
+ * Creates a new element with a specified type, class and innerText.
+ * @param {string} elementType The type of the element that will be created.
+ * @param {string} className The class of the element that will be created.
+ * @param {string} innerText The innerText of the element that will be
+ * created.
+ * @return {element} The element created.
+ */
+function createElement(elementType, className, innerText) {
+  const newElement = document.createElement(elementType);
+  newElement.className = className;
+  newElement.innerText = innerText;
+
+  return newElement;
+}
+
+/**
  * Initializes the GoogleAuth object and checks if the user is on the
  * right page based on their login status. If not, redirects them to
  * the appropriate page.
@@ -48,6 +62,14 @@ async function initClient() {
   googleAuth = gapi.auth2.getAuthInstance();
   googleAuth.isSignedIn.listen(checkSigninStatus);
   checkSigninStatus(googleAuth.isSignedIn.get());
+}
+
+/**
+ * Initializes the client and loads the data associated with their profile.
+ */
+async function initHomeClient() {
+  await initClient();
+  loadProfileData();
 }
 
 /**
@@ -69,6 +91,27 @@ async function initGoogleAuthObject() {
  */
 function loadClient() {
   gapi.load('client:auth2', initClient);
+}
+
+/**
+ * Loads the required Google APIs modules and initializes the client
+ * already logged in. The difference between this function and the loadClient
+ * function is that we will also load the data associated with this client.
+ */
+function loadHomeClient() {
+  gapi.load('client:auth2', initHomeClient);
+}
+
+/**
+ * Loads the profile data associated with the currently logged in user.
+ */
+function loadProfileData() {
+  const userProfile = googleAuth.currentUser.get().getBasicProfile();
+
+  const menuElement = document.getElementById('menu');
+  const profilePicture = createElement('img', 'profile-picture', '');
+  profilePicture.src = userProfile.getImageUrl();
+  menuElement.prepend(profilePicture);
 }
 
 /**
