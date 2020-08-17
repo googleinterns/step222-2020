@@ -72,7 +72,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to check if a group with the given parameters already exists.
-   * @param university The name of the unversity the new group is associated with.
+   * @param university The name of the university the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
    * @return True if it exists, else false.

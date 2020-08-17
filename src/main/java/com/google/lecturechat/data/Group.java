@@ -25,11 +25,11 @@ public final class Group {
   private final long id;
   private final String university;
   private final String degree;
-  private final long year;
+  private final int year;
   private final ArrayList<Long> students;
   private final ArrayList<Long> events;
 
-  public Group(long id, String university, String degree, long year, ArrayList<Long> students, ArrayList<Long> events) {
+  public Group(long id, String university, String degree, int year, ArrayList<Long> students, ArrayList<Long> events) {
     this.id = id;
     this.university = university;
     this.degree = degree;
@@ -43,7 +43,8 @@ public final class Group {
       this.id = groupEntity.getKey().getId();
       this.university = (String) (groupEntity.getProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel()));
       this.degree = (String) (groupEntity.getProperty(GroupEntity.DEGREE_PROPERTY.getLabel()));
-      this.year = (Long) (groupEntity.getProperty(GroupEntity.YEAR_PROPERTY.getLabel()));
+      Long longYear = (Long) (groupEntity.getProperty(GroupEntity.YEAR_PROPERTY.getLabel()));
+      this.year = longYear.intValue();
       this.students = (ArrayList) (groupEntity.getProperty(GroupEntity.STUDENTS_PROPERTY.getLabel()));
       this.events = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
     } else {
