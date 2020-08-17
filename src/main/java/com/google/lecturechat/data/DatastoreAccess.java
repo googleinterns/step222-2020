@@ -90,11 +90,7 @@ public class DatastoreAccess {
                 new FilterPredicate(
                     GroupEntity.YEAR_PROPERTY.getLabel(), FilterOperator.EQUAL, year))));
     Entity groupEntity = datastore.prepare(query).asSingleEntity();
-    if (groupEntity == null) {
-      return false;
-    } else {
-      return true;
-    }
+    return (groupEntity != null);
   }
 
   /**
