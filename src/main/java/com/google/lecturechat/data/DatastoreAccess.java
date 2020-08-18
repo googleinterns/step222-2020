@@ -41,14 +41,10 @@ public class DatastoreAccess {
   }
 
   /**
-  * Factory constructors.
+  * Factory constructor.
   */
   public static DatastoreAccess getDatastoreAccess() {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    return new DatastoreAccess(datastore);
-  }
-
-  public static DatastoreAccess getDatastoreAccess(DatastoreService datastore) {
     return new DatastoreAccess(datastore);
   }
 
@@ -77,7 +73,7 @@ public class DatastoreAccess {
    * @param year The year of the degree the new group is associated with.
    * @return True if it exists, else false.
    */
-  public boolean groupExistsAlready(String university, String degree, int year) {
+  private boolean groupExistsAlready(String university, String degree, int year) {
     Query query = new Query(GroupEntity.KIND.getLabel());
     query.setFilter(
         new CompositeFilter(
@@ -102,7 +98,7 @@ public class DatastoreAccess {
     PreparedQuery results = datastore.prepare(query);
     List<Group> groups = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
-      groups.add(new Group(entity));
+      groups.add(Group.createGroupFromEntity(entity));
     }
     return groups;
   }

@@ -18,6 +18,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.lecturechat.data.constants.GroupEntity;
 import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
+import java.util.List;
 
 /** A helper class for passing group data. */
 public final class Group {
@@ -26,10 +27,10 @@ public final class Group {
   private final String university;
   private final String degree;
   private final int year;
-  private final ArrayList<Long> students;
-  private final ArrayList<Long> events;
+  private final List<Long> students;
+  private final List<Long> events;
 
-  public Group(long id, String university, String degree, int year, ArrayList<Long> students, ArrayList<Long> events) {
+  public Group(long id, String university, String degree, int year, List<Long> students, List<Long> events) {
     this.id = id;
     this.university = university;
     this.degree = degree;
@@ -38,15 +39,40 @@ public final class Group {
     this.events = events;
   }
 
-  public Group(Entity groupEntity) {
+  public long getId() {
+    return id;
+  }
+
+  public String getUniversity() {
+    return university;
+  }
+
+  public String getDegree() {
+    return degree;
+  }
+
+  public int getYear() {
+    return year;
+  }
+
+  public List<Long> getStudents() {
+    return students;
+  }
+
+  public List<Long> getEvents() {
+    return events;
+  }
+
+  public static Group createGroupFromEntity(Entity groupEntity) {
     if (groupEntity.getKind().equals(GroupEntity.KIND.getLabel())) {
-      this.id = groupEntity.getKey().getId();
-      this.university = (String) (groupEntity.getProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel()));
-      this.degree = (String) (groupEntity.getProperty(GroupEntity.DEGREE_PROPERTY.getLabel()));
+      long id = groupEntity.getKey().getId();
+      String university = (String) (groupEntity.getProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel()));
+      String degree = (String) (groupEntity.getProperty(GroupEntity.DEGREE_PROPERTY.getLabel()));
       Long longYear = (Long) (groupEntity.getProperty(GroupEntity.YEAR_PROPERTY.getLabel()));
-      this.year = longYear.intValue();
-      this.students = (ArrayList) (groupEntity.getProperty(GroupEntity.STUDENTS_PROPERTY.getLabel()));
-      this.events = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+      int year = longYear.intValue();
+      List<Long> students = (ArrayList) (groupEntity.getProperty(GroupEntity.STUDENTS_PROPERTY.getLabel()));
+      List<Long> events = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+      return new Group(id, university, degree, year, students, events);
     } else {
       throw new IllegalArgumentException("Attempted to create group object from entity that is not a group.");
     }
