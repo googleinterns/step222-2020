@@ -32,14 +32,18 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public final class DatastoreAccessTest {
 
+  private final String groupEntityLabel = "Group";
+
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   
   private DatastoreAccess datastore;
+  private DatastoreService service;
 
   @Before
   public void setUp() {
     helper.setUp();
+    service = DatastoreServiceFactory.getDatastoreService();
     datastore = DatastoreAccess.getDatastoreAccess();
   }
 
@@ -49,8 +53,55 @@ public final class DatastoreAccessTest {
   }
 
   @Test
-  public void getAllGroupsReturnsCorrectNumberOfGroups1() {
+  public void addGroupAddsExactlyOneGroup() {
+    String university = "A";
+    String degree = "B";
+    int year = 1;
+
+
+    datastore.addGroup(university, degree, year);
+
+
+    assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void addGroupDoesntAddAlreadyExistingGroup() {
+    String university = "A";
+    String degree = "B";
+    int year = 1;
+    datastore.addGroup(university, degree, year);
+
+
+    datastore.addGroup(university, degree, year);
+
+
+    assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void getAllGroupsReturnsEmptyListIfNoGroupsInDatastore() {
     List<Group> groups = datastore.getAllGroups();
+
+
     assertEquals(0, groups.size());
+  }
+
+  @Test
+  public void getAllGroupsReturnsCorrectNumberOfGroups() {
+    String university1 = "A";
+    String degree1 = "B";
+    int year1 = 1;
+    String university2 = "C";
+    String degree2 = "D";
+    int year2 = 1;
+    datastore.addGroup(university1, degree1, year1);
+    datastore.addGroup(university2, degree2, year2);
+
+
+    List<Group> groups = datastore.getAllGroups();
+
+
+    assertEquals(2, groups.size());
   }
 }
