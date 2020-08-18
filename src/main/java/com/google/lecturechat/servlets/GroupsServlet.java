@@ -15,11 +15,12 @@
 package com.google.lecturechat.servlets;
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import javax.ws.rs.BadRequestException;
 import com.google.gson.Gson;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Group;
@@ -42,5 +43,18 @@ public class GroupsServlet extends HttpServlet {
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(groups));
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    try {
+      String university = request.getParameter("university");
+      String degree = request.getParameter("degree");
+      int year = Integer.parseInt(request.getParameter("year"));
+
+      datastore.addGroup(university, degree, year);
+    } catch (Exception e) {
+      throw new BadRequestException(e.getMessage());
+    }
   }
 }
