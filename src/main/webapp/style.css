@@ -1,0 +1,23 @@
+body {
+  display: table-cell;
+  font-family: Assistant;
+  vertical-align: middle;
+}
+
+body, html {
+  height: 100%;
+}
+
+.headline {
+  font-size: 70px;
+}
+
+html {
+  display: table;
+  margin: auto;
+}
+
+.signInButton {
+  display: block;
+  margin: auto;
+}

@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="home-page-style.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Assistant">
+    <meta name="google-signin-client_id" content="">
+    <script src="script.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+            onload="loadHomeClient()">
+    </script>
+  </head>
+  <body>
+    <div id="menu">
+      <div class="menu-options">
+        <a class="menu-option">
+          Profile
+        </a>
+        <a class="menu-option">
+          Settings
+        </a>
+      </div>
+      <a id="sign-out-button" onclick="signOut()">
+        Sign out
+      </a>
+    </div>
+    <div id="main">
+    </div>
+  </body>
+</html>
