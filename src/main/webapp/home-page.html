@@ -3,11 +3,14 @@
     <link rel="stylesheet" href="home-page-style.css">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Assistant">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
     <meta name="google-signin-client_id" content="">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="script.js"></script>
     <script src="home-page-script.js"></script>
     <script async defer src="https://apis.google.com/js/api.js"
-            onload="loadHomeClient();loadGroups()">
+            onload="loadHomeClient();loadProfile()">
     </script>
   </head>
   <body>
@@ -25,6 +28,8 @@
       </a>
     </div>
     <div class="main">
+      <table id="calendar">
+      </table>
       <div id="groups">
         <h2>
           Your groups

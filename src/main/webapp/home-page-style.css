@@ -2,10 +2,50 @@ body {
   font-family: Assistant;
 }
 
+#calendar {
+  max-height: 70%;
+  width: 100%;
+}
+
+.calendar-day {
+  cursor: pointer;
+}
+
+.calendar-details {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.calendar-header {
+  align-items: center;
+  background: linear-gradient(to bottom right, #00ffff, #006666);
+  color: white;
+  display: flex;
+  flex-direction: row;
+  height: 150px;
+  justify-content: space-between;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.calendar-table {
+  height: 300px;
+  width: 100%;
+}
+
 .close-group-form {
   cursor: pointer;
   font-size: 40px;
   font-weight: bold;
+}
+
+#daily-events {
+  background-color: blue;
+  color: white;
+}
+
+#events-container {
+  display: inline;
 }
 
 .group {
@@ -42,6 +82,10 @@ body {
   font-size: 20px;
   font-weight: bold;
   padding-bottom: 0;
+}
+
+.material-icons {
+  cursor: pointer;
 }
 
 input {
@@ -160,4 +204,15 @@ label {
   position: fixed;
   text-align: right;
   width: 200px;
+}
+
+td, th {
+  border-bottom: 1px solid #ddd;
+  font-size: 20px;
+  text-align: center;
+}
+
+th {
+  font-size: 25px;
+  width: 10%;
 }
