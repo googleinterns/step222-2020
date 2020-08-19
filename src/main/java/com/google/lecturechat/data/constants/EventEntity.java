@@ -18,10 +18,10 @@ package com.google.lecturechat.data.constants;
 public enum EventEntity {
   KIND("Event"),
   TITLE_PROPERTY("title"),
-  START_PROPERTY("university"),
-  DURATION_PROPERTY("degree"),
-  MESSAGES_PROPERTY("year"),
-  ATTENDEES_PROPERTY("students"),
+  START_PROPERTY("start"),
+  DURATION_PROPERTY("duration"),
+  MESSAGES_PROPERTY("messages"),
+  ATTENDEES_PROPERTY("attendees");
 
   /* Labels comments and properties of events in the database. */
   private final String label;

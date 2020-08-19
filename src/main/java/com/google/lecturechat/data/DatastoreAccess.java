@@ -17,16 +17,22 @@ package com.google.lecturechat.data;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
+import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -49,20 +55,28 @@ public class DatastoreAccess {
   }
 
   /**
-   * Adds new group entity to the database if it doesn't already exist.
+   * Adds new group entity to the database if it doesn't already exist (atomic).
    * @param university The name of the unversity the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
    */
   public void addGroup(String university, String degree, int year) {
-    if(!groupExistsAlready(university, degree, year)) {
-      Entity groupEntity = new Entity(GroupEntity.KIND.getLabel());
-      groupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
-      groupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
-      groupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
-      groupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<Long>());
-      groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
-      datastore.put(groupEntity);
+    Transaction txn = datastore.beginTransaction();
+    try {
+      if(!groupExistsAlready(university, degree, year)) {
+        Entity groupEntity = new Entity(GroupEntity.KIND.getLabel());
+        groupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
+        groupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
+        groupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
+        groupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        datastore.put(groupEntity);
+      }
+      txn.commit();
+    } finally {
+      if (txn.isActive()) {
+        txn.rollback();
+      }
     }
   }
 
@@ -101,5 +115,42 @@ public class DatastoreAccess {
       groups.add(Group.createGroupFromEntity(entity));
     }
     return groups;
+  } 
+
+  private Entity getEntityById(String kind, long id) {
+    Key key = KeyFactory.createKey(kind, id);
+    try {
+      return datastore.get(key);
+    } catch (EntityNotFoundException e) {
+      throw new IllegalArgumentException("Couldn't find entity with id " + id + " and kind " + kind + ".");
+    }
+  }
+
+  public void addEventToGroup(long groupId, String title, Calendar startTime, int duration) {
+    Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
+    eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
+    long eventId = datastore.put(eventEntity).getId();
+
+    Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
+    List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+    if(eventIds == null) {
+      eventIds = new ArrayList<>();
+    }
+    eventIds.add(eventId);
+
+    groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), eventIds);
+    datastore.put(groupEntity);
+  }
+
+  public List<Entity> getAllEventsFromGroup(long groupId) {
+    Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
+    List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+    List<Entity> events = new ArrayList<>();
+    if(eventIds != null) {
+      for (long eventId: eventIds) {
+        events.add(getEntityById(EventEntity.KIND.getLabel(), eventId));
+      }
+    }
+    return events;
   }
 }
