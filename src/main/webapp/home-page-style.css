@@ -6,9 +6,6 @@ body {
   cursor: pointer;
   font-size: 40px;
   font-weight: bold;
-  position: absolute;
-  right: 50px;
-  top: 45px;
 }
 
 .group {
@@ -66,7 +63,7 @@ label {
   font-weight: bold;
 }
 
-#main {
+.main {
   color: black;
   margin-left: 200px;
 }
@@ -102,6 +99,11 @@ label {
   padding-top: 20px;
 }
 
+.new-group-headline {
+  display: flex;
+  justify-content: space-between;
+}
+
 #open-group-form {
   background-color: #008B8B;
   border: none;
@@ -116,12 +118,14 @@ label {
   padding: 10px;
 }
 
-#open-group-form:hover {
-  opacity: 1;
+#open-group-form:active,
+.submit-group-form:active {
+  outline: none;
 }
 
-#open-group-form:active {
-  outline: none;
+#open-group-form:hover,
+.submit-group-form:hover {
+  opacity: 1;
 }
 
 .profile-picture {
@@ -145,15 +149,7 @@ label {
   width: 100%;
 }
 
-.submit-group-form:active {
-  outline: none;
-}
-
-.submit-group-form:hover {
-  opacity: 1;
-}
-
-#sign-out-button {
+.sign-out-button {
   bottom: 0;
   box-sizing: border-box;
   cursor: pointer;

@@ -87,7 +87,7 @@ function createDetailsMessage(degree, year) {
 }
 
 /**
- * Creates the element associated to a given group.
+ * Creates the element associated with a given group.
  * @param {object} group The group for which we will create a new element.
  * @return {element} The element created.
  */

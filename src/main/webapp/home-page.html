@@ -20,11 +20,11 @@
           Settings
         </a>
       </div>
-      <a id="sign-out-button" onclick="signOut()">
+      <a class="sign-out-button" onclick="signOut()">
         Sign out
       </a>
     </div>
-    <div id="main">
+    <div class="main">
       <div id="groups">
         <h2>
           Your groups
@@ -35,9 +35,14 @@
       </button>
       <div id="group-form">
         <form autocomplete="off" onsubmit="addNewGroup()">
-          <h1>
-            Add new group
-          </h1>
+          <div class="new-group-headline">
+            <h1>
+              Add new group
+            </h1>
+            <span class="close-group-form" onclick="closeGroupForm()">
+              x
+            </span>
+          </div>
           <label for="university">
             University
           </label>
@@ -57,9 +62,6 @@
           <button class="submit-group-form" type="submit">
             Create the group
           </button>
-          <span class="close-group-form" onclick="closeGroupForm()">
-            x
-          </span>
         </form>
       </div>
     </div>
