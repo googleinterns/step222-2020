@@ -1,14 +1,19 @@
 body {
+  background-color: #ebf6f7;
   font-family: Assistant;
 }
 
 #calendar {
+  border: 3px solid #ddd;
   max-height: 70%;
+  max-width: 1000px;
   width: 100%;
 }
 
 .calendar-day {
   cursor: pointer;
+  margin: 0;
+  padding: 0;
 }
 
 .calendar-details {
@@ -29,6 +34,7 @@ body {
 }
 
 .calendar-table {
+  background-color: white;
   height: 300px;
   width: 100%;
 }
@@ -39,16 +45,15 @@ body {
   font-weight: bold;
 }
 
-#daily-events {
-  background-color: blue;
+.day-with-events {
+  background-color: #40e0d0;
   color: white;
+  cursor: pointer;
 }
 
-#events-container {
-  display: inline;
-}
-
+.event,
 .group {
+  background-color: white;
   border: 1px solid #ddd;
   border-radius: 20px;
   margin-bottom: 15px;
@@ -56,15 +61,29 @@ body {
   width: 100%;
 }
 
+.event-title,
+.event-time,
 .group-details,
 .group-university {
   padding: 20px;
 }
 
+.event-title,
+.group-university {
+  font-size: 20px;
+  font-weight: bold;
+  padding-bottom: 0;
+}
+
+.event-time,
 .group-details {
   font-size: 15px;
   font-style: italic;
   padding-top: 0;
+}
+
+#events-container {
+  display: inline;
 }
 
 #group-form {
@@ -76,12 +95,6 @@ body {
   padding: 25px 50px 25px 50px;
   position: relative;
   width: 50%;
-}
-
-.group-university {
-  font-size: 20px;
-  font-weight: bold;
-  padding-bottom: 0;
 }
 
 .material-icons {
@@ -178,6 +191,10 @@ label {
   height: 150px;
   margin: auto;
   width: 150px;
+}
+
+#selected-day {
+  background-color: #008b8b;
 }
 
 .submit-group-form {
