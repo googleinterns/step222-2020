@@ -19,7 +19,8 @@ public enum EventEntity {
   KIND("Event"),
   TITLE_PROPERTY("title"),
   START_PROPERTY("start"),
-  DURATION_PROPERTY("duration"),
+  END_PROPERTY("end"),
+  CREATOR_PROPERTY("creator"),
   MESSAGES_PROPERTY("messages"),
   ATTENDEES_PROPERTY("attendees");
 

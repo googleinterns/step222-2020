@@ -27,6 +27,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.lecturechat.data.Event;
 import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
 import java.lang.IllegalArgumentException;
@@ -55,7 +56,7 @@ public class DatastoreAccess {
   }
 
   /**
-   * Adds new group entity to the database if it doesn't already exist (atomic).
+   * Adds new group entity to the database if it doesn't already exist (atomic transaction).
    * @param university The name of the unversity the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
@@ -117,6 +118,13 @@ public class DatastoreAccess {
     return groups;
   } 
 
+  /**
+   * Queries the database to get an entity by its ID.
+   * @param kind The kind of the entity.
+   * @param id The id of the entity.
+   * @return The entity.
+   * @throws IllegalArgumentException If the entity can't be found in the database.
+   */
   private Entity getEntityById(String kind, long id) {
     Key key = KeyFactory.createKey(kind, id);
     try {
@@ -126,29 +134,65 @@ public class DatastoreAccess {
     }
   }
 
-  public void addEventToGroup(long groupId, String title, Calendar startTime, int duration) {
-    Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
-    eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
-    long eventId = datastore.put(eventEntity).getId();
-
-    Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
-    List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
-    if(eventIds == null) {
-      eventIds = new ArrayList<>();
+  /**
+   * Adds new event entity to a specific group in the database (atomic transaction).
+   * @param groupId The id of the group the new event belongs to.
+   * @param title The title of the new event.
+   * @param start The start time of the event (should be in UTC).
+   * @param end The end time of the event (should be in UTC).
+   * @param creator The creator of the event.
+   */
+  public void addEventToGroup(long groupId, String title, String start, String end, String creator) {
+    Transaction eventTxn = datastore.beginTransaction();
+    long eventId = 0;
+    try {
+      Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
+      eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
+      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), start);
+      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), end);
+      eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
+      eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
+      eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
+      eventId = datastore.put(eventEntity).getId();
+      eventTxn.commit();
+    } finally {
+      if(eventTxn.isActive()) {
+        eventTxn.rollback();
+      }
     }
-    eventIds.add(eventId);
-
-    groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), eventIds);
-    datastore.put(groupEntity);
+    if(eventId != 0) {
+      Transaction groupTxn = datastore.beginTransaction();
+      try {
+        Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
+        List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+        if(eventIds == null) {
+          eventIds = new ArrayList<>();
+        }
+        eventIds.add(eventId);
+        groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), eventIds);
+        datastore.put(groupEntity);
+        groupTxn.commit();
+      } finally {
+        if (groupTxn.isActive()) {
+          groupTxn.rollback();
+        }
+      }
+    }
   }
 
-  public List<Entity> getAllEventsFromGroup(long groupId) {
+  /**
+   * Queries the database to get a list of all events in a certain group.
+   * @param groupId The id of the group.
+   * @return The list of events.
+   */
+  public List<Event> getAllEventsFromGroup(long groupId) {
     Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
     List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
-    List<Entity> events = new ArrayList<>();
+    List<Event> events = new ArrayList<>();
     if(eventIds != null) {
       for (long eventId: eventIds) {
-        events.add(getEntityById(EventEntity.KIND.getLabel(), eventId));
+        Event event = Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId));
+        events.add(event);
       }
     }
     return events;
