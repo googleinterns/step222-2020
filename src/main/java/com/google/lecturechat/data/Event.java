@@ -19,15 +19,15 @@ import com.google.lecturechat.data.constants.EventEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A helper class for passing group data. */
+/** A helper class for passing event data. */
 public final class Event {
 
   private final long id;
   private final String title;
 
   // Format for time: YYYY-MM-DDTHH-MM-SS.
-  private final String start;
-  private final String end;
+  private final String startTimeInUTC;
+  private final String endTimeInUTC;
 
   private final String creator;
   private final List<Long> messages;
@@ -36,15 +36,15 @@ public final class Event {
   public Event(
       long id,
       String title,
-      String start,
-      String end,
+      String startTimeInUTC,
+      String endTimeInUTC,
       String creator,
       List<Long> messages,
       List<Long> attendees) {
     this.id = id;
     this.title = title;
-    this.start = start;
-    this.end = end;
+    this.startTimeInUTC = startTimeInUTC;
+    this.endTimeInUTC = endTimeInUTC;
     this.creator = creator;
     this.messages = messages;
     this.attendees = attendees;
@@ -59,11 +59,11 @@ public final class Event {
   }
 
   public String getStart() {
-    return start;
+    return startTimeInUTC;
   }
 
   public String getEnd() {
-    return end;
+    return endTimeInUTC;
   }
 
   public String getCreator() {

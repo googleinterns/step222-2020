@@ -32,6 +32,7 @@ import com.google.lecturechat.data.constants.GroupEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** API class for methods that access and operate on the datastore database. */
 public class DatastoreAccess {
@@ -49,14 +50,14 @@ public class DatastoreAccess {
   }
 
   /**
-   * Adds new group entity to the database if it doesn't already exist.
+   * Adds new group entity to the database if it doesn't already exist (atomic).
    *
    * @param university The name of the unversity the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
    */
   public void addGroup(String university, String degree, int year) {
-    Transaction txn = datastore.beginTransaction();
+    Transaction transaction = datastore.beginTransaction();
     try {
       if (!groupExistsAlready(university, degree, year)) {
         Entity groupEntity = new Entity(GroupEntity.KIND.getLabel());
@@ -67,10 +68,10 @@ public class DatastoreAccess {
         groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
         datastore.put(groupEntity);
       }
-      txn.commit();
+      transaction.commit();
     } finally {
-      if (txn.isActive()) {
-        txn.rollback();
+      if (transaction.isActive()) {
+        transaction.rollback();
       }
     }
   }
@@ -133,7 +134,7 @@ public class DatastoreAccess {
   }
 
   /**
-   * Adds new event entity to a specific group in the database (atomic transaction).
+   * Adds new event entity to a specific group in the database (atomic).
    *
    * @param groupId The id of the group the new event belongs to.
    * @param title The title of the new event.
@@ -142,26 +143,26 @@ public class DatastoreAccess {
    * @param creator The creator of the event.
    */
   public void addEventToGroup(
-      long groupId, String title, String start, String end, String creator) {
-    Transaction eventTxn = datastore.beginTransaction();
+      long groupId, String title, String startTimeInUTC, String endTimeInUTC, String creator) {
+    Transaction eventTransaction = datastore.beginTransaction();
     long eventId = 0;
     try {
       Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
       eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
-      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), start);
-      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), end);
+      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), startTimeInUTC);
+      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTimeInUTC);
       eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
       eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
       eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
       eventId = datastore.put(eventEntity).getId();
-      eventTxn.commit();
+      eventTransaction.commit();
     } finally {
-      if (eventTxn.isActive()) {
-        eventTxn.rollback();
+      if (eventTransaction.isActive()) {
+        eventTransaction.rollback();
       }
     }
     if (eventId != 0) {
-      Transaction groupTxn = datastore.beginTransaction();
+      Transaction groupTransaction = datastore.beginTransaction();
       try {
         Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
         List<Long> eventIds =
@@ -172,10 +173,10 @@ public class DatastoreAccess {
         eventIds.add(eventId);
         groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), eventIds);
         datastore.put(groupEntity);
-        groupTxn.commit();
+        groupTransaction.commit();
       } finally {
-        if (groupTxn.isActive()) {
-          groupTxn.rollback();
+        if (groupTransaction.isActive()) {
+          groupTransaction.rollback();
         }
       }
     }
@@ -193,11 +194,11 @@ public class DatastoreAccess {
         (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
     List<Event> events = new ArrayList<>();
     if (eventIds != null) {
-      for (long eventId : eventIds) {
-        Event event =
-            Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId));
-        events.add(event);
-      }
+      events =
+          eventIds.stream()
+              .map(
+                  id -> Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), id)))
+              .collect(Collectors.toList());
     }
     return events;
   }
