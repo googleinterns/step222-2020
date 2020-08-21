@@ -14,15 +14,15 @@
 
 package com.google.lecturechat.servlets;
 
+import com.google.gson.Gson;
+import com.google.lecturechat.data.DatastoreAccess;
+import com.google.lecturechat.data.Group;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import com.google.gson.Gson;
-import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Group;
 
 /** Servlet for listing all available groups. */
 @WebServlet("/groups")
@@ -32,7 +32,7 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void init() {
-    datastore = DatastoreAccess.getDatastoreAccess(); 
+    datastore = DatastoreAccess.getDatastoreAccess();
   }
 
   @Override
