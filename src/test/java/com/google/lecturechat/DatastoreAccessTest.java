@@ -33,7 +33,8 @@ public final class DatastoreAccessTest {
 
   private final String groupEntityLabel = "Group";
 
-  private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+  private final LocalServiceTestHelper helper = 
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private DatastoreAccess datastore;
   private DatastoreService service;
 

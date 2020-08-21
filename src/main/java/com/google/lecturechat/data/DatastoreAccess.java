@@ -45,6 +45,7 @@ public class DatastoreAccess {
 
   /**
    * Adds new group entity to the database if it doesn't already exist.
+   *
    * @param university The name of the unversity the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
@@ -63,6 +64,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to check if a group with the given parameters already exists.
+   *
    * @param university The name of the university the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
@@ -86,6 +88,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to get a list of all groups.
+   *
    * @return The list of groups.
    */
   public List<Group> getAllGroups() {
