@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -33,10 +32,8 @@ import org.junit.runners.JUnit4;
 public final class DatastoreAccessTest {
 
   private final String groupEntityLabel = "Group";
-
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-  
   private DatastoreAccess datastore;
   private DatastoreService service;
 
@@ -58,9 +55,7 @@ public final class DatastoreAccessTest {
     String degree = "B";
     int year = 1;
 
-
     datastore.addGroup(university, degree, year);
-
 
     assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
   }
@@ -72,9 +67,7 @@ public final class DatastoreAccessTest {
     int year = 1;
     datastore.addGroup(university, degree, year);
 
-
     datastore.addGroup(university, degree, year);
-
 
     assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
   }
@@ -82,7 +75,6 @@ public final class DatastoreAccessTest {
   @Test
   public void getAllGroupsReturnsEmptyListIfNoGroupsInDatastore() {
     List<Group> groups = datastore.getAllGroups();
-
 
     assertEquals(0, groups.size());
   }
@@ -98,9 +90,7 @@ public final class DatastoreAccessTest {
     datastore.addGroup(university1, degree1, year1);
     datastore.addGroup(university2, degree2, year2);
 
-
     List<Group> groups = datastore.getAllGroups();
-
 
     assertEquals(2, groups.size());
   }

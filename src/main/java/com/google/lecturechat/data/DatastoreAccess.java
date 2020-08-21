@@ -36,9 +36,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * API class for methods that access and operate on the datastore database.
- */
+/** API class for methods that access and operate on the datastore database. */
 public class DatastoreAccess {
 
   private final DatastoreService datastore;
@@ -47,16 +45,15 @@ public class DatastoreAccess {
     this.datastore = datastore;
   }
 
-  /**
-  * Factory constructor.
-  */
+  /** Factory constructor. */
   public static DatastoreAccess getDatastoreAccess() {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return new DatastoreAccess(datastore);
   }
 
   /**
-   * Adds new group entity to the database if it doesn't already exist (atomic transaction).
+   * Adds new group entity to the database if it doesn't already exist.
+   *
    * @param university The name of the unversity the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
@@ -83,6 +80,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to check if a group with the given parameters already exists.
+   *
    * @param university The name of the university the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
@@ -106,6 +104,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to get a list of all groups.
+   *
    * @return The list of groups.
    */
   public List<Group> getAllGroups() {
@@ -120,6 +119,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to get an entity by its ID.
+   *
    * @param kind The kind of the entity.
    * @param id The id of the entity.
    * @return The entity.
@@ -136,6 +136,7 @@ public class DatastoreAccess {
 
   /**
    * Adds new event entity to a specific group in the database (atomic transaction).
+   *
    * @param groupId The id of the group the new event belongs to.
    * @param title The title of the new event.
    * @param start The start time of the event (should be in UTC).
@@ -182,6 +183,7 @@ public class DatastoreAccess {
 
   /**
    * Queries the database to get a list of all events in a certain group.
+   *
    * @param groupId The id of the group.
    * @return The list of events.
    */
