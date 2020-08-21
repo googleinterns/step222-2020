@@ -32,8 +32,7 @@ import org.junit.runners.JUnit4;
 public final class DatastoreAccessTest {
 
   private final String groupEntityLabel = "Group";
-
-  private final LocalServiceTestHelper helper = 
+  private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private DatastoreAccess datastore;
   private DatastoreService service;
