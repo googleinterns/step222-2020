@@ -77,4 +77,4 @@ public final class Group {
       throw new IllegalArgumentException("Attempted to create group object from entity that is not a group.");
     }
   }
-}
+} 

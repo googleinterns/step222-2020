@@ -43,4 +43,4 @@ public class GroupsServlet extends HttpServlet {
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(groups));
   }
-}
+} 

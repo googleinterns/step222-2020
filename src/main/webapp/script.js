@@ -142,4 +142,4 @@ async function signIn() {
 async function signOut() {
   await googleAuth.signOut();
   window.location.href = 'index.html';
-}
+} 
