@@ -193,7 +193,7 @@ public class DatastoreAccess {
         (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
     List<Event> events = new ArrayList<>();
     if (eventIds != null) {
-      for (long eventId: eventIds) {
+      for (long eventId : eventIds) {
         Event event =
             Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId));
         events.add(event);
