@@ -16,7 +16,6 @@ package com.google.lecturechat.data;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.lecturechat.data.constants.EventEntity;
-import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,14 @@ public final class Event {
   private final List<Long> messages;
   private final List<Long> attendees;
 
-  public Event(long id, String title, String start, String end, String creator, List<Long> messages, List<Long> attendees) {
+  public Event(
+      long id,
+      String title,
+      String start,
+      String end,
+      String creator,
+      List<Long> messages,
+      List<Long> attendees) {
     this.id = id;
     this.title = title;
     this.start = start;
@@ -73,17 +79,20 @@ public final class Event {
   }
 
   public static Event createEventFromEntity(Entity eventEntity) {
-     if (eventEntity.getKind().equals(EventEntity.KIND.getLabel())) {
+    if (eventEntity.getKind().equals(EventEntity.KIND.getLabel())) {
       long id = eventEntity.getKey().getId();
       String title = (String) (eventEntity.getProperty(EventEntity.TITLE_PROPERTY.getLabel()));
       String start = (String) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
       String end = (String) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
       String creator = (String) (eventEntity.getProperty(EventEntity.CREATOR_PROPERTY.getLabel()));
-      List<Long> messages = (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
-      List<Long> attendees = (ArrayList) (eventEntity.getProperty(EventEntity.ATTENDEES_PROPERTY.getLabel()));
+      List<Long> messages =
+          (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
+      List<Long> attendees =
+          (ArrayList) (eventEntity.getProperty(EventEntity.ATTENDEES_PROPERTY.getLabel()));
       return new Event(id, title, start, end, creator, messages, attendees);
     } else {
-      throw new IllegalArgumentException("Attempted to create event object from entity that is not an event.");
+      throw new IllegalArgumentException(
+          "Attempted to create event object from entity that is not an event.");
     }
   }
 }

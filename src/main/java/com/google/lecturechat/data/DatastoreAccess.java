@@ -21,19 +21,16 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.lecturechat.data.Event;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
-import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 /** API class for methods that access and operate on the datastore database. */
@@ -61,7 +58,7 @@ public class DatastoreAccess {
   public void addGroup(String university, String degree, int year) {
     Transaction txn = datastore.beginTransaction();
     try {
-      if(!groupExistsAlready(university, degree, year)) {
+      if (!groupExistsAlready(university, degree, year)) {
         Entity groupEntity = new Entity(GroupEntity.KIND.getLabel());
         groupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
         groupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
@@ -115,7 +112,7 @@ public class DatastoreAccess {
       groups.add(Group.createGroupFromEntity(entity));
     }
     return groups;
-  } 
+  }
 
   /**
    * Queries the database to get an entity by its ID.
@@ -130,7 +127,8 @@ public class DatastoreAccess {
     try {
       return datastore.get(key);
     } catch (EntityNotFoundException e) {
-      throw new IllegalArgumentException("Couldn't find entity with id " + id + " and kind " + kind + ".");
+      throw new IllegalArgumentException(
+          "Couldn't find entity with id " + id + " and kind " + kind + ".");
     }
   }
 
@@ -143,7 +141,8 @@ public class DatastoreAccess {
    * @param end The end time of the event (should be in UTC).
    * @param creator The creator of the event.
    */
-  public void addEventToGroup(long groupId, String title, String start, String end, String creator) {
+  public void addEventToGroup(
+      long groupId, String title, String start, String end, String creator) {
     Transaction eventTxn = datastore.beginTransaction();
     long eventId = 0;
     try {
@@ -157,16 +156,17 @@ public class DatastoreAccess {
       eventId = datastore.put(eventEntity).getId();
       eventTxn.commit();
     } finally {
-      if(eventTxn.isActive()) {
+      if (eventTxn.isActive()) {
         eventTxn.rollback();
       }
     }
-    if(eventId != 0) {
+    if (eventId != 0) {
       Transaction groupTxn = datastore.beginTransaction();
       try {
         Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
-        List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
-        if(eventIds == null) {
+        List<Long> eventIds =
+            (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+        if (eventIds == null) {
           eventIds = new ArrayList<>();
         }
         eventIds.add(eventId);
@@ -189,11 +189,13 @@ public class DatastoreAccess {
    */
   public List<Event> getAllEventsFromGroup(long groupId) {
     Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
-    List<Long> eventIds = (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
+    List<Long> eventIds =
+        (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
     List<Event> events = new ArrayList<>();
-    if(eventIds != null) {
+    if (eventIds != null) {
       for (long eventId: eventIds) {
-        Event event = Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId));
+        Event event =
+            Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId));
         events.add(event);
       }
     }
