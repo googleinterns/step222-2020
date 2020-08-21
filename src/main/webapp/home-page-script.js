@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /** Class used to define the basic characteristics of a group. */
-class GroupItem {
+class Group {
   /**
    * Creates a new group with the given parameters.
    * @param {String} university The name of the university.
@@ -21,9 +21,12 @@ class GroupItem {
    * @param {int} year The year of study.
    */
   constructor(university, degree, year) {
-    this.university = university;
-    this.degree = degree;
-    this.year = year;
+    /** @private @const {String} */
+    this.university_ = university;
+    /** @private @const {String} */
+    this.degree_ = degree;
+    /** @private @const {int} */
+    this.year_ = year;
   }
 }
 
@@ -112,8 +115,8 @@ function loadGroups() {
       .then((response) => response.json())
       .then((groups) => {
         groups.forEach((group) => {
-          const groupItem = new GroupItem(group.university, group.degree, group.year);
-          groupsList.appendChild(createGroupElement(groupItem));
+          const groupObject = new Group(group.university, group.degree, group.year);
+          groupsList.appendChild(createGroupElement(group));
         });
       });
 }
