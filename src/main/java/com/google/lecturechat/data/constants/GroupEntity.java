@@ -33,4 +33,4 @@ public enum GroupEntity {
   public String getLabel() {
     return label;
   }
-} 
+}

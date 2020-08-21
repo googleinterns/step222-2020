@@ -23,15 +23,12 @@ import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.lecturechat.data.constants.GroupEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * API class for methods that access and operate on the datastore database.
- */
+/** API class for methods that access and operate on the datastore database. */
 public class DatastoreAccess {
 
   private final DatastoreService datastore;
@@ -40,9 +37,7 @@ public class DatastoreAccess {
     this.datastore = datastore;
   }
 
-  /**
-  * Factory constructor.
-  */
+  /** Factory constructor. */
   public static DatastoreAccess getDatastoreAccess() {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return new DatastoreAccess(datastore);
@@ -55,7 +50,7 @@ public class DatastoreAccess {
    * @param year The year of the degree the new group is associated with.
    */
   public void addGroup(String university, String degree, int year) {
-    if(!groupExistsAlready(university, degree, year)) {
+    if (!groupExistsAlready(university, degree, year)) {
       Entity groupEntity = new Entity(GroupEntity.KIND.getLabel());
       groupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
       groupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
@@ -102,4 +97,4 @@ public class DatastoreAccess {
     }
     return groups;
   }
-} 
+}
