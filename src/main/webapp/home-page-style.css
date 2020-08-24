@@ -1,5 +1,5 @@
 body {
-  font-family: Assistant;
+  font-family: Assistant, sans-serif;
 }
 
 .close-group-form {
@@ -69,7 +69,7 @@ label {
 }
 
 #menu {
-  background-color: #008B8B;
+  background-color: #008b8b;
   color: white;
   font-size: 25px;
   height: 100%;

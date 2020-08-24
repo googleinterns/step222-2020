@@ -16,19 +16,19 @@ package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Group;
+import com.google.lecturechat.data.Event;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups. */
-@WebServlet("/groups")
-public class GroupsServlet extends HttpServlet {
+/** Servlet for listing all events in a certain group. */
+@WebServlet("/events")
+public class EventsServlet extends HttpServlet {
 
+  private static final String ID_PARAMETER = "groupId";
   private static DatastoreAccess datastore;
 
   @Override
@@ -38,23 +38,11 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<Group> groups = datastore.getAllGroups();
+    long groupId = Long.parseLong(request.getParameter(ID_PARAMETER));
+    List<Event> events = datastore.getAllEventsFromGroup(groupId);
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(groups));
-  }
-
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    try {
-      String university = request.getParameter("university");
-      String degree = request.getParameter("degree");
-      int year = Integer.parseInt(request.getParameter("year"));
-
-      datastore.addGroup(university, degree, year);
-    } catch (Exception e) {
-      throw new BadRequestException(e.getMessage());
-    }
+    response.getWriter().println(gson.toJson(events));
   }
 }
