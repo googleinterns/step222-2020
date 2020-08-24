@@ -14,19 +14,20 @@
 
 package com.google.lecturechat.data.constants;
 
-/** Specifies the kind and property names to use for group entities in the datastore database. */
-public enum GroupEntity {
-  KIND("Group"),
-  UNIVERSITY_PROPERTY("university"),
-  DEGREE_PROPERTY("degree"),
-  YEAR_PROPERTY("year"),
-  STUDENTS_PROPERTY("students"),
-  EVENTS_PROPERTY("events");
+/** Specifies the kind and property names to use for event entities in the datastore database. */
+public enum EventEntity {
+  KIND("Event"),
+  TITLE_PROPERTY("title"),
+  START_PROPERTY("start"),
+  END_PROPERTY("end"),
+  CREATOR_PROPERTY("creator"),
+  MESSAGES_PROPERTY("messages"),
+  ATTENDEES_PROPERTY("attendees");
 
-  /* Labels comments and properties of groups in the database. */
+  /* Labels comments and properties of events in the database. */
   private final String label;
 
-  private GroupEntity(String label) {
+  private EventEntity(String label) {
     this.label = label;
   }
 
