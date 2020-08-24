@@ -281,10 +281,10 @@ function createGroupElement(group) {
   const groupElement = createElement('div', 'group', '');
 
   groupElement.appendChild(createElement('div', 'group-university',
-      group.university));
+      group.university_));
   groupElement.appendChild(createElement('hr', '', ''));
   groupElement.appendChild(createElement('div', 'group-details',
-      createDetailsMessage(group.degree, group.year)));
+      createDetailsMessage(group.degree_, group.year_)));
 
   return groupElement;
 }
