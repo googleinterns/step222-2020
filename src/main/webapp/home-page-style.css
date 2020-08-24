@@ -28,7 +28,7 @@ body {
 }
 
 #group-form {
-  background-color: #008B8B;
+  background-color: #008b8b;
   color: white;
   display: none;
   margin: auto;
@@ -105,7 +105,7 @@ label {
 }
 
 #open-group-form {
-  background-color: #008B8B;
+  background-color: #008b8b;
   border: none;
   border-radius: 15px;
   box-sizing: border-box;
@@ -118,13 +118,11 @@ label {
   padding: 10px;
 }
 
-#open-group-form:active,
-.submit-group-form:active {
+#open-group-form:active {
   outline: none;
 }
 
-#open-group-form:hover,
-.submit-group-form:hover {
+#open-group-form:hover {
   opacity: 1;
 }
 
@@ -137,7 +135,7 @@ label {
 }
 
 .submit-group-form {
-  background-color: #096B72;
+  background-color: #096b72;
   border: none;
   color: white;
   cursor: pointer;
@@ -147,6 +145,14 @@ label {
   opacity: 0.8;
   padding: 20px;
   width: 100%;
+}
+
+.submit-group-form:active {
+  outline: none;
+}
+
+.submit-group-form:hover {
+  opacity: 1;
 }
 
 .sign-out-button {

@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
+
 // Copyright 2020 Google LLC
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -65,13 +67,16 @@ function closeGroupForm() {
 }
 
 /**
- * Creates a custom message based on the details provided (degree, year of study).
+ * Creates a custom message based on the details provided (degree, year of
+ * study).
+ * @param {String} degree The degree that will be included in the message.
+ * @param {String} year The year that will be included in the message.
  * @return {String} The message created.
  */
 function createDetailsMessage(degree, year) {
   let message = year;
 
-  switch(year) {
+  switch (year) {
     case 1:
       message += 'st';
       break;
@@ -97,7 +102,8 @@ function createDetailsMessage(degree, year) {
 function createGroupElement(group) {
   const groupElement = createElement('div', 'group', '');
 
-  groupElement.appendChild(createElement('div', 'group-university', group.university));
+  groupElement.appendChild(createElement('div', 'group-university',
+      group.university));
   groupElement.appendChild(createElement('hr', '', ''));
   groupElement.appendChild(createElement('div', 'group-details',
       createDetailsMessage(group.degree, group.year)));
@@ -115,8 +121,9 @@ function loadGroups() {
       .then((response) => response.json())
       .then((groups) => {
         groups.forEach((group) => {
-          const groupObject = new Group(group.university, group.degree, group.year);
-          groupsList.appendChild(createGroupElement(group));
+          const groupObject = new Group(group.university, group.degree,
+              group.year);
+          groupsList.appendChild(createGroupElement(groupObject));
         });
       });
 }
