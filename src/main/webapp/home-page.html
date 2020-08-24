@@ -6,24 +6,60 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant">
     <meta name="google-signin-client_id" content="">
     <script src="script.js"></script>
-    <script async defer src="https://apis.google.com/js/api.js" onload="loadHomeClient()">
-    </script>
+    <script src="home-page-script.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="loadHomeClient();loadGroups()"></script>
   </head>
   <body>
     <div id="menu">
       <div class="menu-options">
         <a class="menu-option">
-          Profile
+          Home
         </a>
         <a class="menu-option">
           Settings
         </a>
       </div>
-      <a id="sign-out-button" onclick="signOut()">
+      <a class="sign-out-button" onclick="signOut()">
         Sign out
       </a>
     </div>
-    <div id="main">
+    <div class="main">
+      <div id="groups">
+        <h2>
+          Your groups
+        </h2>
+      </div>
+      <button id="open-group-form" onclick="openGroupForm()">
+        Create new group
+      </button>
+      <div id="group-form">
+        <form autocomplete="off" onsubmit="addNewGroup()">
+          <div class="new-group-headline">
+            <h1>
+              Add new group
+            </h1>
+            <span class="close-group-form" onclick="closeGroupForm()">
+              x
+            </span>
+          </div>
+          <label for="new-group-university">
+            University
+          </label>
+          <input type="text" placeholder="Enter the name of the university..." name="university" required id="new-group-university">
+          <label for="new-group-degree">
+            Degree
+          </label>
+          <input type="text" placeholder="Enter the name of the degree..." name="degree" required id="new-group-degree">
+          <label for="new-group-year">
+            Year
+          </label>
+          <input type="numerical" placeholder="Enter your current year..." name="year" required id="new-group-year">
+          <hr>
+          <button class="submit-group-form" type="submit">
+            Create the group
+          </button>
+        </form>
+      </div>
     </div>
   </body>
 </html>

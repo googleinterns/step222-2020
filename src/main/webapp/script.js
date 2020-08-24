@@ -122,12 +122,14 @@ function loadHomeClient() {
  * Loads the profile data associated with the currently logged in user.
  */
 function loadProfileData() {
-  const userProfile = googleAuth.currentUser.get().getBasicProfile();
+  if (googleAuth.isSignedIn.get()) {
+    const userProfile = googleAuth.currentUser.get().getBasicProfile();
 
-  const menuElement = document.getElementById('menu');
-  const profilePicture = createElement('img', 'profile-picture', '');
-  profilePicture.src = userProfile.getImageUrl();
-  menuElement.prepend(profilePicture);
+    const menuElement = document.getElementById('menu');
+    const profilePicture = createElement('img', 'profile-picture', '');
+    profilePicture.src = userProfile.getImageUrl();
+    menuElement.prepend(profilePicture);
+  }
 }
 
 /**

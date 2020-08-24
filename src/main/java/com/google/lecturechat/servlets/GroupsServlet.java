@@ -23,6 +23,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 /** Servlet for listing all available groups. */
 @WebServlet("/groups")
@@ -42,5 +43,18 @@ public class GroupsServlet extends HttpServlet {
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(groups));
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    try {
+      String university = request.getParameter("university");
+      String degree = request.getParameter("degree");
+      int year = Integer.parseInt(request.getParameter("year"));
+
+      datastore.addGroup(university, degree, year);
+    } catch (Exception e) {
+      throw new BadRequestException(e.getMessage());
+    }
   }
 }
