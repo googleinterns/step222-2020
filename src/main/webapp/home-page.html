@@ -1,17 +1,13 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <title>LectureChat</title>
     <link rel="stylesheet" href="home-page-style.css">
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Assistant">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant">
     <meta name="google-signin-client_id" content="">
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="script.js"></script>
     <script src="home-page-script.js"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-            onload="loadHomeClient();loadProfile()">
-    </script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="loadHomeClient();loadGroups()"></script>
   </head>
   <body>
     <div id="menu">
@@ -55,21 +51,18 @@
               x
             </span>
           </div>
-          <label for="university">
+          <label for="new-group-university">
             University
           </label>
-          <input type="text" placeholder="Enter the name of the university..."
-                 name="university" required id="new-group-university">
-          <label for="degree">
+          <input type="text" placeholder="Enter the name of the university..." name="university" required id="new-group-university">
+          <label for="new-group-degree">
             Degree
           </label>
-          <input type="text" placeholder="Enter the name of the degree..."
-                 name="degree" required id="new-group-degree">
-          <label for="year">
+          <input type="text" placeholder="Enter the name of the degree..." name="degree" required id="new-group-degree">
+          <label for="new-group-year">
             Year
           </label>
-          <input type="numerical" placeholder="Enter your current year..."
-                 name="year" required id="new-group-year">
+          <input type="numerical" placeholder="Enter your current year..." name="year" required id="new-group-year">
           <hr>
           <button class="submit-group-form" type="submit">
             Create the group

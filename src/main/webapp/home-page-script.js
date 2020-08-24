@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
+
 // Copyright 2020 Google LLC
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -28,9 +30,12 @@ class Group {
    * @param {int} year The year of study.
    */
   constructor(university, degree, year) {
-    this.university = university;
-    this.degree = degree;
-    this.year = year;
+    /** @private @const {String} */
+    this.university_ = university;
+    /** @private @const {String} */
+    this.degree_ = degree;
+    /** @private @const {int} */
+    this.year_ = year;
   }
 }
 
@@ -224,13 +229,16 @@ function createDate(dateObject) {
 }
 
 /**
- * Creates a custom message based on the details provided (degree, year of study).
+ * Creates a custom message based on the details provided (degree, year of
+ * study).
+ * @param {String} degree The degree that will be included in the message.
+ * @param {String} year The year that will be included in the message.
  * @return {String} The message created.
  */
 function createDetailsMessage(degree, year) {
   let message = year;
 
-  switch(year) {
+  switch (year) {
     case 1:
       message += 'st';
       break;
@@ -272,7 +280,8 @@ function createEventElement(event) {
 function createGroupElement(group) {
   const groupElement = createElement('div', 'group', '');
 
-  groupElement.appendChild(createElement('div', 'group-university', group.university));
+  groupElement.appendChild(createElement('div', 'group-university',
+      group.university));
   groupElement.appendChild(createElement('hr', '', ''));
   groupElement.appendChild(createElement('div', 'group-details',
       createDetailsMessage(group.degree, group.year)));

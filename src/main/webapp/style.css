@@ -1,10 +1,11 @@
 body {
   display: table-cell;
-  font-family: Assistant;
+  font-family: Assistant, sans-serif;
   vertical-align: middle;
 }
 
-body, html {
+body,
+html {
   height: 100%;
 }
 
@@ -17,7 +18,7 @@ html {
   margin: auto;
 }
 
-.signInButton {
+.sign-in-button {
   display: block;
   margin: auto;
 }
