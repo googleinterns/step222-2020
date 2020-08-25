@@ -160,8 +160,8 @@ function addWeekDays(calendarTable) {
  * @return {Integer} A positive number if the two events should be switched.
  */
 function compareEventsByStartDate(firstEvent, secondEvent) {
-  const firstEventStartDate = firstEvent.start;
-  const secondEventStartDate = secondEvent.start;
+  const firstEventStartDate = firstEvent.start_;
+  const secondEventStartDate = secondEvent.start_;
 
   return firstEventStartDate < secondEventStartDate;
 }
