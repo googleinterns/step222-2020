@@ -96,10 +96,6 @@ body {
   width: 50%;
 }
 
-.material-icons {
-  cursor: pointer;
-}
-
 input {
   border: 3px solid #c0c0c0;
   box-sizing: border-box;
@@ -122,6 +118,10 @@ label {
 .main {
   color: black;
   margin-left: 200px;
+}
+
+.material-icons {
+  cursor: pointer;
 }
 
 #menu {

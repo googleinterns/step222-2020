@@ -22,36 +22,6 @@ const SCOPE = 'profile email';
 const DISCOVERY_DOCS = [];
 
 /**
- * Retrieves the login status and checks if the user has granted the
- * scopes. Redirects the user to the appropriate page based on the
- * information mentioned before.
- * @param {boolean} isSignedIn A boolean value that indicates whether the
- * user is currently signed in.
- */
-function checkSigninStatus(isSignedIn) {
-  const currentURL = location.href;
-
-  if (isSignedIn) {
-    const user = googleAuth.currentUser.get();
-    const isAuthorized = user.hasGrantedScopes(SCOPE);
-
-    if (isAuthorized) {
-      if (currentURL.endsWith('index.html')) {
-        window.location.href = 'home-page.html';
-      }
-    } else {
-      if (currentURL.endsWith('home-page.html')) {
-        window.location.href = 'index.html';
-      }
-    }
-  } else {
-    if (currentURL.endsWith('home-page.html')) {
-      window.location.href = 'index.html';
-    }
-  }
-}
-
-/**
  * Creates a new element with a specified type, class and innerText.
  * @param {string} elementType The type of the element that will be created.
  * @param {string} className The class of the element that will be created.
@@ -68,24 +38,25 @@ function createElement(elementType, className, innerText) {
 }
 
 /**
+ * Retrieves and returns the login(+authorization) status from the server.
+ * @return {Bool} True if the user is logged in and has provided authorization
+ * to access the data associated with their account. False otherwise.
+ */
+async function getAuthStatus() {
+  const response = await fetch('auth-status');
+  const isSignedIn = await response.json();
+
+  return isSignedIn;
+}
+
+/**
  * Initializes the GoogleAuth object and checks if the user is on the
  * right page based on their login status. If not, redirects them to
  * the appropriate page.
  */
 async function initClient() {
   await initGoogleAuthObject();
-
   googleAuth = gapi.auth2.getAuthInstance();
-  googleAuth.isSignedIn.listen(checkSigninStatus);
-  checkSigninStatus(googleAuth.isSignedIn.get());
-}
-
-/**
- * Initializes the client and loads the data associated with their profile.
- */
-async function initHomeClient() {
-  await initClient();
-  loadProfileData();
 }
 
 /**
@@ -93,7 +64,7 @@ async function initHomeClient() {
  * to perform OAuth.
  */
 async function initGoogleAuthObject() {
-  await gapi.client.init({
+  await gapi.auth2.init({
     'apiKey': API_KEY,
     'clientId': CLIENT_ID,
     'discoveryDocs': DISCOVERY_DOCS,
@@ -110,40 +81,53 @@ function loadClient() {
 }
 
 /**
- * Loads the required Google APIs modules and initializes the client
- * already logged in. The difference between this function and the loadClient
- * function is that we will also load the data associated with this client.
- */
-function loadHomeClient() {
-  gapi.load('client:auth2', initHomeClient);
-}
-
-/**
  * Loads the profile data associated with the currently logged in user.
  */
-function loadProfileData() {
-  if (googleAuth.isSignedIn.get()) {
-    const userProfile = googleAuth.currentUser.get().getBasicProfile();
+async function loadProfileData() {
+  const isSignedIn = await getAuthStatus();
 
+  if (isSignedIn) {
+    const userProfile = googleAuth.currentUser.get().getBasicProfile();
     const menuElement = document.getElementById('menu');
     const profilePicture = createElement('img', 'profile-picture', '');
     profilePicture.src = userProfile.getImageUrl();
     menuElement.prepend(profilePicture);
+  } else {
+    window.location.href = 'index.html';
   }
 }
 
 /**
- * Signs in the user and redirects them to the home page.
+ * Signs in the user, updates the authorization status and redirects them
+ * to the home page (only if they also provide the authorization needed).
  */
 async function signIn() {
-  await googleAuth.signIn();
-  window.location.href = 'home-page.html';
+  const authResult = await googleAuth.grantOfflineAccess();
+
+  if(authResult['code']) {
+    const params = new URLSearchParams();
+    params.append('type', 'login');
+    params.append('auth-code', authResult['code']);
+    await fetch('/auth-status', {method: 'POST', body: params});
+    window.location.href = 'home-page.html';
+  } else {
+    window.location.href = 'index.html';
+  }
 }
 
 /**
- * Signs out the user and redirects them to the start page.
+ * Signs out the user, upadtes the authorization status and redirects
+ * them to the start page.
  */
-async function signOut() {
-  await googleAuth.signOut();
+function signOut() {
+  googleAuth.signOut();
+  const params = new URLSearchParams();
+  params.append('type', 'logout');
+  fetch('/auth-status', {method: 'POST', body: params});
   window.location.href = 'index.html';
 }
+
+window.signIn = signIn;
+window.addEventListener('load', loadClient);
+
+export {initClient, createElement, loadProfileData, signOut};
