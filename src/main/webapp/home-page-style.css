@@ -22,7 +22,7 @@ body {
 
 .calendar-header {
   align-items: center;
-  background: linear-gradient(to bottom right, #00ffff, #006666);
+  background: linear-gradient(to bottom right, #0ff, #066);
   color: white;
   display: flex;
   flex-direction: row;
@@ -228,7 +228,8 @@ label {
   width: 200px;
 }
 
-td, th {
+td,
+th {
   border-bottom: 1px solid #ddd;
   font-size: 20px;
   text-align: center;
