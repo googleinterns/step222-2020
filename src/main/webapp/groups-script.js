@@ -20,12 +20,13 @@ import {createElement} from './script.js';
 class Group {
   /**
    * Creates a new group with the given parameters.
+   * @param {long} id The group id used by the database.
    * @param {String} university The name of the university.
    * @param {String} degree The name of the degree.
    * @param {int} year The year of study.
    */
   constructor(id, university, degree, year) {
-    /** @private @const {String} */
+    /** @private @const {Long} */
     this.id_ = id;
     /** @private @const {String} */
     this.university_ = university;
@@ -137,8 +138,8 @@ function loadGroups() {
       .then((response) => response.json())
       .then((groups) => {
         groups.forEach((group) => {
-          const groupObject = new Group(group.id, group.university, group.degree,
-              group.year);
+          const groupObject = new Group(group.id, group.university,
+              group.degree, group.year);
           groupsList.appendChild(createGroupElement(groupObject));
         });
       });

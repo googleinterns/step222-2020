@@ -17,11 +17,11 @@
 import {createElement} from './script.js';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
+  'July', 'August', 'September', 'October', 'November', 'December'];
 const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-    'Friday', 'Saturday'];
+  'Friday', 'Saturday'];
 
-let eventsDictionary = {};
+const eventsDictionary = {};
 
 /** Class used to define the basic characteristics of an event. */
 class Event {
@@ -53,7 +53,7 @@ function addDayEvents(date, dateElement) {
   }
   events.sort(compareEventsByStartDate);
   dateElement.classList.add('day-with-events');
-  dateElement.addEventListener('click', function () {
+  dateElement.addEventListener('click', function() {
     displayEvents(date);
 
     const currentlySelectedDay = document.getElementById('selected-day');
@@ -112,10 +112,12 @@ function addMonthHeader(calendarContainer, date) {
   const month = date.getMonth();
   const calendarHeader = createElement('div', 'calendar-header', '');
 
-  addNewMonthButton('arrow_back_ios', calendarHeader, date, getPreviousMonthDate);
+  addNewMonthButton('arrow_back_ios', calendarHeader, date,
+      getPreviousMonthDate);
   calendarHeader.appendChild(createElement('p', 'calendar-details',
       MONTHS[month] + ' ' + year));
-  addNewMonthButton('arrow_forward_ios', calendarHeader, date, getNextMonthDate);
+  addNewMonthButton('arrow_forward_ios', calendarHeader, date,
+      getNextMonthDate);
 
   calendarContainer.appendChild(calendarHeader);
 }
@@ -134,8 +136,8 @@ function addNewMonthButton(buttonClass, calendarHeader, date,
     functionToCreateNewMonth) {
   const newMonthButton = createElement('i', 'material-icons', buttonClass);
   newMonthButton.addEventListener('click', function() {
-    loadNewMonth(date, functionToCreateNewMonth)
-  }); 
+    loadNewMonth(date, functionToCreateNewMonth);
+  });
   calendarHeader.appendChild(newMonthButton);
 }
 
@@ -209,7 +211,7 @@ function displayEvents(date) {
   const eventsContainer = document.getElementById('events');
   eventsContainer.innerHTML = '';
 
-  for(let i = 0; i < events.length; i++) {
+  for (let i = 0; i < events.length; i++) {
     eventsContainer.appendChild(createEventElement(events[i]));
   }
 }
@@ -257,7 +259,7 @@ function getPreviousMonthDate(date) {
   if (currentMonth === 0) {
     return new Date(currentYear - 1, 11);
   }
-  
+
   return new Date(currentYear, currentMonth - 1);
 }
 

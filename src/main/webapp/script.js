@@ -104,7 +104,7 @@ async function loadProfileData() {
 async function signIn() {
   const authResult = await googleAuth.grantOfflineAccess();
 
-  if(authResult['code']) {
+  if (authResult['code']) {
     const params = new URLSearchParams();
     params.append('type', 'login');
     params.append('auth-code', authResult['code']);
