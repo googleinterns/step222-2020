@@ -21,6 +21,7 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
 const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
   'Friday', 'Saturday'];
 
+// Dictionary used to simply retrieve the events that start on a given day.
 const eventsDictionary = {};
 
 /** Class used to define the basic characteristics of an event. */
@@ -34,9 +35,9 @@ class Event {
   constructor(title, start, end) {
     /** @private @const {String} */
     this.title_ = title;
-    /** @private @const {Date} */
+    /** @private @const {String} */
     this.start_ = start;
-    /** @private @const {Date} */
+    /** @private @const {String} */
     this.end_ = end;
   }
 }
@@ -46,7 +47,7 @@ class Event {
  * @param {Date} date The date for which the events will be added.
  * @param {Element} dateElement The element in which the events will be added.
  */
-function addDayEvents(date, dateElement) {
+function addEventsOfTheDay(date, dateElement) {
   const events = eventsDictionary[date];
   if (events === undefined) {
     return;
@@ -69,7 +70,7 @@ function addDayEvents(date, dateElement) {
  * @param {Element} calendarTable The table that is part of the calendar.
  * @param {Date} date The date for whose month we will add the days.
  */
-function addMonthDays(calendarTable, date) {
+function addDaysOfTheMonth(calendarTable, date) {
   const year = date.getFullYear();
   const month = date.getMonth();
   const numberOfDaysInMonth = getNumberOfDaysInMonth(date);
@@ -91,7 +92,7 @@ function addMonthDays(calendarTable, date) {
       currentRowElement = createElement('tr', '', '');
     }
     const dayElement = createElement('td', 'calendar-day', day);
-    addDayEvents(new Date(year, month, day), dayElement);
+    addEventsOfTheDay(new Date(year, month, day), dayElement);
     currentRowElement.appendChild(dayElement);
   }
 
@@ -107,17 +108,17 @@ function addMonthDays(calendarTable, date) {
  * @param {Date} date The date for whose month we will display the days and
  * the events associated.
  */
-function addMonthHeader(calendarContainer, date) {
+function addHeaderOfTheMonth(calendarContainer, date) {
   const year = date.getFullYear();
   const month = date.getMonth();
   const calendarHeader = createElement('div', 'calendar-header', '');
 
-  addNewMonthButton('arrow_back_ios', calendarHeader, date,
-      getPreviousMonthDate);
+  addButtonToGetNewMonth('arrow_back_ios', calendarHeader, date,
+      getDateOfThePreviousMonthDate);
   calendarHeader.appendChild(createElement('p', 'calendar-details',
       MONTHS[month] + ' ' + year));
-  addNewMonthButton('arrow_forward_ios', calendarHeader, date,
-      getNextMonthDate);
+  addButtonToGetNewMonth('arrow_forward_ios', calendarHeader, date,
+      getDateOfTheNextMonthDate);
 
   calendarContainer.appendChild(calendarHeader);
 }
@@ -132,7 +133,7 @@ function addMonthHeader(calendarContainer, date) {
  * @param {Function} functionToCreateNewMonth The function used to create
  * the new month.
  */
-function addNewMonthButton(buttonClass, calendarHeader, date,
+function addButtonToGetNewMonth(buttonClass, calendarHeader, date,
     functionToCreateNewMonth) {
   const newMonthButton = createElement('i', 'material-icons', buttonClass);
   newMonthButton.addEventListener('click', function() {
@@ -145,7 +146,7 @@ function addNewMonthButton(buttonClass, calendarHeader, date,
  * Adds the week days header in the calendar's table.
  * @param {Element} calendarTable The table that is part of the calendar.
  */
-function addWeekDays(calendarTable) {
+function addWeekDaysToCalendar(calendarTable) {
   const weekDaysRow = createElement('tr', 'week-days-row', '');
   for (let i = 0; i < WEEK_DAYS.length; i++) {
     weekDaysRow.appendChild(createElement('th', 'week-day', WEEK_DAYS[i]));
@@ -186,13 +187,13 @@ function createEventElement(event) {
  * Creates the calendar associated with the date given.
  * @param {Date} date The date for which we want to display the calendar.
  */
-function createMonthCalendar(date) {
+function createCalendarOfTheMonth(date) {
   const calendarContainer = document.getElementById('calendar');
   const calendarTable = createElement('table', 'calendar-table', '');
 
-  addMonthHeader(calendarContainer, date);
-  addWeekDays(calendarTable);
-  addMonthDays(calendarTable, date);
+  addHeaderOfTheMonth(calendarContainer, date);
+  addWeekDaysToCalendar(calendarTable);
+  addDaysOfTheMonth(calendarTable, date);
 
   calendarContainer.appendChild(calendarTable);
 }
@@ -221,7 +222,7 @@ function displayEvents(date) {
  * @param {Date} date The date for which the new date will be created.
  * @return {Date} The date of the next month.
  */
-function getNextMonthDate(date) {
+function getDateOfTheNextMonth(date) {
   const currentMonth = date.getMonth();
   const currentYear = date.getFullYear();
 
@@ -248,11 +249,11 @@ function getNumberOfDaysInMonth(date) {
 }
 
 /**
- * Gets the previous month date of the date received.
+ * Gets the previous month of the date received.
  * @param {Date} date The date for which the new date will be created.
  * @return {Date} The date of the previous month.
  */
-function getPreviousMonthDate(date) {
+function getDateOfThePreviousMonth(date) {
   const currentMonth = date.getMonth();
   const currentYear = date.getFullYear();
 
@@ -272,7 +273,7 @@ function loadCalendar() {
   const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
       currentDate.getDate());
 
-  createMonthCalendar(currentDate);
+  createCalendarOfTheMonth(currentDate);
   displayEvents(today);
 }
 
@@ -308,7 +309,7 @@ async function loadEvents() {
 function loadNewMonth(date, functionToCreateNewMonth) {
   const newMonthDate = functionToCreateNewMonth(date);
   document.getElementById('calendar').innerHTML = '';
-  createMonthCalendar(newMonthDate);
+  createCalendarOfTheMonth(newMonthDate);
 }
 
 export {createEventElement, Event, loadEvents, loadCalendar};
