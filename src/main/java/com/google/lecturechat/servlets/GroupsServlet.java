@@ -15,9 +15,9 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Group;
-import com.google.lecturechat.data.AuthStatus;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
