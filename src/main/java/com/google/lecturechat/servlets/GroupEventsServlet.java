@@ -15,11 +15,10 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Event;
-import com.google.lecturechat.data.AuthStatus;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,10 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/**
- * Servlet for listing all events in a certain group and adding a new event to
- * a certain group.
- */
+/** Servlet for listing all events in a certain group and adding a new event to a certain group. */
 @WebServlet("/group-events")
 public class GroupEventsServlet extends HttpServlet {
 
@@ -54,7 +50,7 @@ public class GroupEventsServlet extends HttpServlet {
 
     try {
       long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-      String title = (String)request.getParameter(TITLE_PARAMETER);
+      String title = (String) request.getParameter(TITLE_PARAMETER);
       long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
       long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
 

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.ws.rs.BadRequestException;
 
 /** API class for methods that access and operate on the datastore database. */
 public class DatastoreAccess {
@@ -230,8 +229,8 @@ public class DatastoreAccess {
   }
 
   /**
-   * Searches for the user with the given id and returns the entity
-   * associated (or null if there is no user associated with the id received).
+   * Searches for the user with the given id and returns the entity associated (or null if there is
+   * no user associated with the id received).
    *
    * @param userId The id of the user to be searched for.
    * @return The entity associated or null if the user is not registered.
@@ -246,8 +245,8 @@ public class DatastoreAccess {
    * Joins the given group by adding the group id to the user's list of groups.
    *
    * @param groupId The id of the group that the user joined.
-   * @param authStatus The AuthStatus object used to retrieve the id of the
-   * currently signed in user.
+   * @param authStatus The AuthStatus object used to retrieve the id of the currently signed in
+   *     user.
    */
   public void joinGroup(long groupId, AuthStatus authStatus) {
     Transaction transaction = datastore.beginTransaction();
@@ -277,8 +276,8 @@ public class DatastoreAccess {
   /**
    * Gets the groups joined by the currently signed in user.
    *
-   * @param authStatus The AuthStatus object used to retrieve the id of the
-   * currently signed in user.
+   * @param authStatus The AuthStatus object used to retrieve the id of the currently signed in
+   *     user.
    * @return The list of ids of the groups joined.
    */
   public List<Long> getJoinedGroups(AuthStatus authStatus) {
@@ -291,8 +290,7 @@ public class DatastoreAccess {
       }
       String userId = authStatus.getUserId();
       Entity userEntity = getUser(userId);
-      groupsIds =
-          (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+      groupsIds = (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
       transaction.commit();
     } finally {
       if (transaction.isActive()) {

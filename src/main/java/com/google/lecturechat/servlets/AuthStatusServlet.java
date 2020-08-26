@@ -15,7 +15,6 @@
 package com.google.lecturechat.servlets;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -23,12 +22,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gson.Gson;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Event;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Enumeration;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -68,13 +62,13 @@ public class AuthStatusServlet extends HttpServlet {
 
         GoogleTokenResponse tokenResponse =
             new GoogleAuthorizationCodeTokenRequest(
-                new NetHttpTransport(),
-                JacksonFactory.getDefaultInstance(),
-                "https://oauth2.googleapis.com/token",
-                CLIENT_ID,
-                CLIENT_SECRET,
-                authCode,
-                REDIRECT_URI)
+                    new NetHttpTransport(),
+                    JacksonFactory.getDefaultInstance(),
+                    "https://oauth2.googleapis.com/token",
+                    CLIENT_ID,
+                    CLIENT_SECRET,
+                    authCode,
+                    REDIRECT_URI)
                 .execute();
 
         String accessToken = tokenResponse.getAccessToken();
