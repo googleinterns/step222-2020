@@ -114,11 +114,11 @@ function addHeaderOfTheMonth(calendarContainer, date) {
   const calendarHeader = createElement('div', 'calendar-header', '');
 
   addButtonToGetNewMonth('arrow_back_ios', calendarHeader, date,
-      getDateOfThePreviousMonthDate);
+      getDateOfThePreviousMonth);
   calendarHeader.appendChild(createElement('p', 'calendar-details',
       MONTHS[month] + ' ' + year));
   addButtonToGetNewMonth('arrow_forward_ios', calendarHeader, date,
-      getDateOfTheNextMonthDate);
+      getDateOfTheNextMonth);
 
   calendarContainer.appendChild(calendarHeader);
 }
@@ -241,7 +241,7 @@ function getDateOfTheNextMonth(date) {
 function getNumberOfDaysInMonth(date) {
   const year = date.getFullYear();
   const month = date.getMonth();
-  const nextMonthDate = getNextMonthDate(new Date(year, month));
+  const nextMonthDate = getDateOfTheNextMonth(new Date(year, month));
   const nextMonthYear = nextMonthDate.getFullYear();
   const nextMonth = nextMonthDate.getMonth();
 
