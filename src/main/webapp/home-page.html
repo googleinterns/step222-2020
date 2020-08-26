@@ -3,11 +3,12 @@
   <head>
     <title>LectureChat</title>
     <link rel="stylesheet" href="home-page-style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant|Material+Icons">
     <meta name="google-signin-client_id" content="">
-    <script src="script.js"></script>
-    <script src="home-page-script.js"></script>
-    <script async defer src="https://apis.google.com/js/api.js" onload="loadHomeClient();loadGroups()"></script>
+    <script src="home-page-script.js" type="module"></script>
+    <script src="groups-script.js" type="module"></script>
+    <script src="events-script.js" type="module"></script>
+    <script async defer src="https://apis.google.com/js/api.js" id="auth"></script>
   </head>
   <body>
     <div id="menu">
@@ -24,10 +25,21 @@
       </a>
     </div>
     <div class="main">
-      <div id="groups">
+      <table id="calendar">
+      </table>
+      <div id="events-container">
+        <h2>
+          Your events
+        </h2>
+        <div id="events">
+        </div>
+      </div>
+      <div id="groups-container">
         <h2>
           Your groups
         </h2>
+        <div id="groups">
+        </div>
       </div>
       <button id="open-group-form" onclick="openGroupForm()">
         Create new group
