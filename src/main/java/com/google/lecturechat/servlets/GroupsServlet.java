@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups. */
+/** Servlet for listing all available groups and add a new group. */
 @WebServlet("/groups")
 public class GroupsServlet extends HttpServlet {
 
@@ -52,7 +52,7 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!authStatus.isLoggedIn()) {
+    if (!authStatus.isSignedIn()) {
       return;
     }
     try {

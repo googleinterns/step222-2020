@@ -206,10 +206,10 @@ public class DatastoreAccess {
   }
 
   /**
-   * Adds the user to the database if they are new.
+   * Adds the user to the database if they don't exist already.
    *
-   * @param userId The id of the user.
-   * @param name The name of the user.
+   * @param userId The id of the user that will be added.
+   * @param name The name of the user that will be added.
    */
   public void addUser(String userId, String name) {
     Transaction transaction = datastore.beginTransaction();
@@ -231,7 +231,7 @@ public class DatastoreAccess {
 
   /**
    * Searches for the user with the given id and returns the entity
-   * associated (or null otherwise).
+   * associated (or null if there is no user associated with the id received).
    *
    * @param userId The id of the user to be searched for.
    * @return The entity associated or null if the user is not registered.
@@ -243,9 +243,9 @@ public class DatastoreAccess {
   }
 
   /**
-   * Joins the given group by adding the group id to the user groups list.
+   * Joins the given group by adding the group id to the user's list of groups.
    *
-   * @param groupId The group id.
+   * @param groupId The id of the group that the user joined.
    * @param authStatus The AuthStatus object used to retrieve the id of the
    * currently signed in user.
    */
@@ -253,7 +253,7 @@ public class DatastoreAccess {
     Transaction transaction = datastore.beginTransaction();
 
     try {
-      if (!authStatus.isLoggedIn()) {
+      if (!authStatus.isSignedIn()) {
         return;
       }
       String userId = authStatus.getUserId();
@@ -286,7 +286,7 @@ public class DatastoreAccess {
     List<Long> groupsIds = new ArrayList<Long>();
 
     try {
-      if (!authStatus.isLoggedIn()) {
+      if (!authStatus.isSignedIn()) {
         return new ArrayList<>();
       }
       String userId = authStatus.getUserId();

@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all events in a certain group. */
+/** Servlet for joining a group. */
 @WebServlet("/join-group")
 public class JoinGroupServlet extends HttpServlet {
 
@@ -39,7 +39,7 @@ public class JoinGroupServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!authStatus.isLoggedIn()) {
+    if (!authStatus.isSignedIn()) {
       return;
     }
     try {

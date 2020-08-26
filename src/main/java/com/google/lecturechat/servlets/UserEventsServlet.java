@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet for listing all events in a certain group. */
+/** Servlet for listing all events that the user signed up for. */
 @WebServlet("/user-events")
 public class UserEventsServlet extends HttpServlet {
 
@@ -40,7 +40,7 @@ public class UserEventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!authStatus.isLoggedIn()) {
+    if (!authStatus.isSignedIn()) {
       return;
     }
     List<Long> groups = datastore.getJoinedGroups(authStatus);

@@ -15,8 +15,9 @@
 package com.google.lecturechat.data;
 
 /** 
- * A helper class for sharing the id of the currently logged in user between
- * different servlets.
+ * A helper class for sharing the id of the currently signed in user between
+ * different servlets. The user is considered signed in after they
+ * authenticated and provided the authorization needed.
  */
 public class AuthStatus {
   private String userId;
@@ -39,7 +40,7 @@ public class AuthStatus {
     return userId;
   }
 
-  public boolean isLoggedIn() {
+  public boolean isSignedIn() {
     return (userId != null);
   }
 }

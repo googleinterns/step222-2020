@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all events in a certain group. */
+/** Servlet for setting and getting the AuthStatus (authentication + authorization). */
 @WebServlet("/auth-status")
 public class AuthStatusServlet extends HttpServlet {
 
@@ -55,7 +55,7 @@ public class AuthStatusServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(authStatus.isLoggedIn()));
+    response.getWriter().println(gson.toJson(authStatus.isSignedIn()));
   }
 
   @Override

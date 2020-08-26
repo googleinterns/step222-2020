@@ -27,7 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all events in a certain group. */
+/**
+ * Servlet for listing all events in a certain group and adding a new event to
+ * a certain group.
+ */
 @WebServlet("/group-events")
 public class GroupEventsServlet extends HttpServlet {
 
@@ -45,7 +48,7 @@ public class GroupEventsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!authStatus.isLoggedIn()) {
+    if (!authStatus.isSignedIn()) {
       return;
     }
 
@@ -63,7 +66,7 @@ public class GroupEventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!authStatus.isLoggedIn()) {
+    if (!authStatus.isSignedIn()) {
       return;
     }
 
