@@ -16,20 +16,21 @@ package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Event;
+import com.google.lecturechat.data.AuthStatus;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 /** Servlet for listing all events in a certain group. */
-@WebServlet("/events")
-public class EventsServlet extends HttpServlet {
+@WebServlet("/join-group")
+public class JoinGroupServlet extends HttpServlet {
 
-  private static final String ID_PARAMETER = "groupId";
+  private static final String GROUP_ID_PARAMETER = "groupId";
   private static DatastoreAccess datastore;
+  private static final AuthStatus authStatus = AuthStatus.getInstance();
 
   @Override
   public void init() {
@@ -37,12 +38,15 @@ public class EventsServlet extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    long groupId = Long.parseLong(request.getParameter(ID_PARAMETER));
-    List<Event> events = datastore.getAllEventsFromGroup(groupId);
-    response.setContentType("application/json;");
-    response.setCharacterEncoding("UTF-8");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(events));
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    if (!authStatus.isLoggedIn()) {
+      return;
+    }
+    try {
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      datastore.joinGroup(groupId, authStatus);
+    } catch (Exception e) {
+      throw new BadRequestException(e.getMessage());
+    }
   }
 }

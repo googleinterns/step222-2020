@@ -15,6 +15,7 @@
 // limitations under the License.
 
 import {createElement} from './script.js';
+import {createEventElement, Event} from './events-script.js';
 
 /** Class used to define the basic characteristics of a group. */
 class Group {
@@ -35,6 +36,24 @@ class Group {
     /** @private @const {int} */
     this.year_ = year;
   }
+}
+
+/**
+ * Adds a new event to the group specified.
+ * @param {load} groupId The id of the group to which we will add the event.
+ */
+function addNewEvent(groupId) {
+  const params = new URLSearchParams();
+  const title = document.getElementById('new-event-title').value;
+  const start = Date.parse(document.getElementById('new-event-start').value);
+  const end = Date.parse(document.getElementById('new-event-end').value);
+
+  params.append('group-id', groupId);
+  params.append('title', title);
+  params.append('start', start);
+  params.append('end', end);
+
+  fetch('/group-events', {method: 'POST', body: params});
 }
 
 /**
@@ -64,11 +83,22 @@ function changeContainerDisplay(containerID, displayType) {
 }
 
 /**
- * Closes the new group form and displays the "Create new group" button.
+ * Closes the form with the given type (e.g. group, event) and displays
+ * the button associated.
+ * @param {String} formType The form type that is included in the ids of the
+ * form and of the button.
  */
-function closeGroupForm() {
-  changeContainerDisplay('group-form', 'none');
-  changeContainerDisplay('open-group-form', 'initial');
+function closeForm(formType) {
+  changeContainerDisplay(formType + '-form', 'none');
+  changeContainerDisplay('open-' + formType + '-form', 'initial');
+}
+
+/**
+ * Closes the list of events opened.
+ */
+function closeListOfEvents() {
+  changeContainerDisplay('list-of-events', 'none');
+  changeContainerDisplay('groups-section', 'initial');
 }
 
 /**
@@ -113,6 +143,10 @@ function createGroupElement(group) {
   groupElement.appendChild(createElement('div', 'group-details',
       createDetailsMessage(group.degree_, group.year_)));
 
+  groupElement.addEventListener('click', function(){
+    showListOfEvents(group.id_);
+  });
+
   return groupElement;
 }
 
@@ -128,10 +162,34 @@ function joinGroup(groupId) {
 }
 
 /**
- * Fetches groups from the server and adds them to the groups section.
+ * Fetches the events associated with the group from the server.
+ * @param {Object} groupId The group id.
+ */
+async function loadGroupEvents(groupId) {
+  const eventsContainer = document.getElementById('group-events');
+  eventsContainer.innerHTML = '';
+
+  const url = new URL('/group-events', window.location.origin);
+  const params = new URLSearchParams();
+  params.append('group-id', groupId);
+  url.search = params;
+
+  const response = await fetch(url);
+  const events = await response.json();
+
+  events.forEach((event) => {
+    const eventStartTime = new Date(event.startTime);
+    const eventEndDate = new Date(event.endTime);
+    const eventObject = new Event(event.title, eventStartTime, eventEndDate);
+    eventsContainer.appendChild(createEventElement(eventObject));
+  });
+}
+
+/**
+ * Fetches the groups from the server and adds them to the groups section.
  */
 function loadGroups() {
-  const groupsList = document.getElementById('groups');
+  const groupsList = document.getElementById('groups-container');
   groupsList.innerHTML = '';
 
   fetch('/groups')
@@ -146,15 +204,35 @@ function loadGroups() {
 }
 
 /**
- * Opens the new group form and hides the "Create new group" button.
+ * Opens the form with the given type (e.g. group, event) and hides
+ * the button associated.
+ * @param {String} formType The form type that is included in the ids of the
+ * form and of the button.
  */
-function openGroupForm() {
-  changeContainerDisplay('group-form', 'block');
-  changeContainerDisplay('open-group-form', 'none');
+function openForm(formType) {
+  changeContainerDisplay(formType + '-form', 'block');
+  changeContainerDisplay('open-' + formType + '-form', 'none');
+}
+
+/**
+ * Shows the events of the group as a list.
+ * @param {long} groupId The group id.
+ */
+async function showListOfEvents(groupId) {
+  changeContainerDisplay('list-of-events', 'initial');
+  changeContainerDisplay('groups-section', 'none');
+
+  await loadGroupEvents(groupId);
+
+  const eventForm = document.getElementById('new-event-form');
+  eventForm.onsubmit = function() {
+    addNewEvent(groupId);
+  };
 }
 
 window.addNewGroup = addNewGroup;
-window.closeGroupForm = closeGroupForm;
-window.openGroupForm = openGroupForm;
+window.closeListOfEvents = closeListOfEvents;
+window.closeForm = closeForm;
+window.openForm = openForm;
 
 export {loadGroups};

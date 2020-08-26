@@ -25,9 +25,9 @@ public final class Event {
   private final long id;
   private final String title;
 
-  // Format for time: YYYY-MM-DDTHH-MM-SS.
-  private final String startTimeInUTC;
-  private final String endTimeInUTC;
+  // The number of milliseconds since epoch time (1 Jan 1970 UTC).
+  private final long startTime;
+  private final long endTime;
 
   private final String creator;
   private final List<Long> messages;
@@ -36,15 +36,15 @@ public final class Event {
   public Event(
       long id,
       String title,
-      String startTimeInUTC,
-      String endTimeInUTC,
+      long startTime,
+      long endTime,
       String creator,
       List<Long> messages,
       List<Long> attendees) {
     this.id = id;
     this.title = title;
-    this.startTimeInUTC = startTimeInUTC;
-    this.endTimeInUTC = endTimeInUTC;
+    this.startTime = startTime;
+    this.endTime = endTime;
     this.creator = creator;
     this.messages = messages;
     this.attendees = attendees;
@@ -58,12 +58,12 @@ public final class Event {
     return title;
   }
 
-  public String getStart() {
-    return startTimeInUTC;
+  public long getStart() {
+    return startTime;
   }
 
-  public String getEnd() {
-    return endTimeInUTC;
+  public long getEnd() {
+    return endTime;
   }
 
   public String getCreator() {
@@ -82,8 +82,8 @@ public final class Event {
     if (eventEntity.getKind().equals(EventEntity.KIND.getLabel())) {
       long id = eventEntity.getKey().getId();
       String title = (String) (eventEntity.getProperty(EventEntity.TITLE_PROPERTY.getLabel()));
-      String start = (String) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
-      String end = (String) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
+      long start = (long) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
+      long end = (long) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
       String creator = (String) (eventEntity.getProperty(EventEntity.CREATOR_PROPERTY.getLabel()));
       List<Long> messages =
           (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));

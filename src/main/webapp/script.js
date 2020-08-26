@@ -44,9 +44,9 @@ function createElement(elementType, className, innerText) {
  */
 async function getAuthStatus() {
   const response = await fetch('auth-status');
-  const isSignedIn = await response.json();
+  const authStatus = await response.json();
 
-  return isSignedIn;
+  return authStatus;
 }
 
 /**
@@ -84,9 +84,9 @@ function loadClient() {
  * Loads the profile data associated with the currently logged in user.
  */
 async function loadProfileData() {
-  const isSignedIn = await getAuthStatus();
+  const authStatus = await getAuthStatus();
 
-  if (isSignedIn) {
+  if (authStatus) {
     const userProfile = googleAuth.currentUser.get().getBasicProfile();
     const menuElement = document.getElementById('menu');
     const profilePicture = createElement('img', 'profile-picture', '');

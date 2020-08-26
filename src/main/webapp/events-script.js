@@ -28,8 +28,8 @@ class Event {
   /**
    * Creates a new event with the given parameters.
    * @param {String} title The title of the event.
-   * @param {String} start The start date of the event.
-   * @param {int} end The end date of the event.
+   * @param {Date} start The start date of the event.
+   * @param {Date} end The end date of the event.
    */
   constructor(title, start, end) {
     /** @private @const {String} */
@@ -280,7 +280,7 @@ function loadCalendar() {
  * Fetches events from the server and stores them in the dictionary.
  */
 async function loadEvents() {
-  const response = await fetch('/events');
+  const response = await fetch('/user-events');
   const events = await response.json();
 
   events.forEach((event) => {
@@ -288,7 +288,7 @@ async function loadEvents() {
     const eventEndDate = new Date(event.end);
     const eventStartDay = new Date(eventStartDate.getFullYear(),
         eventStartDate.getMonth(), eventStartDate.getDate());
-    const eventObject = new Event(event.name, eventStartDate,
+    const eventObject = new Event(event.title, eventStartDate,
         eventEndDate);
 
     if (eventStartDay in eventsDictionary) {
@@ -311,4 +311,4 @@ function loadNewMonth(date, functionToCreateNewMonth) {
   createMonthCalendar(newMonthDate);
 }
 
-export {loadEvents, loadCalendar};
+export {createEventElement, Event, loadEvents, loadCalendar};

@@ -29,10 +29,12 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
+import com.google.lecturechat.data.constants.UserEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.ws.rs.BadRequestException;
 
 /** API class for methods that access and operate on the datastore database. */
 public class DatastoreAccess {
@@ -143,14 +145,14 @@ public class DatastoreAccess {
    * @param creator The creator of the event.
    */
   public void addEventToGroup(
-      long groupId, String title, String startTimeInUTC, String endTimeInUTC, String creator) {
+      long groupId, String title, long startTime, long endTime, String creator) {
     Transaction eventTransaction = datastore.beginTransaction();
     long eventId = 0;
     try {
       Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
       eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
-      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), startTimeInUTC);
-      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTimeInUTC);
+      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), startTime);
+      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTime);
       eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
       eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
       eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
@@ -201,5 +203,103 @@ public class DatastoreAccess {
               .collect(Collectors.toList());
     }
     return events;
+  }
+
+  /**
+   * Adds the user to the database if they are new.
+   *
+   * @param userId The id of the user.
+   * @param name The name of the user.
+   */
+  public void addUser(String userId, String name) {
+    Transaction transaction = datastore.beginTransaction();
+
+    try {
+      if (getUser(userId) == null) {
+        Entity userEntity = new Entity(KeyFactory.createKey(UserEntity.KIND.getLabel(), userId));
+        userEntity.setProperty(UserEntity.NAME_PROPERTY.getLabel(), name);
+        userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), new ArrayList<Long>());
+        datastore.put(userEntity);
+      }
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  /**
+   * Searches for the user with the given id and returns the entity
+   * associated (or null otherwise).
+   *
+   * @param userId The id of the user to be searched for.
+   * @return The entity associated or null if the user is not registered.
+   */
+  public Entity getUser(String userId) {
+    Query query = new Query(KeyFactory.createKey(UserEntity.KIND.getLabel(), userId));
+    Entity userEntity = datastore.prepare(query).asSingleEntity();
+    return userEntity;
+  }
+
+  /**
+   * Joins the given group by adding the group id to the user groups list.
+   *
+   * @param groupId The group id.
+   * @param authStatus The AuthStatus object used to retrieve the id of the
+   * currently signed in user.
+   */
+  public void joinGroup(long groupId, AuthStatus authStatus) {
+    Transaction transaction = datastore.beginTransaction();
+
+    try {
+      if (!authStatus.isLoggedIn()) {
+        return;
+      }
+      String userId = authStatus.getUserId();
+      Entity userEntity = getUser(userId);
+      List<Long> groupsIds =
+          (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+      if (groupsIds == null) {
+        groupsIds = new ArrayList<>();
+      }
+      groupsIds.add(groupId);
+      userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), groupsIds);
+      datastore.put(userEntity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  /**
+   * Gets the groups joined by the currently signed in user.
+   *
+   * @param authStatus The AuthStatus object used to retrieve the id of the
+   * currently signed in user.
+   * @return The list of ids of the groups joined.
+   */
+  public List<Long> getJoinedGroups(AuthStatus authStatus) {
+    Transaction transaction = datastore.beginTransaction();
+    List<Long> groupsIds = new ArrayList<Long>();
+
+    try {
+      if (!authStatus.isLoggedIn()) {
+        return new ArrayList<>();
+      }
+      String userId = authStatus.getUserId();
+      Entity userEntity = getUser(userId);
+      groupsIds =
+          (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+
+    return groupsIds;
   }
 }

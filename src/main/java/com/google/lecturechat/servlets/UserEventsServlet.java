@@ -16,23 +16,20 @@ package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Group;
+import com.google.lecturechat.data.Event;
 import com.google.lecturechat.data.AuthStatus;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups. */
-@WebServlet("/groups")
-public class GroupsServlet extends HttpServlet {
+/** Servlet for listing all events in a certain group. */
+@WebServlet("/user-events")
+public class UserEventsServlet extends HttpServlet {
 
-  private static final String UNIVERSITY_PARAMETER = "university";
-  private static final String DEGREE_PARAMETER = "degree";
-  private static final String YEAR_PARAMETER = "year";
   private static DatastoreAccess datastore;
   private static final AuthStatus authStatus = AuthStatus.getInstance();
 
@@ -43,26 +40,19 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<Group> groups = datastore.getAllGroups();
-    response.setContentType("application/json;");
-    response.setCharacterEncoding("UTF-8");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(groups));
-  }
-
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if (!authStatus.isLoggedIn()) {
       return;
     }
-    try {
-      String university = request.getParameter(UNIVERSITY_PARAMETER);
-      String degree = request.getParameter(DEGREE_PARAMETER);
-      int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
-
-      datastore.addGroup(university, degree, year);
-    } catch (Exception e) {
-      throw new BadRequestException(e.getMessage());
+    List<Long> groups = datastore.getJoinedGroups(authStatus);
+    List<Event> events = new ArrayList<Event>();
+    if (groups != null) {
+      for (int i = 0; i < groups.size(); i++) {
+        events.addAll(datastore.getAllEventsFromGroup(groups.get(i)));
+      }
     }
+    response.setContentType("application/json;");
+    response.setCharacterEncoding("UTF-8");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(events));
   }
 }
