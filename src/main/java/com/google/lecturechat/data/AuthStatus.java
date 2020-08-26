@@ -14,7 +14,7 @@
 
 package com.google.lecturechat.data;
 
-/** 
+/**
  * A helper class for sharing the id of the currently signed in user between different servlets. The
  * user is considered signed in after they authenticated and provided the authorization needed.
  */

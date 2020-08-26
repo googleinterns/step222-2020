@@ -143,7 +143,7 @@ function createGroupElement(group) {
   groupElement.appendChild(createElement('div', 'group-details',
       createDetailsMessage(group.degree_, group.year_)));
 
-  groupElement.addEventListener('click', function(){
+  groupElement.addEventListener('click', function() {
     showListOfEvents(group.id_);
   });
 
