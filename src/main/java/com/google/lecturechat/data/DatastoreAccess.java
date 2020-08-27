@@ -138,8 +138,8 @@ public class DatastoreAccess {
    *
    * @param groupId The id of the group the new event belongs to.
    * @param title The title of the new event.
-   * @param startTime The start time of the event (should be in UTC).
-   * @param endTime The end time of the event (should be in UTC).
+   * @param startTime The start time of the event (number of milliseconds since epoch time).
+   * @param endTime The end time of the event (number of milliseconds since epoch time).
    * @param creator The creator of the event.
    */
   public void addEventToGroup(
