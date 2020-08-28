@@ -257,13 +257,14 @@ public class DatastoreAccess {
    * @param entityLabel The label associated with this entity.
    */
   public void joinEntity(String userId, long entityId, String entityLabel) {
-    if (!isUserRegistered(userId)) {
+    Optional<Entity> entity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+    if (!entity.isPresent()) {
       return;
     }
 
     Transaction transaction = datastore.beginTransaction();
     try {
-      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId).get();
+      Entity userEntity = entity.get();
       List<Long> entitiesIds = (ArrayList) (userEntity.getProperty(entityLabel));
       if (entitiesIds == null) {
         entitiesIds = new ArrayList<>();
@@ -310,11 +311,12 @@ public class DatastoreAccess {
    * @return The list of the groups joined.
    */
   public List<Group> getJoinedGroups(String userId) {
-    if (!isUserRegistered(userId)) {
+    Optional<Entity> entity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+    if (!entity.isPresent()) {
       return new ArrayList<>();
     }
 
-    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId).get();
+    Entity userEntity = entity.get();
     List<Long> groupsIds =
         (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
     if (groupsIds == null) {
@@ -334,11 +336,12 @@ public class DatastoreAccess {
    * @return The list of the events joined.
    */
   public List<Event> getJoinedEvents(String userId) {
-    if (!isUserRegistered(userId)) {
+    Optional<Entity> entity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+    if (!entity.isPresent()) {
       return new ArrayList<>();
     }
 
-    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId).get();
+    Entity userEntity = entity.get();
     List<Long> eventsIds =
         (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
     if (eventsIds == null) {
