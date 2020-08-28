@@ -234,11 +234,12 @@ function getDateOfTheNextMonth(date) {
 }
 
 /**
+ * TODO: Include unit tests
+ * 
  * Gets the number of days present in the month of the date received.
  * @param {Date} date The date for which we will compute the number of days.
  * @return {Integer} The number of days.
  */
-// TODO: Include unit tests
 function getNumberOfDaysInMonth(date) {
   const year = date.getFullYear();
   const month = date.getMonth();
