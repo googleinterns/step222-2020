@@ -249,8 +249,8 @@ public class DatastoreAccess {
   }
 
   /**
-   * Joins the given entity by adding the entity id to the user's list of entities (The entities
-   * are defined by a label). Examples of entities: groups, events.
+   * Joins the given entity by adding the entity id to the user's list of entities (The entities are
+   * defined by a label). Examples of entities: groups, events.
    *
    * @param userId The id of the user that joins the entity.
    * @param entityId The id of the entity that the user joined.
@@ -320,9 +320,10 @@ public class DatastoreAccess {
     if (groupsIds == null) {
       return new ArrayList<>();
     }
-    return groupsIds
-        .stream()
-        .map(groupId -> Group.createGroupFromEntity(getEntityById(GroupEntity.KIND.getLabel(), groupId)))
+    return groupsIds.stream()
+        .map(
+            groupId ->
+                Group.createGroupFromEntity(getEntityById(GroupEntity.KIND.getLabel(), groupId)))
         .collect(Collectors.toList());
   }
 
@@ -343,9 +344,10 @@ public class DatastoreAccess {
     if (eventsIds == null) {
       return new ArrayList<>();
     }
-    return eventsIds
-        .stream()
-        .map(eventId -> Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId)))
+    return eventsIds.stream()
+        .map(
+            eventId ->
+            Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId)))
         .collect(Collectors.toList());
   }
 }

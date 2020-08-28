@@ -33,10 +33,9 @@ import javax.ws.rs.BadRequestException;
 public class AuthStatus {
   private static final String CLIENT_ID = "";
   private static final GoogleIdTokenVerifier verifier =
-          new GoogleIdTokenVerifier.Builder(
-                  new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-              .setAudience(Collections.singletonList(CLIENT_ID))
-              .build();
+      new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+          .setAudience(Collections.singletonList(CLIENT_ID))
+          .build();
 
   /**
    * Gets the id_token from the associated cookie if it is included in the request.
@@ -52,8 +51,8 @@ public class AuthStatus {
       for (Cookie cookie : cookies) {
         if (cookie.getName().equals("id_token")) {
           try {
-            String idTokenString = java.net.URLDecoder.decode(cookie.getValue(),
-                StandardCharsets.UTF_8.name());
+            String idTokenString =
+                java.net.URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8.name());
             try {
               GoogleIdToken googleIdToken = verifier.verify(idTokenString);
               if (idToken != null) {
