@@ -29,8 +29,8 @@ class Event {
   /**
    * Creates a new event with the given parameters.
    * @param {String} title The title of the event.
-   * @param {String} start The start date of the event.
-   * @param {String} end The end date of the event.
+   * @param {Date} start The start date of the event.
+   * @param {Date} end The end date of the event.
    */
   constructor(title, start, end) {
     /** @private @const {String} */
@@ -114,11 +114,11 @@ function addHeaderOfTheMonth(calendarContainer, date) {
   const calendarHeader = createElement('div', 'calendar-header', '');
 
   addButtonToGetNewMonth('arrow_back_ios', calendarHeader, date,
-      getDateOfThePreviousMonthDate);
+      getDateOfThePreviousMonth);
   calendarHeader.appendChild(createElement('p', 'calendar-details',
       MONTHS[month] + ' ' + year));
   addButtonToGetNewMonth('arrow_forward_ios', calendarHeader, date,
-      getDateOfTheNextMonthDate);
+      getDateOfTheNextMonth);
 
   calendarContainer.appendChild(calendarHeader);
 }
@@ -234,6 +234,8 @@ function getDateOfTheNextMonth(date) {
 }
 
 /**
+ * TODO: Include unit tests
+ *
  * Gets the number of days present in the month of the date received.
  * @param {Date} date The date for which we will compute the number of days.
  * @return {Integer} The number of days.
@@ -241,7 +243,7 @@ function getDateOfTheNextMonth(date) {
 function getNumberOfDaysInMonth(date) {
   const year = date.getFullYear();
   const month = date.getMonth();
-  const nextMonthDate = getNextMonthDate(new Date(year, month));
+  const nextMonthDate = getDateOfTheNextMonth(new Date(year, month));
   const nextMonthYear = nextMonthDate.getFullYear();
   const nextMonth = nextMonthDate.getMonth();
 
@@ -281,7 +283,7 @@ function loadCalendar() {
  * Fetches events from the server and stores them in the dictionary.
  */
 async function loadEvents() {
-  const response = await fetch('/events');
+  const response = await fetch('/user-events');
   const events = await response.json();
 
   events.forEach((event) => {
@@ -289,7 +291,7 @@ async function loadEvents() {
     const eventEndDate = new Date(event.end);
     const eventStartDay = new Date(eventStartDate.getFullYear(),
         eventStartDate.getMonth(), eventStartDate.getDate());
-    const eventObject = new Event(event.name, eventStartDate,
+    const eventObject = new Event(event.title, eventStartDate,
         eventEndDate);
 
     if (eventStartDay in eventsDictionary) {
@@ -312,4 +314,4 @@ function loadNewMonth(date, functionToCreateNewMonth) {
   createCalendarOfTheMonth(newMonthDate);
 }
 
-export {loadEvents, loadCalendar};
+export {createEventElement, Event, loadEvents, loadCalendar};

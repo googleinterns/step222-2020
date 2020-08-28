@@ -1,3 +1,7 @@
+#active-option {
+  color: #c0c0c0;
+}
+
 body {
   font-family: Assistant, sans-serif;
 }
@@ -38,7 +42,7 @@ body {
   width: 100%;
 }
 
-.close-group-form {
+.close-form {
   cursor: pointer;
   font-size: 40px;
   font-weight: bold;
@@ -60,18 +64,11 @@ body {
   width: 100%;
 }
 
-.event-title,
 .event-time,
+.event-title,
 .group-details,
 .group-university {
   padding: 20px;
-}
-
-.event-title,
-.group-university {
-  font-size: 20px;
-  font-weight: bold;
-  padding-bottom: 0;
 }
 
 .event-time,
@@ -81,11 +78,28 @@ body {
   padding-top: 0;
 }
 
+.event-title,
+.group-university {
+  font-size: 20px;
+  font-weight: bold;
+  padding-bottom: 0;
+}
+
 #events-container {
   display: inline;
 }
 
-#group-form {
+.form-headline {
+  display: flex;
+  justify-content: space-between;
+}
+
+.group:hover {
+  cursor: pointer;
+}
+
+#group-form,
+#event-form {
   background-color: #008b8b;
   color: white;
   display: none;
@@ -113,6 +127,10 @@ input:focus {
 
 label {
   font-weight: bold;
+}
+
+#list-of-events {
+  display: none;
 }
 
 .main {
@@ -155,11 +173,11 @@ label {
   padding-top: 20px;
 }
 
-.new-group-headline {
-  display: flex;
-  justify-content: space-between;
+.menu-section:not(.active-section) {
+  display: none;
 }
 
+#open-event-form,
 #open-group-form {
   background-color: #008b8b;
   border: none;
@@ -174,10 +192,12 @@ label {
   padding: 10px;
 }
 
+#open-event-form:active,
 #open-group-form:active {
   outline: none;
 }
 
+#open-event-form:hover,
 #open-group-form:hover {
   opacity: 1;
 }
@@ -190,11 +210,24 @@ label {
   width: 150px;
 }
 
+.sign-out-button {
+  bottom: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 25px;
+  font-weight: bold;
+  padding-bottom: 20px;
+  padding-right: 20px;
+  position: fixed;
+  text-align: right;
+  width: 200px;
+}
+
 #selected-day {
   background-color: #008b8b;
 }
 
-.submit-group-form {
+.submit-form {
   background-color: #096b72;
   border: none;
   color: white;
@@ -213,19 +246,6 @@ label {
 
 .submit-group-form:hover {
   opacity: 1;
-}
-
-.sign-out-button {
-  bottom: 0;
-  box-sizing: border-box;
-  cursor: pointer;
-  font-size: 25px;
-  font-weight: bold;
-  padding-bottom: 20px;
-  padding-right: 20px;
-  position: fixed;
-  text-align: right;
-  width: 200px;
 }
 
 td,

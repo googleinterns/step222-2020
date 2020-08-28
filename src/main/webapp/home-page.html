@@ -13,11 +13,11 @@
   <body>
     <div id="menu">
       <div class="menu-options">
-        <a class="menu-option">
+        <a class="menu-option" id="active-option" onclick="showSection(this)">
           Home
         </a>
-        <a class="menu-option">
-          Settings
+        <a class="menu-option" onclick="showSection(this)">
+          Groups
         </a>
       </div>
       <a class="sign-out-button" onclick="signOut()">
@@ -25,52 +25,96 @@
       </a>
     </div>
     <div class="main">
-      <table id="calendar">
-      </table>
-      <div id="events-container">
-        <h2>
-          Your events
-        </h2>
-        <div id="events">
-        </div>
-      </div>
-      <div id="groups-container">
-        <h2>
-          Your groups
-        </h2>
-        <div id="groups">
-        </div>
-      </div>
-      <button id="open-group-form" onclick="openGroupForm()">
-        Create new group
-      </button>
-      <div id="group-form">
-        <form autocomplete="off" onsubmit="addNewGroup()">
-          <div class="new-group-headline">
-            <h1>
-              Add new group
-            </h1>
-            <span class="close-group-form" onclick="closeGroupForm()">
-              x
-            </span>
+      <div class="menu-section active-section" id="home">
+        <table id="calendar">
+        </table>
+        <div id="events-container">
+          <h2>
+            Your events
+          </h2>
+          <div id="events">
           </div>
-          <label for="new-group-university">
-            University
-          </label>
-          <input type="text" placeholder="Enter the name of the university..." name="university" required id="new-group-university">
-          <label for="new-group-degree">
-            Degree
-          </label>
-          <input type="text" placeholder="Enter the name of the degree..." name="degree" required id="new-group-degree">
-          <label for="new-group-year">
-            Year
-          </label>
-          <input type="numerical" placeholder="Enter your current year..." name="year" required id="new-group-year">
-          <hr>
-          <button class="submit-group-form" type="submit">
-            Create the group
+        </div>
+      </div>
+      <div class="menu-section" id="groups">
+        <div id="groups-section">
+          <h2>
+            Your groups
+          </h2>
+          <div id="groups-container">
+          </div>
+          <button id="open-group-form" onclick="openForm('group')">
+            Create new group
           </button>
-        </form>
+          <div id="group-form">
+            <form autocomplete="off" onsubmit="addNewGroup()">
+              <div class="form-headline">
+                <h1>
+                  Add new group
+                </h1>
+                <span class="close-form" onclick="closeForm('group')">
+                  x
+                </span>
+              </div>
+              <label for="new-group-university">
+                University
+              </label>
+              <input type="text" placeholder="Enter the name of the university..." name="university" required id="new-group-university">
+              <label for="new-group-degree">
+                Degree
+              </label>
+              <input type="text" placeholder="Enter the name of the degree..." name="degree" required id="new-group-degree">
+              <label for="new-group-year">
+                Year
+              </label>
+              <input type="numerical" placeholder="Enter your current year..." name="year" required id="new-group-year">
+              <hr>
+              <button class="submit-form" type="submit">
+                Create the group
+              </button>
+            </form>
+          </div>
+        </div>
+        <div id="list-of-events">
+          <div id="group-headline">
+            <i class="material-icons" onclick="closeListOfEvents()">
+              keyboard_backspace
+            </i>
+          </div>
+          <div id="group-events">
+          </div>
+          <button id="open-event-form" onclick="openForm('event')">
+            Create new event
+          </button>
+          <div id="event-form">
+            <form autocomplete="off" id="new-event-form">
+              <div class="form-headline">
+                <h1>
+                  Add new event
+                </h1>
+                <span class="close-form" onclick="closeForm('event')">
+                  x
+                </span>
+              </div>
+              <label for="new-event-title">
+                Title
+              </label>
+              <input type="text" placeholder="Enter the title of the event..." name="title" required id="new-event-title">
+              <label for="new-event-start">
+                Start date
+              </label>
+              <input type="datetime-local" placeholder="Enter the start date of the event..." name="start" required id="new-event-start">
+              <label for="new-event-end">
+                End date
+              </label>
+              <input type="datetime-local" placeholder="Enter the end date of the event..." name="end" required id="new-event-end">
+              <hr>
+              <button class="submit-form" type="submit">
+                Create the event
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </body>

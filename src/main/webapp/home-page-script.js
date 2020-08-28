@@ -14,9 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {initClient, createElement, loadProfileData, signOut} from './script.js';
+import {initClient, loadProfileData, signOut} from './script.js';
 import {loadGroups} from './groups-script.js';
 import {loadEvents, loadCalendar} from './events-script.js';
+
+/**
+ * Gets the section ID from the option element.
+ * @param {Element} option The menu option associated with the section.
+ * @return {String} The section ID.
+ */
+function getSectionIdFromOption(option) {
+  return option.innerHTML.trim().toLowerCase();
+}
 
 /**
  * Initializes the client and loads the data associated with their profile.
@@ -45,5 +54,26 @@ async function loadProfile() {
   loadGroups();
 }
 
+/**
+ * Shows the new section by hiding the current active section.
+ * @param {Element} activeOption The menu option linked to the section
+ * to be displayed.
+ */
+function showSection(activeOption) {
+  const currentActiveOption = document.getElementById('active-option');
+  const currentActiveSectionId = getSectionIdFromOption(currentActiveOption);
+  const currentActiveSection = document.getElementById(currentActiveSectionId);
+
+  currentActiveOption.id = '';
+  currentActiveSection.classList.remove('active-section');
+
+  const activeSectionId = getSectionIdFromOption(activeOption);
+  const activeSection = document.getElementById(activeSectionId);
+
+  activeOption.id = 'active-option';
+  activeSection.classList.add('active-section');
+}
+
+window.showSection = showSection;
 window.signOut = signOut;
 loadHomeClient('auth');
