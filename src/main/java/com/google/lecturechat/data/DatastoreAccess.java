@@ -138,19 +138,19 @@ public class DatastoreAccess {
    *
    * @param groupId The id of the group the new event belongs to.
    * @param title The title of the new event.
-   * @param start The start time of the event (should be in UTC).
-   * @param end The end time of the event (should be in UTC).
+   * @param startTime The start time of the event (number of milliseconds since epoch time).
+   * @param endTime The end time of the event (number of milliseconds since epoch time).
    * @param creator The creator of the event.
    */
   public void addEventToGroup(
-      long groupId, String title, String startTimeInUTC, String endTimeInUTC, String creator) {
+      long groupId, String title, long startTime, long endTime, String creator) {
     Transaction eventTransaction = datastore.beginTransaction();
     long eventId = 0;
     try {
       Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
       eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
-      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), startTimeInUTC);
-      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTimeInUTC);
+      eventEntity.setProperty(EventEntity.START_PROPERTY.getLabel(), startTime);
+      eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTime);
       eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
       eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
       eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
