@@ -41,11 +41,10 @@ public class JoinedGroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
-      List<Group> groups = datastore.getJoinedGroups(userId);
+    if (userId.isPresent()) {
+      List<Group> groups = datastore.getJoinedGroups(userId.get());
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
@@ -55,14 +54,12 @@ public class JoinedGroupsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
-
+    if (userId.isPresent()) {
       try {
         long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-        datastore.joinGroup(userId, groupId);
+        datastore.joinGroup(userId.get(), groupId);
       } catch (Exception e) {
         throw new BadRequestException(e.getMessage());
       }

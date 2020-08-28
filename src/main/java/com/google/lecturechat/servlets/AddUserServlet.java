@@ -40,12 +40,11 @@ public class AddUserServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<Payload> optionalUserPayload = AuthStatus.getUserPayload(request);
+    Optional<Payload> userPayload = AuthStatus.getUserPayload(request);
 
-    if (optionalUserPayload.isPresent()) {
-      Payload userPayload = optionalUserPayload.get();
-      String userId = userPayload.getSubject();
-      String name = (String) userPayload.get("name");
+    if (userPayload.isPresent()) {
+      String userId = userPayload.get().getSubject();
+      String name = (String) userPayload.get().get("name");
 
       datastore.addUser(userId, name);
     }

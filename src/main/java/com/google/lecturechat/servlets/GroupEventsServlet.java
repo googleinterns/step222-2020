@@ -62,18 +62,16 @@ public class GroupEventsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
-
+    if (userId.isPresent()) {
       try {
         long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
         String title = (String) request.getParameter(TITLE_PARAMETER);
         long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
         long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
 
-        datastore.addEventToGroup(groupId, title, start, end, userId);
+        datastore.addEventToGroup(groupId, title, start, end, userId.get());
       } catch (Exception e) {
         throw new BadRequestException(e.getMessage());
       }

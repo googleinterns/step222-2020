@@ -41,11 +41,10 @@ public class JoinedEventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
-      List<Event> events = datastore.getJoinedEvents(userId);
+    if (userId.isPresent()) {
+      List<Event> events = datastore.getJoinedEvents(userId.get());
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
@@ -55,14 +54,12 @@ public class JoinedEventsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
-
+    if (userId.isPresent()) {
       try {
         long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
-        datastore.joinEvent(userId, eventId);
+        datastore.joinEvent(userId.get(), eventId);
       } catch (Exception e) {
         throw new BadRequestException(e.getMessage());
       }
