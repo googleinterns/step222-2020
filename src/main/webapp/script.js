@@ -91,8 +91,8 @@ async function signIn() {
   const authResult = await googleAuth.signIn();
 
   if (googleAuth.isSignedIn.get()) {
-    const id_token = authResult.getAuthResponse().id_token;
-    document.cookie = 'id_token=' + encodeURIComponent(id_token);
+    const idToken = authResult.getAuthResponse().id_token;
+    document.cookie = 'id_token=' + encodeURIComponent(idToken);
     await fetch('/add-user', {method: 'POST'});
     window.location.href = 'home-page.html';
   }
@@ -103,7 +103,7 @@ async function signIn() {
  */
 function signOut() {
   googleAuth.signOut();
-  document.cookie = "id_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+  document.cookie = 'id_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   window.location.href = 'index.html';
 }
 
