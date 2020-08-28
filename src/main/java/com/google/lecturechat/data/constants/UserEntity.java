@@ -1,4 +1,3 @@
- 
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +14,17 @@
 
 package com.google.lecturechat.data.constants;
 
-/** Specifies the kind and property names to use for event entities in the datastore database. */
-public enum EventEntity {
-  KIND("Event"),
-  TITLE_PROPERTY("title"),
-  START_PROPERTY("start"),
-  END_PROPERTY("end"),
-  CREATOR_PROPERTY("creator"),
-  MESSAGES_PROPERTY("messages"),
-  ATTENDEES_PROPERTY("attendees");
+/** Specifies the kind and property names to use for user entities in the datastore database. */
+public enum UserEntity {
+  KIND("User"),
+  NAME_PROPERTY("name"),
+  GROUPS_PROPERTY("groups"),
+  EVENTS_PROPERTY("events");
 
-  /* Labels comments and properties of events in the database. */
+  /* Labels comments and properties of users in the database. */
   private final String label;
 
-  private EventEntity(String label) {
+  private UserEntity(String label) {
     this.label = label;
   }
 

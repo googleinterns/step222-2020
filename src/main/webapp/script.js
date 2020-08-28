@@ -38,18 +38,6 @@ function createElement(elementType, className, innerText) {
 }
 
 /**
- * Retrieves and returns the login(+authorization) status from the server.
- * @return {Bool} True if the user is logged in and has provided authorization
- * to access the data associated with their account. False otherwise.
- */
-async function getAuthStatus() {
-  const response = await fetch('auth-status');
-  const isSignedIn = await response.json();
-
-  return isSignedIn;
-}
-
-/**
  * Initializes the GoogleAuth object and checks if the user is on the
  * right page based on their login status. If not, redirects them to
  * the appropriate page.
@@ -84,9 +72,7 @@ function loadClient() {
  * Loads the profile data associated with the currently logged in user.
  */
 async function loadProfileData() {
-  const isSignedIn = await getAuthStatus();
-
-  if (isSignedIn) {
+  if (googleAuth.isSignedIn.get()) {
     const userProfile = googleAuth.currentUser.get().getBasicProfile();
     const menuElement = document.getElementById('menu');
     const profilePicture = createElement('img', 'profile-picture', '');
@@ -102,28 +88,22 @@ async function loadProfileData() {
  * to the home page (only if they also provide the authorization needed).
  */
 async function signIn() {
-  const authResult = await googleAuth.grantOfflineAccess();
+  const authResult = await googleAuth.signIn();
 
-  if (authResult['code']) {
-    const params = new URLSearchParams();
-    params.append('type', 'login');
-    params.append('auth-code', authResult['code']);
-    await fetch('/auth-status', {method: 'POST', body: params});
+  if (googleAuth.isSignedIn.get()) {
+    const id_token = authResult.getAuthResponse().id_token;
+    document.cookie = 'id_token=' + encodeURIComponent(id_token);
+    await fetch('/add-user', {method: 'POST'});
     window.location.href = 'home-page.html';
-  } else {
-    window.location.href = 'index.html';
   }
 }
 
 /**
- * Signs out the user, upadtes the authorization status and redirects
- * them to the start page.
+ * Signs out the user, deletes the cookie and redirects them to the start page.
  */
 function signOut() {
   googleAuth.signOut();
-  const params = new URLSearchParams();
-  params.append('type', 'logout');
-  fetch('/auth-status', {method: 'POST', body: params});
+  document.cookie = "id_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
   window.location.href = 'index.html';
 }
 

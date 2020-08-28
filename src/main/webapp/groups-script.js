@@ -158,7 +158,7 @@ function joinGroup(groupId) {
   const params = new URLSearchParams();
   params.append('group-id', groupId);
 
-  fetch('/join-group', {method: 'POST', body: params});
+  fetch('/joined-groups', {method: 'POST', body: params});
 }
 
 /**

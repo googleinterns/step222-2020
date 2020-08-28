@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
+import com.google.lecturechat.data.constants.UserEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -134,12 +135,45 @@ public class DatastoreAccess {
   }
 
   /**
+   * Queries the database to get an entity by its ID string.
+   *
+   * @param kind The kind of the entity.
+   * @param id The id of the entity (as a string).
+   * @return The entity.
+   * @throws IllegalArgumentException If the entity can't be found in the database.
+   */
+  private Entity getEntityByIdString(String kind, String id) {
+    Key key = KeyFactory.createKey(kind, id);
+    try {
+      return datastore.get(key);
+    } catch (EntityNotFoundException e) {
+      throw new IllegalArgumentException(
+          "Couldn't find entity with id " + id + " and kind " + kind + ".");
+    }
+  }
+
+  /**
+   * Queries the database to check if the user is already registered or not.
+   *
+   * @param userId The id of the user to be checked.
+   * @return True if the user is already registered, false otherwise.
+   */
+  public boolean isUserRegistered(String userId) {
+    try {
+      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+      return true;
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  /**
    * Adds new event entity to a specific group in the database (atomic).
    *
    * @param groupId The id of the group the new event belongs to.
    * @param title The title of the new event.
-   * @param startTime The start time of the event (number of milliseconds since epoch time).
-   * @param endTime The end time of the event (number of milliseconds since epoch time).
+   * @param start The start time of the event (should be in UTC).
+   * @param end The end time of the event (should be in UTC).
    * @param creator The creator of the event.
    */
   public void addEventToGroup(
@@ -200,6 +234,133 @@ public class DatastoreAccess {
                   id -> Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), id)))
               .collect(Collectors.toList());
     }
+    return events;
+  }
+
+  /**
+   * Adds the user to the database if they don't exist already.
+   *
+   * @param userId The id of the user that will be added.
+   * @param name The name of the user that will be added.
+   */
+  public void addUser(String userId, String name) {
+    boolean isRegistered = isUserRegistered(userId);
+    if (!isRegistered) {
+      Transaction transaction = datastore.beginTransaction();
+      try {
+        Entity userEntity = new Entity(KeyFactory.createKey(UserEntity.KIND.getLabel(), userId));
+        userEntity.setProperty(UserEntity.NAME_PROPERTY.getLabel(), name);
+        userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), new ArrayList<Long>());
+        userEntity.setProperty(UserEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        datastore.put(userEntity);
+        transaction.commit();
+      } finally {
+        if (transaction.isActive()) {
+          transaction.rollback();
+        }
+      }
+    }
+  }
+
+  /**
+   * Joins the given group by adding the group id to the user's list of groups.
+   *
+   * @param userId The id of the user that joins the group.
+   * @param groupId The id of the group that the user joined.
+   */
+  public void joinGroup(String userId, long groupId) {
+    Transaction transaction = datastore.beginTransaction();
+
+    try {
+      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+      List<Long> groupsIds =
+          (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+      if (groupsIds == null) {
+        groupsIds = new ArrayList<>();
+      }
+      // TODO: The classes will be later modified such that the groupsIds and eventsIds
+      // will be stored as sets instead of lists.
+      if (!groupsIds.contains(groupId)) {
+        groupsIds.add(groupId);
+      }
+      userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), groupsIds);
+      datastore.put(userEntity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
+    /**
+   * Joins the given event by adding the event id to the user's list of events.
+   *
+   * @param userId The id of the user that joins the group.
+   * @param eventId The id of the event that the user joined.
+   */
+  public void joinEvent(String userId, long eventId) {
+    Transaction transaction = datastore.beginTransaction();
+
+    try {
+      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+      List<Long> eventsIds =
+          (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
+      if (eventsIds == null) {
+        eventsIds = new ArrayList<>();
+      }
+      // TODO: The classes will be later modified such that the groupsIds and eventsIds
+      // will be stored as sets instead of lists.
+      if (!eventsIds.contains(eventId)) {
+        eventsIds.add(eventId);
+      }
+      userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), eventsIds);
+      datastore.put(userEntity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  /**
+   * Gets the groups joined by the user.
+   *
+   * @param userId The id of the user.
+   * @return The list of the groups joined.
+   */
+  public List<Group> getJoinedGroups(String userId) {
+    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+    List<Long> groupsIds = (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+    List<Group> groups = new ArrayList<>();
+    if (groupsIds != null) {
+      for (Long groupId : groupsIds) {
+        Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
+        groups.add(Group.createGroupFromEntity(groupEntity));
+      }
+    }
+
+    return groups;
+  }
+
+  /**
+   * Gets the events joined by the user.
+   *
+   * @param userId The id of the user.
+   * @return The list of the events joined.
+   */
+  public List<Event> getJoinedEvents(String userId) {
+    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
+    List<Long> eventsIds = (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
+    List<Event> events = new ArrayList<>();
+    if (eventsIds != null) {
+      for (Long eventId : eventsIds) {
+        Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
+        events.add(Event.createEventFromEntity(eventEntity));
+      }
+    }
+
     return events;
   }
 }

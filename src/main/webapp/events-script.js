@@ -234,8 +234,6 @@ function getDateOfTheNextMonth(date) {
 }
 
 /**
- * TODO: Include unit tests
- *
  * Gets the number of days present in the month of the date received.
  * @param {Date} date The date for which we will compute the number of days.
  * @return {Integer} The number of days.
@@ -283,7 +281,7 @@ function loadCalendar() {
  * Fetches events from the server and stores them in the dictionary.
  */
 async function loadEvents() {
-  const response = await fetch('/user-events');
+  const response = await fetch('/joined-events');
   const events = await response.json();
 
   events.forEach((event) => {

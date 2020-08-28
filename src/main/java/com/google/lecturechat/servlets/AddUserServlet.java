@@ -1,3 +1,4 @@
+ 
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +16,21 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Event;
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all events in a certain group. */
-@WebServlet("/events")
-public class EventsServlet extends HttpServlet {
+/** Servlet for adding a new user to the database (if they are not already registered). */
+@WebServlet("/add-user")
+public class AddUserServlet extends HttpServlet {
 
-  private static final String ID_PARAMETER = "groupId";
   private static DatastoreAccess datastore;
 
   @Override
@@ -37,12 +39,15 @@ public class EventsServlet extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    long groupId = Long.parseLong(request.getParameter(ID_PARAMETER));
-    List<Event> events = datastore.getAllEventsFromGroup(groupId);
-    response.setContentType("application/json;");
-    response.setCharacterEncoding("UTF-8");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(events));
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Optional<Payload> optionalUserPayload = AuthStatus.getUserPayload(request);
+
+    if (optionalUserPayload.isPresent()) {
+      Payload userPayload = optionalUserPayload.get();
+      String userId = userPayload.getSubject();
+      String name = (String) userPayload.get("name");
+
+      datastore.addUser(userId, name);
+    }
   }
 }

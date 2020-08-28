@@ -15,24 +15,25 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
-import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Group;
+import com.google.lecturechat.data.Event;
+import com.google.lecturechat.data.AuthStatus;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups and add a new group. */
-@WebServlet("/groups")
-public class GroupsServlet extends HttpServlet {
+/** Servlet for joining a event and listing all the events that the user joined.  */
+@WebServlet("/joined-events")
+public class JoinedEventsServlet extends HttpServlet {
 
-  private static final String UNIVERSITY_PARAMETER = "university";
-  private static final String DEGREE_PARAMETER = "degree";
-  private static final String YEAR_PARAMETER = "year";
+  private static final String EVENT_ID_PARAMETER = "event-id";
   private static DatastoreAccess datastore;
 
   @Override
@@ -42,28 +43,28 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    boolean isSignedIn = AuthStatus.isSignedIn(request);
+    Optional<String> optionalUserId = AuthStatus.getUserId(request);
 
-    if (isSignedIn) {
-      List<Group> groups = datastore.getAllGroups();
+    if (optionalUserId.isPresent()) {
+      String userId = optionalUserId.get();
+      List<Event> events = datastore.getJoinedEvents(userId);
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(groups));
+      response.getWriter().println(gson.toJson(events));
     }
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    boolean isSignedIn = AuthStatus.isSignedIn(request);
+    Optional<String> optionalUserId = AuthStatus.getUserId(request);
 
-    if (isSignedIn) {
+    if (optionalUserId.isPresent()) {
+      String userId = optionalUserId.get();
+
       try {
-        String university = request.getParameter(UNIVERSITY_PARAMETER);
-        String degree = request.getParameter(DEGREE_PARAMETER);
-        int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
-
-        datastore.addGroup(university, degree, year);
+        long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
+        datastore.joinEvent(userId, eventId);
       } catch (Exception e) {
         throw new BadRequestException(e.getMessage());
       }
