@@ -81,4 +81,13 @@ public final class Group {
           "Attempted to create group object from entity that is not a group.");
     }
   }
+
+  @Override
+  public boolean equals(Object anotherObject) {
+    if (!(anotherObject instanceof Group)) {
+      return false;
+    }
+    Group anotherGroup = (Group) anotherObject;
+    return (this.getId() == anotherGroup.getId());
+  }
 }

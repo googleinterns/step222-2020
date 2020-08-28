@@ -20,6 +20,7 @@ import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Group;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,10 +43,10 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    boolean isSignedIn = AuthStatus.isSignedIn(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (isSignedIn) {
-      List<Group> groups = datastore.getAllGroups();
+    if (userId.isPresent()) {
+      List<Group> groups = datastore.getOtherGroups(userId.get());
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
