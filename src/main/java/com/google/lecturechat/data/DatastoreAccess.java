@@ -33,6 +33,7 @@ import com.google.lecturechat.data.constants.UserEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** API class for methods that access and operate on the datastore database. */
@@ -140,15 +141,12 @@ public class DatastoreAccess {
    * @param kind The kind of the entity.
    * @param id The id of the entity (as a string).
    * @return The entity.
-   * @throws IllegalArgumentException If the entity can't be found in the database.
    */
-  private Entity getEntityByIdString(String kind, String id) {
-    Key key = KeyFactory.createKey(kind, id);
+  private Optional<Entity> getEntityByIdString(String kind, String id) {
     try {
-      return datastore.get(key);
+      return Optional.of(datastore.get(KeyFactory.createKey(kind, id)));
     } catch (EntityNotFoundException e) {
-      throw new IllegalArgumentException(
-          "Couldn't find entity with id " + id + " and kind " + kind + ".");
+      return Optional.empty();
     }
   }
 
@@ -159,12 +157,7 @@ public class DatastoreAccess {
    * @return True if the user is already registered, false otherwise.
    */
   public boolean isUserRegistered(String userId) {
-    try {
-      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-      return true;
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
+    return getEntityByIdString(UserEntity.KIND.getLabel(), userId).isPresent();
   }
 
   /**
@@ -244,20 +237,48 @@ public class DatastoreAccess {
    * @param name The name of the user that will be added.
    */
   public void addUser(String userId, String name) {
-    boolean isRegistered = isUserRegistered(userId);
-    if (!isRegistered) {
-      Transaction transaction = datastore.beginTransaction();
-      try {
-        Entity userEntity = new Entity(KeyFactory.createKey(UserEntity.KIND.getLabel(), userId));
-        userEntity.setProperty(UserEntity.NAME_PROPERTY.getLabel(), name);
-        userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), new ArrayList<Long>());
-        userEntity.setProperty(UserEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
-        datastore.put(userEntity);
-        transaction.commit();
-      } finally {
-        if (transaction.isActive()) {
-          transaction.rollback();
-        }
+    if (isUserRegistered(userId)) {
+      return;
+    }
+
+    Entity userEntity = new Entity(KeyFactory.createKey(UserEntity.KIND.getLabel(), userId));
+    userEntity.setProperty(UserEntity.NAME_PROPERTY.getLabel(), name);
+    userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), new ArrayList<Long>());
+    userEntity.setProperty(UserEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+    datastore.put(userEntity);
+  }
+
+  /**
+   * Joins the given entity by adding the entity id to the user's list of entities (The entities
+   * are defined by a label). Examples of entities: groups, events.
+   *
+   * @param userId The id of the user that joins the entity.
+   * @param entityId The id of the entity that the user joined.
+   * @param entityLabel The label associated with this entity.
+   */
+  public void joinEntity(String userId, long entityId, String entityLabel) {
+    if (!isUserRegistered(userId)) {
+      return;
+    }
+
+    Transaction transaction = datastore.beginTransaction();
+    try {
+      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId).get();
+      List<Long> entitiesIds = (ArrayList) (userEntity.getProperty(entityLabel));
+      if (entitiesIds == null) {
+        entitiesIds = new ArrayList<>();
+      }
+      // TODO: The classes will be later modified such that the groupsIds and eventsIds
+      // will be stored as sets instead of lists.
+      if (!entitiesIds.contains(entityId)) {
+        entitiesIds.add(entityId);
+      }
+      userEntity.setProperty(entityLabel, entitiesIds);
+      datastore.put(userEntity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
       }
     }
   }
@@ -269,28 +290,7 @@ public class DatastoreAccess {
    * @param groupId The id of the group that the user joined.
    */
   public void joinGroup(String userId, long groupId) {
-    Transaction transaction = datastore.beginTransaction();
-
-    try {
-      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-      List<Long> groupsIds =
-          (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
-      if (groupsIds == null) {
-        groupsIds = new ArrayList<>();
-      }
-      // TODO: The classes will be later modified such that the groupsIds and eventsIds
-      // will be stored as sets instead of lists.
-      if (!groupsIds.contains(groupId)) {
-        groupsIds.add(groupId);
-      }
-      userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), groupsIds);
-      datastore.put(userEntity);
-      transaction.commit();
-    } finally {
-      if (transaction.isActive()) {
-        transaction.rollback();
-      }
-    }
+    joinEntity(userId, groupId, UserEntity.GROUPS_PROPERTY.getLabel());
   }
 
   /**
@@ -300,28 +300,7 @@ public class DatastoreAccess {
    * @param eventId The id of the event that the user joined.
    */
   public void joinEvent(String userId, long eventId) {
-    Transaction transaction = datastore.beginTransaction();
-
-    try {
-      Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-      List<Long> eventsIds =
-          (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
-      if (eventsIds == null) {
-        eventsIds = new ArrayList<>();
-      }
-      // TODO: The classes will be later modified such that the groupsIds and eventsIds
-      // will be stored as sets instead of lists.
-      if (!eventsIds.contains(eventId)) {
-        eventsIds.add(eventId);
-      }
-      userEntity.setProperty(UserEntity.EVENTS_PROPERTY.getLabel(), eventsIds);
-      datastore.put(userEntity);
-      transaction.commit();
-    } finally {
-      if (transaction.isActive()) {
-        transaction.rollback();
-      }
-    }
+    joinEntity(userId, eventId, UserEntity.EVENTS_PROPERTY.getLabel());
   }
 
   /**
@@ -331,18 +310,20 @@ public class DatastoreAccess {
    * @return The list of the groups joined.
    */
   public List<Group> getJoinedGroups(String userId) {
-    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-    List<Long> groupsIds =
-        (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
-    List<Group> groups = new ArrayList<>();
-    if (groupsIds != null) {
-      for (Long groupId : groupsIds) {
-        Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
-        groups.add(Group.createGroupFromEntity(groupEntity));
-      }
+    if (!isUserRegistered(userId)) {
+      return new ArrayList<>();
     }
 
-    return groups;
+    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId).get();
+    List<Long> groupsIds =
+        (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+    if (groupsIds == null) {
+      return new ArrayList<>();
+    }
+    return groupsIds
+        .stream()
+        .map(groupId -> Group.createGroupFromEntity(getEntityById(GroupEntity.KIND.getLabel(), groupId)))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -352,17 +333,19 @@ public class DatastoreAccess {
    * @return The list of the events joined.
    */
   public List<Event> getJoinedEvents(String userId) {
-    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-    List<Long> eventsIds =
-        (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
-    List<Event> events = new ArrayList<>();
-    if (eventsIds != null) {
-      for (Long eventId : eventsIds) {
-        Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
-        events.add(Event.createEventFromEntity(eventEntity));
-      }
+    if (!isUserRegistered(userId)) {
+      return new ArrayList<>();
     }
 
-    return events;
+    Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId).get();
+    List<Long> eventsIds =
+        (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
+    if (eventsIds == null) {
+      return new ArrayList<>();
+    }
+    return eventsIds
+        .stream()
+        .map(eventId -> Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId)))
+        .collect(Collectors.toList());
   }
 }

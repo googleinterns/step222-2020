@@ -32,6 +32,11 @@ import javax.ws.rs.BadRequestException;
 /** A helper class used to retrieve specific data such as the id_token from a request. */
 public class AuthStatus {
   private static final String CLIENT_ID = "";
+  private static final GoogleIdTokenVerifier verifier =
+          new GoogleIdTokenVerifier.Builder(
+                  new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+              .setAudience(Collections.singletonList(CLIENT_ID))
+              .build();
 
   /**
    * Gets the id_token from the associated cookie if it is included in the request.
@@ -39,31 +44,33 @@ public class AuthStatus {
    * @param request The request from which we will extract the cookie.
    * @return An Optional object that contains the id_token if it was found in the request.
    */
-  public static Optional<String> getIdToken(HttpServletRequest request) {
+  private static Optional<GoogleIdToken> getIdToken(HttpServletRequest request) throws IOException {
     Cookie[] cookies = request.getCookies();
-    Optional<String> optionalIdToken = Optional.empty();
-    Optional<String> optionalEncodedIdToken = Optional.empty();
+    Optional<GoogleIdToken> idToken = Optional.empty();
 
     if (cookies != null) {
       for (Cookie cookie : cookies) {
         if (cookie.getName().equals("id_token")) {
-          String encodedIdToken = cookie.getValue();
-          optionalEncodedIdToken = Optional.of(encodedIdToken);
+          try {
+            String idTokenString = java.net.URLDecoder.decode(cookie.getValue(),
+                StandardCharsets.UTF_8.name());
+            try {
+              GoogleIdToken googleIdToken = verifier.verify(idTokenString);
+              if (idToken != null) {
+                idToken = Optional.of(googleIdToken);
+              }
+            } catch (GeneralSecurityException e) {
+              throw new BadRequestException("Invalid id_token");
+            }
+          } catch (UnsupportedEncodingException e) {
+            throw new BadRequestException(e.getMessage());
+          }
+          break;
         }
       }
     }
 
-    if (optionalEncodedIdToken.isPresent()) {
-      String encodedIdToken = optionalEncodedIdToken.get();
-      try {
-        String idToken = java.net.URLDecoder.decode(encodedIdToken, StandardCharsets.UTF_8.name());
-        optionalIdToken = Optional.of(idToken);
-      } catch (UnsupportedEncodingException e) {
-        throw new BadRequestException(e.getMessage());
-      }
-    }
-
-    return optionalIdToken;
+    return idToken;
   }
 
   /**
@@ -75,30 +82,7 @@ public class AuthStatus {
    *     request and it was valid.
    */
   public static Optional<Payload> getUserPayload(HttpServletRequest request) throws IOException {
-    Optional<String> optionalIdToken = AuthStatus.getIdToken(request);
-    Optional<Payload> optionalUserPayload = Optional.empty();
-
-    if (optionalIdToken.isPresent()) {
-      String idTokenString = optionalIdToken.get();
-
-      GoogleIdTokenVerifier verifier =
-          new GoogleIdTokenVerifier.Builder(
-                  new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-              .setAudience(Collections.singletonList(CLIENT_ID))
-              .build();
-
-      try {
-        GoogleIdToken idToken = verifier.verify(idTokenString);
-        if (idToken != null) {
-          Payload payload = idToken.getPayload();
-          optionalUserPayload = Optional.of(payload);
-        }
-      } catch (GeneralSecurityException e) {
-        throw new BadRequestException("Invalid id_token");
-      }
-    }
-
-    return optionalUserPayload;
+    return getIdToken(request).map(GoogleIdToken::getPayload);
   }
 
   /**
@@ -108,16 +92,7 @@ public class AuthStatus {
    * @return An Optional object that contains the user id if the request included a valid id_token.
    */
   public static Optional<String> getUserId(HttpServletRequest request) throws IOException {
-    Optional<Payload> optionalUserPayload = getUserPayload(request);
-    Optional<String> optionalUserId = Optional.empty();
-
-    if (optionalUserPayload.isPresent()) {
-      Payload userPayload = optionalUserPayload.get();
-      String userId = userPayload.getSubject();
-      optionalUserId = Optional.of(userId);
-    }
-
-    return optionalUserId;
+    return getUserPayload(request).map(Payload::getSubject);
   }
 
   /**
@@ -126,13 +101,7 @@ public class AuthStatus {
    * @param request The request from which we will extract the cookies.
    * @return True if the user is signed in, false otherwise.
    */
-  public static boolean isSignedIn(HttpServletRequest request) {
-    Optional<String> optionalIdToken = AuthStatus.getIdToken(request);
-
-    if (optionalIdToken.isPresent()) {
-      return true;
-    } else {
-      return false;
-    }
+  public static boolean isSignedIn(HttpServletRequest request) throws IOException {
+    return getIdToken(request).isPresent();
   }
 }
