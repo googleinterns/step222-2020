@@ -293,10 +293,10 @@ public class DatastoreAccess {
     }
   }
 
-    /**
+  /**
    * Joins the given event by adding the event id to the user's list of events.
    *
-   * @param userId The id of the user that joins the group.
+   * @param userId The id of the user that joins the event.
    * @param eventId The id of the event that the user joined.
    */
   public void joinEvent(String userId, long eventId) {
@@ -314,7 +314,7 @@ public class DatastoreAccess {
       if (!eventsIds.contains(eventId)) {
         eventsIds.add(eventId);
       }
-      userEntity.setProperty(UserEntity.GROUPS_PROPERTY.getLabel(), eventsIds);
+      userEntity.setProperty(UserEntity.EVENTS_PROPERTY.getLabel(), eventsIds);
       datastore.put(userEntity);
       transaction.commit();
     } finally {

@@ -82,14 +82,14 @@ public final class Event {
     if (eventEntity.getKind().equals(EventEntity.KIND.getLabel())) {
       long id = eventEntity.getKey().getId();
       String title = (String) (eventEntity.getProperty(EventEntity.TITLE_PROPERTY.getLabel()));
-      long start = (long) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
-      long end = (long) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
+      long startTime = (long) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
+      long endTime = (long) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
       String creator = (String) (eventEntity.getProperty(EventEntity.CREATOR_PROPERTY.getLabel()));
       List<Long> messages =
           (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
       List<Long> attendees =
           (ArrayList) (eventEntity.getProperty(EventEntity.ATTENDEES_PROPERTY.getLabel()));
-      return new Event(id, title, start, end, creator, messages, attendees);
+      return new Event(id, title, startTime, endTime, creator, messages, attendees);
     } else {
       throw new IllegalArgumentException(
           "Attempted to create event object from entity that is not an event.");
