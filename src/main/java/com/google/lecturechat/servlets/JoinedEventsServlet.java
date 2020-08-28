@@ -15,21 +15,19 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Event;
-import com.google.lecturechat.data.AuthStatus;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for joining an event and listing all the events that the user joined.  */
+/** Servlet for joining an event and listing all the events that the user joined. */
 @WebServlet("/joined-events")
 public class JoinedEventsServlet extends HttpServlet {
 

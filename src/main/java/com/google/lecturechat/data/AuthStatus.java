@@ -21,7 +21,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
@@ -30,9 +29,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-/**
- * A helper class used to retrieve specific data such as the id_token from a request.
- */
+/** A helper class used to retrieve specific data such as the id_token from a request. */
 public class AuthStatus {
   private static final String CLIENT_ID = "";
 
@@ -49,7 +46,7 @@ public class AuthStatus {
 
     if (cookies != null) {
       for (Cookie cookie : cookies) {
-        if(cookie.getName().equals("id_token")) {
+        if (cookie.getName().equals("id_token")) {
           String encodedIdToken = cookie.getValue();
           optionalEncodedIdToken = Optional.of(encodedIdToken);
         }
@@ -75,7 +72,7 @@ public class AuthStatus {
    *
    * @param request The request from which we will extract the cookie.
    * @return An Optional object that contains the payload if the id_token was included in the
-   * request and it was valid.
+   *     request and it was valid.
    */
   public static Optional<Payload> getUserPayload(HttpServletRequest request) throws IOException {
     Optional<String> optionalIdToken = AuthStatus.getIdToken(request);
@@ -84,10 +81,11 @@ public class AuthStatus {
     if (optionalIdToken.isPresent()) {
       String idTokenString = optionalIdToken.get();
 
-      GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-        JacksonFactory.getDefaultInstance())
-        .setAudience(Collections.singletonList(CLIENT_ID))
-        .build();
+      GoogleIdTokenVerifier verifier =
+          new GoogleIdTokenVerifier.Builder(
+                  new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+              .setAudience(Collections.singletonList(CLIENT_ID))
+              .build();
 
       try {
         GoogleIdToken idToken = verifier.verify(idTokenString);

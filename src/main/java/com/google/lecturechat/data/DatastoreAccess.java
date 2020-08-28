@@ -332,7 +332,8 @@ public class DatastoreAccess {
    */
   public List<Group> getJoinedGroups(String userId) {
     Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-    List<Long> groupsIds = (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
+    List<Long> groupsIds =
+        (ArrayList) (userEntity.getProperty(UserEntity.GROUPS_PROPERTY.getLabel()));
     List<Group> groups = new ArrayList<>();
     if (groupsIds != null) {
       for (Long groupId : groupsIds) {
@@ -352,7 +353,8 @@ public class DatastoreAccess {
    */
   public List<Event> getJoinedEvents(String userId) {
     Entity userEntity = getEntityByIdString(UserEntity.KIND.getLabel(), userId);
-    List<Long> eventsIds = (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
+    List<Long> eventsIds =
+        (ArrayList) (userEntity.getProperty(UserEntity.EVENTS_PROPERTY.getLabel()));
     List<Event> events = new ArrayList<>();
     if (eventsIds != null) {
       for (Long eventId : eventsIds) {
