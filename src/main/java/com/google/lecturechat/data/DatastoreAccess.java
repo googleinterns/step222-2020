@@ -347,7 +347,7 @@ public class DatastoreAccess {
     return eventsIds.stream()
         .map(
             eventId ->
-            Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId)))
+                Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId)))
         .collect(Collectors.toList());
   }
 }
