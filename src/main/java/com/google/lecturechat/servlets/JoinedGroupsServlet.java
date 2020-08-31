@@ -41,31 +41,32 @@ public class JoinedGroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
-      List<Group> groups = datastore.getJoinedGroups(userId);
-      response.setContentType("application/json;");
-      response.setCharacterEncoding("UTF-8");
-      Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(groups));
+    if (!userId.isPresent()) {
+      return;
     }
+
+    List<Group> groups = datastore.getJoinedGroups(userId.get());
+    response.setContentType("application/json;");
+    response.setCharacterEncoding("UTF-8");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(groups));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
+    if (!userId.isPresent()) {
+      return;
+    }
 
-      try {
-        long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-        datastore.joinGroup(userId, groupId);
-      } catch (Exception e) {
-        throw new BadRequestException(e.getMessage());
-      }
+    try {
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      datastore.joinGroup(userId.get(), groupId);
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
   }
 }

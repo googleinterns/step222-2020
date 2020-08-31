@@ -44,39 +44,39 @@ public class GroupEventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    boolean isSignedIn = AuthStatus.isSignedIn(request);
+    if (!AuthStatus.isSignedIn(request)) {
+      return;
+    }
 
-    if (isSignedIn) {
-      try {
-        long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-        List<Event> events = datastore.getAllEventsFromGroup(groupId);
-        response.setContentType("application/json;");
-        response.setCharacterEncoding("UTF-8");
-        Gson gson = new Gson();
-        response.getWriter().println(gson.toJson(events));
-      } catch (Exception e) {
-        throw new BadRequestException(e.getMessage());
-      }
+    try {
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      List<Event> events = datastore.getAllEventsFromGroup(groupId);
+      response.setContentType("application/json;");
+      response.setCharacterEncoding("UTF-8");
+      Gson gson = new Gson();
+      response.getWriter().println(gson.toJson(events));
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> optionalUserId = AuthStatus.getUserId(request);
+    Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (optionalUserId.isPresent()) {
-      String userId = optionalUserId.get();
+    if (!userId.isPresent()) {
+      return;
+    }
 
-      try {
-        long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-        String title = (String) request.getParameter(TITLE_PARAMETER);
-        long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
-        long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
+    try {
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      String title = (String) request.getParameter(TITLE_PARAMETER);
+      long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
+      long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
 
-        datastore.addEventToGroup(groupId, title, start, end, userId);
-      } catch (Exception e) {
-        throw new BadRequestException(e.getMessage());
-      }
+      datastore.addEventToGroup(groupId, title, start, end, userId.get());
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
   }
 }

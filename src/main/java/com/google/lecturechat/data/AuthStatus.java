@@ -45,7 +45,6 @@ public class AuthStatus {
    */
   private static Optional<GoogleIdToken> getIdToken(HttpServletRequest request) throws IOException {
     Cookie[] cookies = request.getCookies();
-    Optional<GoogleIdToken> idToken = Optional.empty();
 
     if (cookies != null) {
       for (Cookie cookie : cookies) {
@@ -53,23 +52,17 @@ public class AuthStatus {
           try {
             String idTokenString =
                 java.net.URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8.name());
-            try {
-              GoogleIdToken googleIdToken = verifier.verify(idTokenString);
-              if (idToken != null) {
-                idToken = Optional.of(googleIdToken);
-              }
-            } catch (GeneralSecurityException e) {
-              throw new BadRequestException("Invalid id_token");
-            }
+            return Optional.ofNullable(verifier.verify(idTokenString));
+          } catch (GeneralSecurityException e) {
+            throw new BadRequestException("Invalid id_token");
           } catch (UnsupportedEncodingException e) {
             throw new BadRequestException(e.getMessage());
           }
-          break;
         }
       }
     }
 
-    return idToken;
+    return Optional.empty();
   }
 
   /**
