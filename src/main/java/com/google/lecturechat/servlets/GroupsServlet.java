@@ -42,31 +42,31 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    boolean isSignedIn = AuthStatus.isSignedIn(request);
-
-    if (isSignedIn) {
-      List<Group> groups = datastore.getAllGroups();
-      response.setContentType("application/json;");
-      response.setCharacterEncoding("UTF-8");
-      Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(groups));
+    if (!AuthStatus.isSignedIn(request)) {
+      return;
     }
+
+    List<Group> groups = datastore.getAllGroups();
+    response.setContentType("application/json;");
+    response.setCharacterEncoding("UTF-8");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(groups));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    boolean isSignedIn = AuthStatus.isSignedIn(request);
+    if (!AuthStatus.isSignedIn(request)) {
+      return;
+    }
 
-    if (isSignedIn) {
-      try {
-        String university = request.getParameter(UNIVERSITY_PARAMETER);
-        String degree = request.getParameter(DEGREE_PARAMETER);
-        int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
+    try {
+      String university = request.getParameter(UNIVERSITY_PARAMETER);
+      String degree = request.getParameter(DEGREE_PARAMETER);
+      int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
 
-        datastore.addGroup(university, degree, year);
-      } catch (Exception e) {
-        throw new BadRequestException(e.getMessage());
-      }
+      datastore.addGroup(university, degree, year);
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
   }
 }

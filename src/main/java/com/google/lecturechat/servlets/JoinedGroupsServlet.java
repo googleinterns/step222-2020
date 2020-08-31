@@ -43,26 +43,30 @@ public class JoinedGroupsServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (userId.isPresent()) {
-      List<Group> groups = datastore.getJoinedGroups(userId.get());
-      response.setContentType("application/json;");
-      response.setCharacterEncoding("UTF-8");
-      Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(groups));
+    if (!userId.isPresent()) {
+      return;
     }
+
+    List<Group> groups = datastore.getJoinedGroups(userId.get());
+    response.setContentType("application/json;");
+    response.setCharacterEncoding("UTF-8");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(groups));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (userId.isPresent()) {
-      try {
-        long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-        datastore.joinGroup(userId.get(), groupId);
-      } catch (Exception e) {
-        throw new BadRequestException(e.getMessage());
-      }
+    if (!userId.isPresent()) {
+      return;
+    }
+
+    try {
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      datastore.joinGroup(userId.get(), groupId);
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
   }
 }

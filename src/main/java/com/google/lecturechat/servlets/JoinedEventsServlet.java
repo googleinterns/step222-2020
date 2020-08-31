@@ -43,26 +43,30 @@ public class JoinedEventsServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (userId.isPresent()) {
-      List<Event> events = datastore.getJoinedEvents(userId.get());
-      response.setContentType("application/json;");
-      response.setCharacterEncoding("UTF-8");
-      Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(events));
+    if (!userId.isPresent()) {
+      return;
     }
+
+    List<Event> events = datastore.getJoinedEvents(userId.get());
+    response.setContentType("application/json;");
+    response.setCharacterEncoding("UTF-8");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(events));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<String> userId = AuthStatus.getUserId(request);
 
-    if (userId.isPresent()) {
-      try {
-        long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
-        datastore.joinEvent(userId.get(), eventId);
-      } catch (Exception e) {
-        throw new BadRequestException(e.getMessage());
-      }
+    if (!userId.isPresent()) {
+      return;
+    }
+
+    try {
+      long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
+      datastore.joinEvent(userId.get(), eventId);
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
   }
 }

@@ -42,11 +42,12 @@ public class AddUserServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<Payload> userPayload = AuthStatus.getUserPayload(request);
 
-    if (userPayload.isPresent()) {
-      String userId = userPayload.get().getSubject();
-      String name = (String) userPayload.get().get("name");
-
-      datastore.addUser(userId, name);
+    if (!userPayload.isPresent()) {
+      return;
     }
+
+    String userId = userPayload.get().getSubject();
+    String name = (String) userPayload.get().get("name");
+    datastore.addUser(userId, name);
   }
 }
