@@ -43,11 +43,13 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
-    List<Group> groups = datastore.getAllGroups();
+    List<Group> groups = datastore.getNotJoinedGroups(userId.get());
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();

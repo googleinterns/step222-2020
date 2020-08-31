@@ -357,9 +357,22 @@ public class DatastoreAccess {
    * @param userId The id of the user.
    * @return The list of groups that the user didn't join yet.
    */
-  public List<Group> getOtherGroups(String userId) {
+  public List<Group> getNotJoinedGroups(String userId) {
     List<Group> groups = getAllGroups();
     groups.removeAll(getJoinedGroups(userId));
     return groups;
+  }
+
+  /**
+   * Gets all the events in a certain group that the user didn't join yet.
+   *
+   * @param groupId The id of the group.
+   * @param userId The id of the user.
+   * @return The list of events that the user didn't join yet.
+   */
+  public List<Event> getAllNotJoinedEventsFromGroup(long groupId, String userId) {
+    List<Event> events = getAllEventsFromGroup(groupId);
+    events.removeAll(getJoinedEvents(userId));
+    return events;
   }
 }

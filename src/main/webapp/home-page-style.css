@@ -210,6 +210,19 @@ label {
   width: 150px;
 }
 
+.rounded-button {
+  background-color: #008b8b;
+  border: none;
+  border-radius: 15px;
+  box-sizing: border-box;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  opacity: 0.8;
+  padding: 10px;
+}
+
 .sign-out-button {
   bottom: 0;
   box-sizing: border-box;

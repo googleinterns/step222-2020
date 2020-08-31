@@ -95,4 +95,13 @@ public final class Event {
           "Attempted to create event object from entity that is not an event.");
     }
   }
+
+  @Override
+  public boolean equals(Object anotherObject) {
+    if (!(anotherObject instanceof Event)) {
+      return false;
+    }
+    Event anotherEvent = (Event) anotherObject;
+    return (this.getId() == anotherEvent.getId());
+  }
 }

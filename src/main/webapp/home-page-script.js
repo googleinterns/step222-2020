@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import {initClient, loadProfileData, signOut} from './script.js';
-import {loadJoinedGroups, loadOtherGroups} from './groups-script.js';
+import {loadJoinedGroups, loadNotJoinedGroups} from './groups-script.js';
 import {loadEvents, loadCalendar} from './events-script.js';
 
 /**
@@ -52,7 +52,7 @@ async function loadProfile() {
   await loadEvents();
   loadCalendar();
   loadJoinedGroups();
-  loadOtherGroups();
+  loadNotJoinedGroups();
 }
 
 /**

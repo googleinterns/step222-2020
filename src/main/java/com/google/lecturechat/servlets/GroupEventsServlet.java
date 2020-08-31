@@ -44,13 +44,15 @@ public class GroupEventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
     try {
       long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-      List<Event> events = datastore.getAllEventsFromGroup(groupId);
+      List<Event> events = datastore.getAllNotJoinedEventsFromGroup(groupId, userId.get());
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
