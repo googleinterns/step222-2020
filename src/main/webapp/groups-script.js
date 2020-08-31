@@ -41,9 +41,11 @@ class Group {
 /**
  * Adds the group options available based on the user membership (if the user
  * is part of the group or not).
- * @param {Object} group The object containing the data associated with that group.
+ * @param {Object} group The object containing the data associated with that
+ * group.
  * @param {Element} groupElement The element associated with this group.
- * @param {Boolean} isMember Indicates whether or not the user is a member of the group.
+ * @param {Boolean} isMember Indicates whether or not the user is a member of
+ * the group.
  */
 function addGroupOptions(group, groupElement, isMember) {
   const groupOptionsElement = createElement('div', 'group-options', '');
@@ -59,7 +61,8 @@ function addGroupOptions(group, groupElement, isMember) {
 
 /**
  * Adds a join button through which the user can become a member of that group.
- * @param {Object} group The object containing the data associated with that group.
+ * @param {Object} group The object containing the data associated with that
+ * group.
  * @param {Element} groupOptionsElement The element in which the button
  * will be inserted.
  * @param {Element} groupElement The element associated with this group.
@@ -189,7 +192,9 @@ function createDetailsMessage(degree, year) {
 
 /**
  * Creates the element associated with a given group.
- * @param {object} group The group for which we will create a new element.
+ * @param {Object} group The group for which we will create a new element.
+ * @param {Boolean} isMember Indicates whether or not the user is member of
+ * the group.
  * @return {Element} The element created.
  */
 function createGroupElement(group, isMember) {
@@ -235,16 +240,19 @@ async function loadGroupEvents(groupId) {
   events.forEach((event) => {
     const eventStartTime = new Date(event.startTime);
     const eventEndDate = new Date(event.endTime);
-    const eventObject = new Event(event.id, event.title, eventStartTime, eventEndDate);
+    const eventObject = new Event(event.id, event.title, eventStartTime,
+        eventEndDate);
     eventsContainer.appendChild(createEventElement(eventObject, false));
   });
 }
 
 /**
  * Fetches groups from the servlet and displays them in the given container.
- * The function assumes the user is either part of all the groups or none at all.
+ * The function assumes the user is either part of all the groups or none at
+ * all.
  * @param {String} servlet The servlet from which the groups will be fetched.
- * @param {String} containerID The ID of the container that will display all the groups.
+ * @param {String} containerID The ID of the container that will display all
+ * the groups.
  * @param {Boolean} isMember Indicates whether or not the user is a member of
  * those groups or not.
  */
@@ -264,14 +272,16 @@ function loadGroups(servlet, containerID, isMember) {
 }
 
 /**
- * Fetches the groups joined by the user and adds them to the associated container.
+ * Fetches the groups joined by the user and adds them to the associated
+ * container.
  */
 function loadJoinedGroups() {
   loadGroups('/joined-groups', 'joined-groups-container', true);
 }
 
 /**
- * Fetches the groups not joined by the user and adds them to the associated container.
+ * Fetches the groups not joined by the user and adds them to the associated
+ * container.
  */
 function loadNotJoinedGroups() {
   loadGroups('/groups', 'not-joined-groups-container', false);
