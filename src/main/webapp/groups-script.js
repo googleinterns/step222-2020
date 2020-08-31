@@ -212,7 +212,7 @@ function createGroupElement(group, isMember) {
 
 /**
  * Joins the group by sending the request to the server.
- * @param {String} groupId The id of the group that the current user will join.
+ * @param {String} groupId The id of the group that the user will join.
  */
 function joinGroup(groupId) {
   const params = new URLSearchParams();

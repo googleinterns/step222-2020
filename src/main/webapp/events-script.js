@@ -343,7 +343,7 @@ function getDateOfThePreviousMonth(date) {
 
 /**
  * Joins the event by sending the request to the server.
- * @param {String} eventId The id of the event that the current user will join.
+ * @param {String} eventId The id of the event that the user will join.
  */
 function joinEvent(eventId) {
   const params = new URLSearchParams();
