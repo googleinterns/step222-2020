@@ -375,4 +375,32 @@ public class DatastoreAccess {
     events.removeAll(getJoinedEvents(userId));
     return events;
   }
+
+  public List<String> getMessagesFromEvent(long eventId) {
+    Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
+    List<String> messages =
+          (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
+      return messages;
+  }
+
+  public void addMessage(long eventId, String message) {
+    Transaction transaction = datastore.beginTransaction();
+    try {
+      Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
+      List<String> messages =
+          (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
+      if (messages == null) {
+        messages = new ArrayList<>();
+      }
+      messages.add(message);
+      eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), messages);
+      datastore.put(eventEntity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
 }

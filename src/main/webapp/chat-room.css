@@ -1,0 +1,24 @@
+body {
+  font-family: Assistant, sans-serif;
+  vertical-align: left;
+  margin-left: 50px;
+  margin-right: auto;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+input[type=submit] {
+  background-color: #008b8b;
+  border: none;
+  border-radius: 15px;
+  box-sizing: border-box;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  opacity: 0.8;
+  padding: 10px;
+}

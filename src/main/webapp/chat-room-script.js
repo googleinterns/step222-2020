@@ -14,10 +14,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Event} from './events-script.js';
+let eventId;
+setInterval(showMessages, 1000);
 
-function loadEventData() {
+window.loadEventData = function loadEventData() {
   const urlParams = new URLSearchParams(window.location.search);
-  const eventId = urlParams.get('id');
+  eventId = urlParams.get('id');
+  document.getElementById("title").innerHTML = urlParams.get('title');;
+}
 
+window.sendMessage = async function sendMessage() {
+  const form = document.getElementById('message-form');
+  const params = new URLSearchParams();
+  const formData = new FormData(form);
+  for (const pair of formData.entries()) {
+    params.append(pair[0], pair[1]);
+  }
+  params.append('id', eventId)
+  await fetch('/messages', {
+    method: 'POST',
+    body: params,
+  });
+  form.reset();
+  showMessages();
+};
+
+async function showMessages() {
+  fetch('/messages?id=' + eventId)
+    .then((response) => response.json()).then(async (messages) => {
+        const chat = document.getElementById('chat-container');
+        chat.innerHTML = '';
+        let i = 0;
+        for (i = 0; i < messages.length; i++) {
+          const message = createMessageElement(messages[i]);
+          chat.appendChild(message);
+        }
+    });
+}
+
+function createMessageElement(message) {
+  const element = document.createElement('p');
+  element.innerText = message;
+  element.className = 'message';
+  return element;
 }

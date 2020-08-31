@@ -156,7 +156,7 @@ function addButtonToGetNewMonth(buttonClass, calendarHeader, date,
 function addChatroomButton(event, eventOptionsElement) {
   const chatroomButton = createElement('button', 'rounded-button', 'Chatroom');
   chatroomButton.addEventListener('click', function() {
-    window.location.href = '/chat-room.html?id=' + event.id_;
+    window.location.href = '/chat-room.html?id=' + event.id_ + '&title=' + event.title_;
   });
   eventOptionsElement.appendChild(chatroomButton);
 }
