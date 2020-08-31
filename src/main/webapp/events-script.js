@@ -72,22 +72,6 @@ function addEventsOfTheDay(date, dateElement) {
 }
 
 /**
- * Displays the evnts from the date received and marks the element as the one
- * containing the selected day.
- * @param {Date} date The date for which the events will be displayed.
- * @param {Element} dateElement The element containing the selected day.
- */
-function displayEventsAndMarkDay(date, dateElement) {
-  displayEvents(date);
-
-  const currentlySelectedDay = document.getElementById('selected-day');
-  if (currentlySelectedDay !== null) {
-    currentlySelectedDay.id = '';
-  }
-  dateElement.id = 'selected-day';
-}
-
-/**
  * Adds the days of the current month into the calendar table.
  * @param {Element} calendarTable The table that is part of the calendar.
  * @param {Date} date The date for whose month we will add the days.
@@ -178,12 +162,13 @@ function addChatroomButton(eventOptionsElement) {
 }
 
 /**
- * Adds the event options available based on the user status (if the user joins
+ * Adds the event options available based on the user status (if the user joined
  * the event or not).
  * @param {Object} event The object containing the data associated with that
  * event.
  * @param {Element} eventElement The element associated with this event.
- * @param {Boolean} hasJoined Indicates if the user has joined the event.
+ * @param {Boolean} hasJoined Indicates whether or not the user has joined
+ * the event.
  */
 function addEventOptions(event, eventElement, hasJoined) {
   const eventOptionsElement = createElement('div', '', '');
@@ -237,7 +222,8 @@ function compareEventsByStartDate(firstEvent, secondEvent) {
 /**
  * Creates the element associated with a given event.
  * @param {Object} event The event for which we will create a new element.
- * @param {Boolean} hasJoined True if the user has joined the event, false otherwise.
+ * @param {Boolean} hasJoined Indicates whether or not the user has joined
+ * the event.
  * @return {Element} The element created.
  */
 function createEventElement(event, hasJoined) {
@@ -284,6 +270,22 @@ function displayEvents(date) {
   for (let i = 0; i < events.length; i++) {
     eventsContainer.appendChild(createEventElement(events[i], true));
   }
+}
+
+/**
+ * Displays the events from the date received and marks the element as the one
+ * containing the selected day.
+ * @param {Date} date The date for which the events will be displayed.
+ * @param {Element} dateElement The element containing the selected day.
+ */
+function displayEventsAndMarkDay(date, dateElement) {
+  displayEvents(date);
+
+  const currentlySelectedDay = document.getElementById('selected-day');
+  if (currentlySelectedDay !== null) {
+    currentlySelectedDay.id = '';
+  }
+  dateElement.id = 'selected-day';
 }
 
 /**

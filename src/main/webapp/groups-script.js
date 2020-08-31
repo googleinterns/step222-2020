@@ -43,7 +43,7 @@ class Group {
  * is part of the group or not).
  * @param {Object} group The object containing the data associated with that group.
  * @param {Element} groupElement The element associated with this group.
- * @param {Boolean} isMember Indicates if the user is a member of the group.
+ * @param {Boolean} isMember Indicates whether or not the user is a member of the group.
  */
 function addGroupOptions(group, groupElement, isMember) {
   const groupOptionsElement = createElement('div', 'group-options', '');
@@ -114,7 +114,7 @@ function addNewGroup() {
 
 /**
  * Adds a show events button through which the user can see the list of events
- * of the group.
+ * of the group that they didn't join yet.
  * @param {Object} group The object containing the data associated with that
  * group.
  * @param {Element} groupOptionsElement The element in which the button
@@ -244,8 +244,9 @@ async function loadGroupEvents(groupId) {
  * Fetches groups from the servlet and displays them in the given container.
  * The function assumes the user is either part of all the groups or none at all.
  * @param {String} servlet The servlet from which the groups will be fetched.
- * @param {String} containerID The ID of the caontainer that will display all the groups.
- * @param {Boolean} isMember Indicates if the user is a member of those groups or not.
+ * @param {String} containerID The ID of the container that will display all the groups.
+ * @param {Boolean} isMember Indicates whether or not the user is a member of
+ * those groups or not.
  */
 function loadGroups(servlet, containerID, isMember) {
   const groupsList = document.getElementById(containerID);
