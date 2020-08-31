@@ -172,11 +172,13 @@ function addChatroomButton(eventOptionsElement) {
  */
 function addEventOptions(event, eventElement, hasJoined) {
   const eventOptionsElement = createElement('div', '', '');
-  if (!hasJoined) {
-    addJoinEventButton(event.id_, eventOptionsElement, eventElement);
-  } else {
+
+  if (hasJoined) {
     addChatroomButton(eventOptionsElement);
+  } else {
+    addJoinEventButton(event.id_, eventOptionsElement, eventElement);
   }
+
   eventElement.appendChild(eventOptionsElement);
 }
 
