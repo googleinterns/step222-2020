@@ -185,6 +185,8 @@ function addEventOptions(event, eventElement, hasJoined) {
 /**
  * Adds a join button through which the user can join that event.
  * @param {Object} eventId The id of the event that will be joined by the user.
+ * @param {Element} eventOptionsElement The element that will include this
+ * button.
  * @param {Element} eventElement The element associated with this event.
  */
 function addJoinEventButton(eventId, eventOptionsElement, eventElement) {
