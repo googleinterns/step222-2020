@@ -153,10 +153,10 @@ function addButtonToGetNewMonth(buttonClass, calendarHeader, date,
  * @param {Element} eventOptionsElement The element that will include this
  * button.
  */
-function addChatroomButton(eventOptionsElement) {
+function addChatroomButton(event, eventOptionsElement) {
   const chatroomButton = createElement('button', 'rounded-button', 'Chatroom');
   chatroomButton.addEventListener('click', function() {
-    // TODO: redirect the user to the chatroom
+    window.location.href = '/chat-room.html?id=' + event.id_;
   });
   eventOptionsElement.appendChild(chatroomButton);
 }
@@ -174,7 +174,7 @@ function addEventOptions(event, eventElement, hasJoined) {
   const eventOptionsElement = createElement('div', '', '');
 
   if (hasJoined) {
-    addChatroomButton(eventOptionsElement);
+    addChatroomButton(event, eventOptionsElement);
   } else {
     addJoinEventButton(event.id_, eventOptionsElement, eventElement);
   }
