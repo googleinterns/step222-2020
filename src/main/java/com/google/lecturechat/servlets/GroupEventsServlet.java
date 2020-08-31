@@ -17,22 +17,24 @@ package com.google.lecturechat.servlets;
 import com.google.gson.Gson;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Group;
+import com.google.lecturechat.data.Event;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups and adding a new group. */
-@WebServlet("/groups")
-public class GroupsServlet extends HttpServlet {
+/** Servlet for listing all the events of a group and adding a new event to that group. */
+@WebServlet("/group-events")
+public class GroupEventsServlet extends HttpServlet {
 
-  private static final String UNIVERSITY_PARAMETER = "university";
-  private static final String DEGREE_PARAMETER = "degree";
-  private static final String YEAR_PARAMETER = "year";
+  private static final String GROUP_ID_PARAMETER = "group-id";
+  private static final String TITLE_PARAMETER = "title";
+  private static final String START_DATE_PARAMETER = "start";
+  private static final String END_DATE_PARAMETER = "end";
   private static DatastoreAccess datastore;
 
   @Override
@@ -46,25 +48,33 @@ public class GroupsServlet extends HttpServlet {
       return;
     }
 
-    List<Group> groups = datastore.getAllGroups();
-    response.setContentType("application/json;");
-    response.setCharacterEncoding("UTF-8");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(groups));
+    try {
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      List<Event> events = datastore.getAllEventsFromGroup(groupId);
+      response.setContentType("application/json;");
+      response.setCharacterEncoding("UTF-8");
+      Gson gson = new Gson();
+      response.getWriter().println(gson.toJson(events));
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
+    }
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
     try {
-      String university = request.getParameter(UNIVERSITY_PARAMETER);
-      String degree = request.getParameter(DEGREE_PARAMETER);
-      int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      String title = (String) request.getParameter(TITLE_PARAMETER);
+      long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
+      long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
 
-      datastore.addGroup(university, degree, year);
+      datastore.addEventToGroup(groupId, title, start, end, userId.get());
     } catch (NumberFormatException e) {
       throw new BadRequestException(e.getMessage());
     }

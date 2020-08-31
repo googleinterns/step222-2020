@@ -1,3 +1,4 @@
+ 
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +16,21 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Group;
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups and adding a new group. */
-@WebServlet("/groups")
-public class GroupsServlet extends HttpServlet {
+/** Servlet for adding a new user to the database (if they are not already registered). */
+@WebServlet("/add-user")
+public class AddUserServlet extends HttpServlet {
 
-  private static final String UNIVERSITY_PARAMETER = "university";
-  private static final String DEGREE_PARAMETER = "degree";
-  private static final String YEAR_PARAMETER = "year";
   private static DatastoreAccess datastore;
 
   @Override
@@ -41,32 +39,15 @@ public class GroupsServlet extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
-      return;
-    }
-
-    List<Group> groups = datastore.getAllGroups();
-    response.setContentType("application/json;");
-    response.setCharacterEncoding("UTF-8");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(groups));
-  }
-
-  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<Payload> userPayload = AuthStatus.getUserPayload(request);
+
+    if (!userPayload.isPresent()) {
       return;
     }
 
-    try {
-      String university = request.getParameter(UNIVERSITY_PARAMETER);
-      String degree = request.getParameter(DEGREE_PARAMETER);
-      int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
-
-      datastore.addGroup(university, degree, year);
-    } catch (NumberFormatException e) {
-      throw new BadRequestException(e.getMessage());
-    }
+    String userId = userPayload.get().getSubject();
+    String name = (String) userPayload.get().get("name");
+    datastore.addUser(userId, name);
   }
 }

@@ -15,20 +15,23 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Event;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all events in a certain group. */
-@WebServlet("/events")
-public class EventsServlet extends HttpServlet {
+/** Servlet for joining an event and listing all the events that the user joined. */
+@WebServlet("/joined-events")
+public class JoinedEventsServlet extends HttpServlet {
 
-  private static final String ID_PARAMETER = "groupId";
+  private static final String EVENT_ID_PARAMETER = "event-id";
   private static DatastoreAccess datastore;
 
   @Override
@@ -38,11 +41,32 @@ public class EventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    long groupId = Long.parseLong(request.getParameter(ID_PARAMETER));
-    List<Event> events = datastore.getAllEventsFromGroup(groupId);
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
+      return;
+    }
+
+    List<Event> events = datastore.getJoinedEvents(userId.get());
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(events));
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
+      return;
+    }
+
+    try {
+      long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
+      datastore.joinEvent(userId.get(), eventId);
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
+    }
   }
 }

@@ -20,19 +20,18 @@ import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Group;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups and adding a new group. */
-@WebServlet("/groups")
-public class GroupsServlet extends HttpServlet {
+/** Servlet for joining a group and listing all the groups that the user joined. */
+@WebServlet("/joined-groups")
+public class JoinedGroupsServlet extends HttpServlet {
 
-  private static final String UNIVERSITY_PARAMETER = "university";
-  private static final String DEGREE_PARAMETER = "degree";
-  private static final String YEAR_PARAMETER = "year";
+  private static final String GROUP_ID_PARAMETER = "group-id";
   private static DatastoreAccess datastore;
 
   @Override
@@ -42,11 +41,13 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
-    List<Group> groups = datastore.getAllGroups();
+    List<Group> groups = datastore.getJoinedGroups(userId.get());
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
@@ -55,16 +56,15 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
     try {
-      String university = request.getParameter(UNIVERSITY_PARAMETER);
-      String degree = request.getParameter(DEGREE_PARAMETER);
-      int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
-
-      datastore.addGroup(university, degree, year);
+      long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      datastore.joinGroup(userId.get(), groupId);
     } catch (NumberFormatException e) {
       throw new BadRequestException(e.getMessage());
     }
