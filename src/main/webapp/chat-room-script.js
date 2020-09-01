@@ -14,15 +14,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-let eventId;
-setInterval(showMessages, 1000);
 
+let eventId;
+// Repeatedly load messages to synchronise chat between users.
+const pollingIntervall = 1000;
+setInterval(showMessages, pollingIntervall);
+
+/**
+ * Loads event id and title for this chat room.
+ */
 window.loadEventData = function loadEventData() {
   const urlParams = new URLSearchParams(window.location.search);
   eventId = urlParams.get('id');
-  document.getElementById("title").innerHTML = urlParams.get('title');;
-}
+  document.getElementById('title').innerHTML = urlParams.get('title');
+};
 
+/**
+ * Sends message entered in form to server.
+ */
 window.sendMessage = async function sendMessage() {
   const form = document.getElementById('message-form');
   const params = new URLSearchParams();
@@ -30,7 +39,7 @@ window.sendMessage = async function sendMessage() {
   for (const pair of formData.entries()) {
     params.append(pair[0], pair[1]);
   }
-  params.append('id', eventId)
+  params.append('id', eventId);
   await fetch('/messages', {
     method: 'POST',
     body: params,
@@ -39,9 +48,12 @@ window.sendMessage = async function sendMessage() {
   showMessages();
 };
 
+/**
+ * Retrieves all messages associated with the event from the server.
+ */
 async function showMessages() {
   fetch('/messages?id=' + eventId)
-    .then((response) => response.json()).then(async (messages) => {
+      .then((response) => response.json()).then(async (messages) => {
         const chat = document.getElementById('chat-container');
         chat.innerHTML = '';
         let i = 0;
@@ -49,9 +61,14 @@ async function showMessages() {
           const message = createMessageElement(messages[i]);
           chat.appendChild(message);
         }
-    });
+      });
 }
 
+/**
+ * Creates html element to display a chat message.
+ * @param {String} message The message content.
+ * @return {Element} The element created.
+ */
 function createMessageElement(message) {
   const element = document.createElement('p');
   element.innerText = message;

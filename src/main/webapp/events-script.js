@@ -150,13 +150,15 @@ function addButtonToGetNewMonth(buttonClass, calendarHeader, date,
 
 /**
  * Adds a button that can be used to open the chatroom of the event.
+ * @param {Element} event The event corresponding to the chat room.
  * @param {Element} eventOptionsElement The element that will include this
  * button.
  */
 function addChatroomButton(event, eventOptionsElement) {
   const chatroomButton = createElement('button', 'rounded-button', 'Chatroom');
   chatroomButton.addEventListener('click', function() {
-    window.location.href = '/chat-room.html?id=' + event.id_ + '&title=' + event.title_;
+    window.location.href = '/chat-room.html?id=' + event.id_ +
+        '&title=' + event.title_;
   });
   eventOptionsElement.appendChild(chatroomButton);
 }

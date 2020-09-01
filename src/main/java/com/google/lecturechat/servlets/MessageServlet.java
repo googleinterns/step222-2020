@@ -15,16 +15,19 @@
 package com.google.lecturechat.servlets;
 
 import com.google.gson.Gson;
+import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Group;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet for listing all available groups and adding a new group. */
+/** Servlet for adding a chat message and getting all messages associated with an event. */
 @WebServlet("/messages")
 public class MessageServlet extends HttpServlet {
 
@@ -39,30 +42,39 @@ public class MessageServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    long eventId = getId(request);
-    if(eventId == 0) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+    if (!userId.isPresent()) {
       return;
     }
-    List<String> messages = datastore.getMessagesFromEvent(eventId);
-    response.setContentType("application/json;");
-    response.setCharacterEncoding("UTF-8");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(messages));
+
+    try {
+      long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
+      List<String> messages = datastore.getMessagesFromEvent(eventId);
+      if (messages == null) {
+         messages = new ArrayList<String>();
+      }
+      response.setContentType("application/json;");
+      response.setCharacterEncoding("UTF-8");
+      Gson gson = new Gson();
+      response.getWriter().println(gson.toJson(messages));
+    } catch (NumberFormatException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
-    String message = request.getParameter(MESSAGE_PARAMETER);
-    datastore.addMessage(eventId, message);
-  }
+    Optional<String> userId = AuthStatus.getUserId(request);
+    if (!userId.isPresent()) {
+      return;
+    }
 
-  private static long getId(HttpServletRequest request) {
-    String eventId = request.getParameter(EVENT_ID_PARAMETER);
-    if (eventId == null) {
-      return 0;
-    } else {
-      return Long.parseLong(eventId);
+    try {
+      long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
+      String message = request.getParameter(MESSAGE_PARAMETER);
+      datastore.addMessage(eventId, message);
+    } catch (NumberFormatException e) {
+      e.printStackTrace();
     }
   }
 }

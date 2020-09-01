@@ -376,6 +376,12 @@ public class DatastoreAccess {
     return events;
   }
 
+  /**
+   * Gets all the messages in a certain group.
+   *
+   * @param eventId The id of the group.
+   * @return The list of messages.
+   */
   public List<String> getMessagesFromEvent(long eventId) {
     Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
     List<String> messages =
@@ -383,6 +389,12 @@ public class DatastoreAccess {
       return messages;
   }
 
+  /**
+   * Retrieve all messages from a certain event.
+   *
+   * @param eventId The id of the event associated with the message.
+   * @param message The message that will be added.
+   */
   public void addMessage(long eventId, String message) {
     Transaction transaction = datastore.beginTransaction();
     try {
@@ -402,5 +414,4 @@ public class DatastoreAccess {
       }
     }
   }
-
 }
