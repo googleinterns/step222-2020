@@ -385,8 +385,8 @@ public class DatastoreAccess {
   public List<String> getMessagesFromEvent(long eventId) {
     Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
     List<String> messages =
-          (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
-      return messages;
+        (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
+    return messages;
   }
 
   /**
