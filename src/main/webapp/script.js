@@ -39,7 +39,7 @@ function createElement(elementType, className, innerText) {
  * Gets the value of the cookie with the given name if it is set. Otherwise,
  * it will return null.
  * @param {String} cookieName The cookie name.
- * @return The value associated with the cookie if it was set or null
+ * @return {String} The value associated with the cookie if it was set or null
  * otherwise.
  */
 function getCookie(cookieName) {

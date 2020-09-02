@@ -35,8 +35,8 @@ describe('Compare events', function() {
 
   it('The first event is bigger than the second one if it begins later',
       function() {
-        const firstEvent = new utils.Event(0, 'First event', new Date(2020, 9, 10),
-            new Date(2020, 9, 11));
+        const firstEvent = new utils.Event(0, 'First event',
+            new Date(2020, 9, 10), new Date(2020, 9, 11));
         const secondEvent = new utils.Event(1, 'Second event',
             new Date(2020, 8, 10), new Date(2020, 8, 11));
         const comparisonResult = utils.compareEventsByStartDate(firstEvent,
