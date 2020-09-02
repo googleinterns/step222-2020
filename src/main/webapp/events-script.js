@@ -28,11 +28,14 @@ const eventsDictionary = {};
 class Event {
   /**
    * Creates a new event with the given parameters.
+   * @param {long} id The id used to store the event in the database.
    * @param {String} title The title of the event.
    * @param {Date} start The start date of the event.
    * @param {Date} end The end date of the event.
    */
-  constructor(title, start, end) {
+  constructor(id, title, start, end) {
+    /** @private @const {long} */
+    this.id_ = id;
     /** @private @const {String} */
     this.title_ = title;
     /** @private @const {String} */
@@ -43,11 +46,20 @@ class Event {
 }
 
 /**
- * Adds the events associated with that date to the element.
+ * Adds the events associated with that date to the element. Today will be
+ * displayed by default.
  * @param {Date} date The date for which the events will be added.
  * @param {Element} dateElement The element in which the events will be added.
  */
 function addEventsOfTheDay(date, dateElement) {
+  const currentDate = new Date();
+  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
+      currentDate.getDate());
+
+  if (date.getTime() == today.getTime()) {
+    displayEventsAndMarkDay(date, dateElement);
+  }
+
   const events = eventsDictionary[date];
   if (events === undefined) {
     return;
@@ -55,13 +67,7 @@ function addEventsOfTheDay(date, dateElement) {
   events.sort(compareEventsByStartDate);
   dateElement.classList.add('day-with-events');
   dateElement.addEventListener('click', function() {
-    displayEvents(date);
-
-    const currentlySelectedDay = document.getElementById('selected-day');
-    if (currentlySelectedDay !== null) {
-      currentlySelectedDay.id = '';
-    }
-    dateElement.id = 'selected-day';
+    displayEventsAndMarkDay(date, dateElement);
   });
 }
 
@@ -143,6 +149,56 @@ function addButtonToGetNewMonth(buttonClass, calendarHeader, date,
 }
 
 /**
+ * Adds a button that can be used to open the chatroom of the event.
+ * @param {Element} eventOptionsElement The element that will include this
+ * button.
+ */
+function addChatroomButton(eventOptionsElement) {
+  const chatroomButton = createElement('button', 'rounded-button', 'Chatroom');
+  chatroomButton.addEventListener('click', function() {
+    // TODO: redirect the user to the chatroom (pull request #21)
+  });
+  eventOptionsElement.appendChild(chatroomButton);
+}
+
+/**
+ * Adds the event options available based on the user status (if the user joined
+ * the event or not).
+ * @param {Object} event The object containing the data associated with that
+ * event.
+ * @param {Element} eventElement The element associated with this event.
+ * @param {Boolean} hasJoined Indicates whether or not the user has joined
+ * the event.
+ */
+function addEventOptions(event, eventElement, hasJoined) {
+  const eventOptionsElement = createElement('div', '', '');
+
+  if (hasJoined) {
+    addChatroomButton(eventOptionsElement);
+  } else {
+    addJoinEventButton(event.id_, eventOptionsElement, eventElement);
+  }
+
+  eventElement.appendChild(eventOptionsElement);
+}
+
+/**
+ * Adds a join button through which the user can join that event.
+ * @param {Object} eventId The id of the event that will be joined by the user.
+ * @param {Element} eventOptionsElement The element that will include this
+ * button.
+ * @param {Element} eventElement The element associated with this event.
+ */
+function addJoinEventButton(eventId, eventOptionsElement, eventElement) {
+  const joinEventButton = createElement('button', 'rounded-button', 'Join');
+  joinEventButton.addEventListener('click', function() {
+    joinEvent(eventId);
+    eventElement.remove();
+  });
+  eventOptionsElement.appendChild(joinEventButton);
+}
+
+/**
  * Adds the week days header in the calendar's table.
  * @param {Element} calendarTable The table that is part of the calendar.
  */
@@ -169,16 +225,19 @@ function compareEventsByStartDate(firstEvent, secondEvent) {
 
 /**
  * Creates the element associated with a given event.
- * @param {object} event The event for which we will create a new element.
+ * @param {Object} event The event for which we will create a new element.
+ * @param {Boolean} hasJoined Indicates whether or not the user has joined
+ * the event.
  * @return {Element} The element created.
  */
-function createEventElement(event) {
+function createEventElement(event, hasJoined) {
   const eventElement = createElement('div', 'event', '');
 
   eventElement.appendChild(createElement('div', 'event-title', event.title_));
   eventElement.appendChild(createElement('hr', '', ''));
   eventElement.appendChild(createElement('div', 'event-time',
       event.start_ + ' - ' + event.end_));
+  addEventOptions(event, eventElement, hasJoined);
 
   return eventElement;
 }
@@ -199,8 +258,7 @@ function createCalendarOfTheMonth(date) {
 }
 
 /**
- * Displays the events happening on the given date in the 'events'
- * container.
+ * Displays the events happening on the given date for which the user signed up.
  * @param {Date} date The date for which the events will be displayed.
  */
 function displayEvents(date) {
@@ -213,8 +271,24 @@ function displayEvents(date) {
   eventsContainer.innerHTML = '';
 
   for (let i = 0; i < events.length; i++) {
-    eventsContainer.appendChild(createEventElement(events[i]));
+    eventsContainer.appendChild(createEventElement(events[i], true));
   }
+}
+
+/**
+ * Displays the events from the date received for which the user signed up
+ * and marks the element as the one containing the selected day.
+ * @param {Date} date The date for which the events will be displayed.
+ * @param {Element} dateElement The element containing the selected day.
+ */
+function displayEventsAndMarkDay(date, dateElement) {
+  displayEvents(date);
+
+  const currentlySelectedDay = document.getElementById('selected-day');
+  if (currentlySelectedDay !== null) {
+    currentlySelectedDay.id = '';
+  }
+  dateElement.id = 'selected-day';
 }
 
 /**
@@ -267,31 +341,38 @@ function getDateOfThePreviousMonth(date) {
 }
 
 /**
- * Loads the calendar associated with the current date and displays the events
- * of the current day.
+ * Joins the event by sending the request to the server.
+ * @param {String} eventId The id of the event that the user will join.
  */
-function loadCalendar() {
-  const currentDate = new Date();
-  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
-      currentDate.getDate());
+function joinEvent(eventId) {
+  const params = new URLSearchParams();
+  params.append('event-id', eventId);
 
-  createCalendarOfTheMonth(currentDate);
-  displayEvents(today);
+  fetch('/joined-events', {method: 'POST', body: params});
 }
 
 /**
- * Fetches events from the server and stores them in the dictionary.
+ * Loads the calendar associated with the current date and displays the events
+ * of the current day for which the user signed up.
+ */
+function loadCalendar() {
+  const currentDate = new Date();
+  createCalendarOfTheMonth(currentDate);
+}
+
+/**
+ * Fetches events for which the user signed up from the server.
  */
 async function loadEvents() {
   const response = await fetch('/joined-events');
   const events = await response.json();
 
   events.forEach((event) => {
-    const eventStartDate = new Date(event.start);
-    const eventEndDate = new Date(event.end);
+    const eventStartDate = new Date(event.startTime);
+    const eventEndDate = new Date(event.endTime);
     const eventStartDay = new Date(eventStartDate.getFullYear(),
         eventStartDate.getMonth(), eventStartDate.getDate());
-    const eventObject = new Event(event.title, eventStartDate,
+    const eventObject = new Event(event.id, event.title, eventStartDate,
         eventEndDate);
 
     if (eventStartDay in eventsDictionary) {

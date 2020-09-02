@@ -20,13 +20,14 @@ import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Group;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups and adding a new group. */
+/** Servlet for adding a new group and listing all the groups that the user didn't join yet. */
 @WebServlet("/groups")
 public class GroupsServlet extends HttpServlet {
 
@@ -42,11 +43,13 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
-    List<Group> groups = datastore.getAllGroups();
+    List<Group> groups = datastore.getNotJoinedGroups(userId.get());
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();

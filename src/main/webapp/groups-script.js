@@ -27,7 +27,7 @@ class Group {
    * @param {int} year The year of study.
    */
   constructor(id, university, degree, year) {
-    /** @private @const {Long} */
+    /** @private @const {long} */
     this.id_ = id;
     /** @private @const {String} */
     this.university_ = university;
@@ -36,6 +36,49 @@ class Group {
     /** @private @const {int} */
     this.year_ = year;
   }
+}
+
+/**
+ * Adds the group options available based on the user membership (if the user
+ * is part of the group or not).
+ * @param {Object} group The object containing the data associated with that
+ * group.
+ * @param {Element} groupElement The element associated with this group.
+ * @param {Boolean} isMember Indicates whether or not the user is a member of
+ * the group.
+ */
+function addGroupOptions(group, groupElement, isMember) {
+  const groupOptionsElement = createElement('div', 'group-options', '');
+
+  if (isMember) {
+    addShowEventsButton(group, groupOptionsElement);
+  } else {
+    addJoinGroupButton(group, groupOptionsElement, groupElement);
+  }
+
+  groupElement.appendChild(groupOptionsElement);
+}
+
+/**
+ * Adds a join button through which the user can become a member of that group.
+ * @param {Object} group The object containing the data associated with that
+ * group.
+ * @param {Element} groupOptionsElement The element in which the button
+ * will be inserted.
+ * @param {Element} groupElement The element associated with this group.
+ */
+function addJoinGroupButton(group, groupOptionsElement, groupElement) {
+  const joinGroupButton = createElement('button', 'rounded-button', 'Join');
+
+  joinGroupButton.addEventListener('click', function() {
+    joinGroup(group.id_);
+    groupElement.remove();
+
+    const joinedGroupsList = document.getElementById('joined-groups-container');
+    joinedGroupsList.prepend(createGroupElement(group, true));
+  });
+
+  groupOptionsElement.appendChild(joinGroupButton);
 }
 
 /**
@@ -70,6 +113,24 @@ function addNewGroup() {
   params.append('year', year);
 
   fetch('/groups', {method: 'POST', body: params});
+}
+
+/**
+ * Adds a show events button through which the user can see the list of events
+ * of the group that they didn't join yet.
+ * @param {Object} group The object containing the data associated with that
+ * group.
+ * @param {Element} groupOptionsElement The element in which the button
+ * will be inserted.
+ */
+function addShowEventsButton(group, groupOptionsElement) {
+  const showEventsButton = createElement('button', 'rounded-button', 'Events');
+
+  showEventsButton.addEventListener('click', function() {
+    showListOfEvents(group.id_);
+  });
+
+  groupOptionsElement.appendChild(showEventsButton);
 }
 
 /**
@@ -131,10 +192,12 @@ function createDetailsMessage(degree, year) {
 
 /**
  * Creates the element associated with a given group.
- * @param {object} group The group for which we will create a new element.
+ * @param {Object} group The group for which we will create a new element.
+ * @param {Boolean} isMember Indicates whether or not the user is member of
+ * the group.
  * @return {Element} The element created.
  */
-function createGroupElement(group) {
+function createGroupElement(group, isMember) {
   const groupElement = createElement('div', 'group', '');
 
   groupElement.appendChild(createElement('div', 'group-university',
@@ -142,17 +205,14 @@ function createGroupElement(group) {
   groupElement.appendChild(createElement('hr', '', ''));
   groupElement.appendChild(createElement('div', 'group-details',
       createDetailsMessage(group.degree_, group.year_)));
-
-  groupElement.addEventListener('click', function() {
-    showListOfEvents(group.id_);
-  });
+  addGroupOptions(group, groupElement, isMember);
 
   return groupElement;
 }
 
 /**
  * Joins the group by sending the request to the server.
- * @param {String} groupId The id of the group that the current user will join.
+ * @param {String} groupId The id of the group that the user will join.
  */
 function joinGroup(groupId) {
   const params = new URLSearchParams();
@@ -180,27 +240,51 @@ async function loadGroupEvents(groupId) {
   events.forEach((event) => {
     const eventStartTime = new Date(event.startTime);
     const eventEndDate = new Date(event.endTime);
-    const eventObject = new Event(event.title, eventStartTime, eventEndDate);
-    eventsContainer.appendChild(createEventElement(eventObject));
+    const eventObject = new Event(event.id, event.title, eventStartTime,
+        eventEndDate);
+    eventsContainer.appendChild(createEventElement(eventObject, false));
   });
 }
 
 /**
- * Fetches the groups from the server and adds them to the groups section.
+ * Fetches groups from the servlet and displays them in the given container.
+ * The function assumes the user is either part of all the groups or none at
+ * all.
+ * @param {String} servlet The servlet from which the groups will be fetched.
+ * @param {String} containerID The ID of the container that will display all
+ * the groups.
+ * @param {Boolean} isMember Indicates whether or not the user is a member of
+ * those groups or not.
  */
-function loadGroups() {
-  const groupsList = document.getElementById('groups-container');
+function loadGroups(servlet, containerID, isMember) {
+  const groupsList = document.getElementById(containerID);
   groupsList.innerHTML = '';
 
-  fetch('/groups')
+  fetch(servlet)
       .then((response) => response.json())
       .then((groups) => {
         groups.forEach((group) => {
           const groupObject = new Group(group.id, group.university,
               group.degree, group.year);
-          groupsList.appendChild(createGroupElement(groupObject));
+          groupsList.appendChild(createGroupElement(groupObject, isMember));
         });
       });
+}
+
+/**
+ * Fetches the groups joined by the user and adds them to the associated
+ * container.
+ */
+function loadJoinedGroups() {
+  loadGroups('/joined-groups', 'joined-groups-container', true);
+}
+
+/**
+ * Fetches the groups not joined by the user and adds them to the associated
+ * container.
+ */
+function loadNotJoinedGroups() {
+  loadGroups('/groups', 'not-joined-groups-container', false);
 }
 
 /**
@@ -215,7 +299,8 @@ function openForm(formType) {
 }
 
 /**
- * Shows the events of the group as a list.
+ * Shows the events (only the ones not joined yet by the user) of the
+ * group as a list.
  * @param {long} groupId The group id.
  */
 async function showListOfEvents(groupId) {
@@ -235,4 +320,4 @@ window.closeListOfEvents = closeListOfEvents;
 window.closeForm = closeForm;
 window.openForm = openForm;
 
-export {loadGroups};
+export {loadJoinedGroups, loadNotJoinedGroups};

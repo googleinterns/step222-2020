@@ -215,7 +215,7 @@ public class DatastoreAccess {
    * @param groupId The id of the group.
    * @return The list of events.
    */
-  public List<Event> getAllEventsFromGroup(long groupId) {
+  private List<Event> getAllEventsFromGroup(long groupId) {
     Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
     List<Long> eventIds =
         (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
@@ -349,5 +349,30 @@ public class DatastoreAccess {
             eventId ->
                 Event.createEventFromEntity(getEntityById(EventEntity.KIND.getLabel(), eventId)))
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets only the groups that the user isn't part of already.
+   *
+   * @param userId The id of the user.
+   * @return The list of groups that the user didn't join yet.
+   */
+  public List<Group> getNotJoinedGroups(String userId) {
+    List<Group> groups = getAllGroups();
+    groups.removeAll(getJoinedGroups(userId));
+    return groups;
+  }
+
+  /**
+   * Gets all the events in a certain group that the user didn't join yet.
+   *
+   * @param groupId The id of the group.
+   * @param userId The id of the user.
+   * @return The list of events that the user didn't join yet.
+   */
+  public List<Event> getAllNotJoinedEventsFromGroup(long groupId, String userId) {
+    List<Event> events = getAllEventsFromGroup(groupId);
+    events.removeAll(getJoinedEvents(userId));
+    return events;
   }
 }

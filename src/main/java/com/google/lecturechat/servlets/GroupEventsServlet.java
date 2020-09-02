@@ -27,7 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all the events of a group and adding a new event to that group. */
+/**
+ * Servlet for adding a new event to a group and listing all the events of that group that the user
+ * didn't join yet.
+ */
 @WebServlet("/group-events")
 public class GroupEventsServlet extends HttpServlet {
 
@@ -44,13 +47,15 @@ public class GroupEventsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
     try {
       long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
-      List<Event> events = datastore.getAllEventsFromGroup(groupId);
+      List<Event> events = datastore.getAllNotJoinedEventsFromGroup(groupId, userId.get());
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
