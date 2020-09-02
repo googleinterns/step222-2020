@@ -87,7 +87,6 @@ public final class Group {
     if (!(anotherObject instanceof Group)) {
       return false;
     }
-    Group anotherGroup = (Group) anotherObject;
-    return (this.getId() == anotherGroup.getId());
+    return (this.getId() == ((Group) anotherObject).getId());
   }
 }

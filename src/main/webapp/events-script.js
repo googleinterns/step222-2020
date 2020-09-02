@@ -28,13 +28,13 @@ const eventsDictionary = {};
 class Event {
   /**
    * Creates a new event with the given parameters.
-   * @param {Long} id The id used to store the event in the database.
+   * @param {long} id The id used to store the event in the database.
    * @param {String} title The title of the event.
    * @param {Date} start The start date of the event.
    * @param {Date} end The end date of the event.
    */
   constructor(id, title, start, end) {
-    /** @private @const {LOng} */
+    /** @private @const {long} */
     this.id_ = id;
     /** @private @const {String} */
     this.title_ = title;
@@ -258,8 +258,7 @@ function createCalendarOfTheMonth(date) {
 }
 
 /**
- * Displays the events happening on the given date in the 'events'
- * container.
+ * Displays the events happening on the given date for which the user signed up.
  * @param {Date} date The date for which the events will be displayed.
  */
 function displayEvents(date) {
@@ -277,8 +276,8 @@ function displayEvents(date) {
 }
 
 /**
- * Displays the events from the date received and marks the element as the one
- * containing the selected day.
+ * Displays the events from the date received for which the user signed up
+ * and marks the element as the one containing the selected day.
  * @param {Date} date The date for which the events will be displayed.
  * @param {Element} dateElement The element containing the selected day.
  */
@@ -354,7 +353,7 @@ function joinEvent(eventId) {
 
 /**
  * Loads the calendar associated with the current date and displays the events
- * of the current day.
+ * of the current day for which the user signed up.
  */
 function loadCalendar() {
   const currentDate = new Date();
@@ -362,7 +361,7 @@ function loadCalendar() {
 }
 
 /**
- * Fetches events from the server and stores them in the dictionary.
+ * Fetches events for which the user signed up from the server.
  */
 async function loadEvents() {
   const response = await fetch('/joined-events');

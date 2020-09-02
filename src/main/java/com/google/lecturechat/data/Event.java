@@ -101,7 +101,6 @@ public final class Event {
     if (!(anotherObject instanceof Event)) {
       return false;
     }
-    Event anotherEvent = (Event) anotherObject;
-    return (this.getId() == anotherEvent.getId());
+    return (this.getId() == ((Event) anotherObject).getId());
   }
 }
