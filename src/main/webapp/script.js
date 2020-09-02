@@ -45,7 +45,7 @@ function createElement(elementType, className, innerText) {
 function getCookie(cookieName) {
   const cookies = document.cookies.split(';');
 
-  for (let cookie of cookies) {
+  for (const cookie of cookies) {
     const cookiePair = cookie.split('=');
     if (cookieName === cookiePair[0].trim()) {
       return decodeURIComponent(cookiePair[1]);
