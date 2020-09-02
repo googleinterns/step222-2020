@@ -36,6 +36,26 @@ function createElement(elementType, className, innerText) {
 }
 
 /**
+ * Gets the value of the cookie with the given name if it is set. Otherwise,
+ * it will return null.
+ * @param {String} cookieName The cookie name.
+ * @return The value associated with the cookie if it was set or null
+ * otherwise.
+ */
+function getCookie(cookieName) {
+  const cookies = document.cookies.split(';');
+
+  for (let cookie of cookies) {
+    const cookiePair = cookie.split('=');
+    if (cookieName === cookiePair[0].trim()) {
+      return decodeURIComponent(cookiePair[1]);
+    }
+  }
+
+  return null;
+}
+
+/**
  * Initializes the GoogleAuth object and checks if the user is on the
  * right page based on their login status. If not, redirects them to
  * the appropriate page.
@@ -83,6 +103,15 @@ async function loadProfileData() {
 }
 
 /**
+ * Sets a cookie with the given name and value.
+ * @param {String} cookieName The cookie name.
+ * @param {String} cookieValue The cookie value.
+ */
+function setCookie(cookieName, cookieValue) {
+  document.cookie = cookieName + '=' + encodeURIComponent(cookieValue);
+}
+
+/**
  * Signs in the user, updates the authorization status and redirects them
  * to the home page (only if they also provide the authorization needed).
  */
@@ -92,7 +121,7 @@ async function signIn() {
 
   if (googleAuth.isSignedIn.get()) {
     const idToken = authResult.getAuthResponse().id_token;
-    document.cookie = 'id_token=' + encodeURIComponent(idToken);
+    setCookie('id_token', idToken);
     await fetch('/add-user', {method: 'POST'});
     window.location.href = 'home-page.html';
   }
