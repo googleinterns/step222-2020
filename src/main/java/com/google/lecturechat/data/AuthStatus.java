@@ -21,9 +21,11 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.RuntimeException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,11 +33,19 @@ import javax.ws.rs.BadRequestException;
 
 /** A helper class used to retrieve specific data such as the id_token from a request. */
 public class AuthStatus {
-  private static final String CLIENT_ID = "";
+  private static String CLIENT_ID;
   private static final GoogleIdTokenVerifier verifier =
       new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
           .setAudience(Collections.singletonList(CLIENT_ID))
           .build();
+
+  static {
+    try {
+      CLIENT_ID = AccessSecrets.getClientId();
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
 
   /**
    * Gets the id_token from the associated cookie if it is included in the request.
