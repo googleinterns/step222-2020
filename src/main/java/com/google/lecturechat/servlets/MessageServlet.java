@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
@@ -41,17 +40,13 @@ public class MessageServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> userId = AuthStatus.getUserId(request);
-    if (!userId.isPresent()) {
+    if (!AuthStatus.isSignedIn(request)) {
       return;
     }
 
     try {
       long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
       List<String> messages = datastore.getMessagesFromEvent(eventId);
-      if (messages == null) {
-        messages = new ArrayList<String>();
-      }
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();

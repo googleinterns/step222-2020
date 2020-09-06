@@ -58,8 +58,7 @@ async function showMessages() {
         chat.innerHTML = '';
         let i = 0;
         for (i = 0; i < messages.length; i++) {
-          const message = createMessageElement(messages[i]);
-          chat.appendChild(message);
+          chat.appendChild(createMessageElement(messages[i]));
         }
       });
 }
