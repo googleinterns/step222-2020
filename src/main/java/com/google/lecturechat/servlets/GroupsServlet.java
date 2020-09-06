@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all available groups and adding a new group. */
+/** Servlet for adding a new group and listing all the groups that the user didn't join yet. */
 @WebServlet("/groups")
 public class GroupsServlet extends HttpServlet {
 

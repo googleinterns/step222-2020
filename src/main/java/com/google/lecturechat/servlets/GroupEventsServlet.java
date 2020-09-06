@@ -27,7 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for listing all the events of a group and adding a new event to that group. */
+/**
+ * Servlet for adding a new event to a group and listing all the events of that group that the user
+ * didn't join yet.
+ */
 @WebServlet("/group-events")
 public class GroupEventsServlet extends HttpServlet {
 
