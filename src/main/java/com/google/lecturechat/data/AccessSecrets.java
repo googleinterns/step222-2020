@@ -15,12 +15,11 @@
 package com.google.lecturechat.data;
 
 import com.google.api.gax.rpc.ApiException;
-import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
 import java.io.IOException;
 
-/**A helper class used to access and retrieve the secrets (e.g. the OAuth 2.0 client ID).*/
+/** A helper class used to access and retrieve the secrets (e.g. the OAuth 2.0 client ID).*/
 public class AccessSecrets {
   private static final String projectId = "lecturechat";
   private static final String secretId = "client-id";
@@ -28,19 +27,20 @@ public class AccessSecrets {
 
   /**
    * Returns the OAuth 2.0 client ID if it was included in the Secret Manager.
+   *
    * @return The client ID if the operations are successfull.
    * @throws IOException If the SecretManagerServiceClient object couldn't been created.
-   * @throws ApiException If the secret version associated with client ID couldn't have
-   * been accessed.
+   * @throws ApiException If the secret version associated with client ID couldn't have been
+   *     accessed.
    */
   public static String getClientId() throws IOException, ApiException {
     SecretManagerServiceClient client = SecretManagerServiceClient.create();
-    String response = client
-        .accessSecretVersion(
-            SecretVersionName.of(projectId, secretId, versionId))
-        .getPayload()
-        .getData()
-        .toStringUtf8();
+    String response =
+        client
+            .accessSecretVersion(SecretVersionName.of(projectId, secretId, versionId))
+            .getPayload()
+            .getData()
+            .toStringUtf8();
     client.close();
     return response;
   }

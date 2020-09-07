@@ -44,6 +44,7 @@ public class JoinedEventsServlet extends HttpServlet {
     Optional<String> userId = AuthStatus.getUserId(request);
 
     if (!userId.isPresent()) {
+      System.out.println("not logged in");
       return;
     }
 
