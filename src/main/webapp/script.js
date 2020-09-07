@@ -14,7 +14,8 @@
 
 /* eslint-disable no-unused-vars */
 
-const CLIENT_ID = '764525537710-crtrm9pdut61dgijldb591jjjl5c2rfq.apps.googleusercontent.com';
+const CLIENT_ID =
+    '764525537710-crtrm9pdut61dgijldb591jjjl5c2rfq.apps.googleusercontent.com';
 const SCOPE = 'profile email';
 const DISCOVERY_DOCS = [];
 

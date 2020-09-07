@@ -19,7 +19,7 @@ import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
 import java.io.IOException;
 
-/** A helper class used to access and retrieve the secrets (e.g. the OAuth 2.0 client ID).*/
+/** A helper class used to access and retrieve the secrets (e.g. the OAuth 2.0 client ID). */
 public class AccessSecrets {
   private static final String projectId = "lecturechat";
   private static final String secretId = "client-id";
