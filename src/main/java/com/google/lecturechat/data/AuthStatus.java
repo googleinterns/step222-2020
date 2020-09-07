@@ -32,14 +32,14 @@ import javax.ws.rs.BadRequestException;
 /** A helper class used to retrieve specific data such as the id_token from a request. */
 public class AuthStatus {
   private static String CLIENT_ID;
-  private static  GoogleIdTokenVerifier verifier;
+  private static GoogleIdTokenVerifier verifier;
 
   static {
     try {
       CLIENT_ID = AccessSecrets.getClientId();
       verifier =
-          new GoogleIdTokenVerifier
-              .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+          new GoogleIdTokenVerifier.Builder(
+                  new NetHttpTransport(), JacksonFactory.getDefaultInstance())
               .setAudience(Collections.singletonList(CLIENT_ID))
               .build();
     } catch (IOException e) {
