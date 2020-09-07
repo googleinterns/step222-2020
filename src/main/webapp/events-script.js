@@ -217,10 +217,7 @@ function addWeekDaysToCalendar(calendarTable) {
  * @return {Integer} A positive number if the two events should be switched.
  */
 function compareEventsByStartDate(firstEvent, secondEvent) {
-  const firstEventStartDate = firstEvent.start_;
-  const secondEventStartDate = secondEvent.start_;
-
-  return firstEventStartDate < secondEventStartDate;
+  return firstEvent.start_ < secondEvent.start_;
 }
 
 /**
@@ -308,8 +305,6 @@ function getDateOfTheNextMonth(date) {
 }
 
 /**
- * TODO: Include unit tests.
- *
  * Gets the number of days present in the month of the date received.
  * @param {Date} date The date for which we will compute the number of days.
  * @return {Integer} The number of days.

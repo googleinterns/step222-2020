@@ -89,6 +89,23 @@
           <deploy.version>1</deploy.version>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+             <id>my-exec</id>
+             <phase>generate-sources</phase>
+             <goals>
+               <goal>exec</goal>
+             </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <executable>${project.basedir}/src/test/javascript/jasmine_setup.sh</executable>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
