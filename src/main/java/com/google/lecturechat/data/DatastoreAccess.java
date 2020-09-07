@@ -57,12 +57,15 @@ public class DatastoreAccess {
    * @param university The name of the unversity the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
+   * @return The id associated with the group.
    */
-  public void addGroup(String university, String degree, int year) {
+  public long addGroup(String university, String degree, int year) {
     Transaction transaction = datastore.beginTransaction();
+    long groupId;
     try {
-      if (!groupExistsAlready(university, degree, year)) {
-        Entity groupEntity = new Entity(GroupEntity.KIND.getLabel());
+      Entity groupEntity = getExistingGroupEntity(university, degree, year);
+      if (groupEntity == null) {
+        groupEntity = new Entity(GroupEntity.KIND.getLabel());
         groupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
         groupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
         groupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
@@ -70,12 +73,14 @@ public class DatastoreAccess {
         groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
         datastore.put(groupEntity);
       }
+      groupId = groupEntity.getKey().getId();
       transaction.commit();
     } finally {
       if (transaction.isActive()) {
         transaction.rollback();
       }
     }
+    return groupId;
   }
 
   /**
@@ -84,9 +89,9 @@ public class DatastoreAccess {
    * @param university The name of the university the new group is associated with.
    * @param degree The name of the degree the new group is associated with.
    * @param year The year of the degree the new group is associated with.
-   * @return True if it exists, else false.
+   * @return The entity associated with the group if it exists or null otherwise.
    */
-  private boolean groupExistsAlready(String university, String degree, int year) {
+  private Entity getExistingGroupEntity(String university, String degree, int year) {
     Query query = new Query(GroupEntity.KIND.getLabel());
     query.setFilter(
         new CompositeFilter(
@@ -98,8 +103,7 @@ public class DatastoreAccess {
                     GroupEntity.DEGREE_PROPERTY.getLabel(), FilterOperator.EQUAL, degree),
                 new FilterPredicate(
                     GroupEntity.YEAR_PROPERTY.getLabel(), FilterOperator.EQUAL, year))));
-    Entity groupEntity = datastore.prepare(query).asSingleEntity();
-    return (groupEntity != null);
+    return datastore.prepare(query).asSingleEntity();
   }
 
   /**
@@ -168,8 +172,9 @@ public class DatastoreAccess {
    * @param startTime The start time of the event (number of milliseconds since epoch time).
    * @param endTime The end time of the event (number of milliseconds since epoch time).
    * @param creator The creator of the event.
+   * @return The id of the event created or 0 if the event couldn't be created.
    */
-  public void addEventToGroup(
+  public long addEventToGroup(
       long groupId, String title, long startTime, long endTime, String creator) {
     Transaction eventTransaction = datastore.beginTransaction();
     long eventId = 0;
@@ -207,6 +212,7 @@ public class DatastoreAccess {
         }
       }
     }
+    return eventId;
   }
 
   /**

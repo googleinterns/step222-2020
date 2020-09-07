@@ -58,7 +58,9 @@ public class GroupsServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!AuthStatus.isSignedIn(request)) {
+    Optional<String> userId = AuthStatus.getUserId(request);
+
+    if (!userId.isPresent()) {
       return;
     }
 
@@ -67,7 +69,8 @@ public class GroupsServlet extends HttpServlet {
       String degree = request.getParameter(DEGREE_PARAMETER);
       int year = Integer.parseInt(request.getParameter(YEAR_PARAMETER));
 
-      datastore.addGroup(university, degree, year);
+      long groupId = datastore.addGroup(university, degree, year);
+      datastore.joinGroup(userId.get(), groupId);
     } catch (NumberFormatException e) {
       throw new BadRequestException(e.getMessage());
     }
