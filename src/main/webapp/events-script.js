@@ -28,13 +28,13 @@ const eventsDictionary = {};
 class Event {
   /**
    * Creates a new event with the given parameters.
-   * @param {long} id The id used to store the event in the database.
+   * @param {Long} id The id used to store the event in the database.
    * @param {String} title The title of the event.
    * @param {Date} start The start date of the event.
    * @param {Date} end The end date of the event.
    */
   constructor(id, title, start, end) {
-    /** @private @const {long} */
+    /** @private @const {LOng} */
     this.id_ = id;
     /** @private @const {String} */
     this.title_ = title;
@@ -156,7 +156,7 @@ function addButtonToGetNewMonth(buttonClass, calendarHeader, date,
 function addChatroomButton(eventOptionsElement) {
   const chatroomButton = createElement('button', 'rounded-button', 'Chatroom');
   chatroomButton.addEventListener('click', function() {
-    // TODO: redirect the user to the chatroom (pull request #21)
+    // TODO: redirect the user to the chatroom
   });
   eventOptionsElement.appendChild(chatroomButton);
 }
@@ -191,9 +191,11 @@ function addEventOptions(event, eventElement, hasJoined) {
  */
 function addJoinEventButton(eventId, eventOptionsElement, eventElement) {
   const joinEventButton = createElement('button', 'rounded-button', 'Join');
-  joinEventButton.addEventListener('click', function() {
-    joinEvent(eventId);
+  joinEventButton.addEventListener('click', async function() {
+    await joinEvent(eventId);
     eventElement.remove();
+    await loadEvents();
+    loadCalendar();
   });
   eventOptionsElement.appendChild(joinEventButton);
 }
@@ -250,6 +252,7 @@ function createCalendarOfTheMonth(date) {
   const calendarContainer = document.getElementById('calendar');
   const calendarTable = createElement('table', 'calendar-table', '');
 
+  calendarContainer.innerHTML = '';
   addHeaderOfTheMonth(calendarContainer, date);
   addWeekDaysToCalendar(calendarTable);
   addDaysOfTheMonth(calendarTable, date);
@@ -258,7 +261,8 @@ function createCalendarOfTheMonth(date) {
 }
 
 /**
- * Displays the events happening on the given date for which the user signed up.
+ * Displays the events happening on the given date in the 'events'
+ * container.
  * @param {Date} date The date for which the events will be displayed.
  */
 function displayEvents(date) {
@@ -276,8 +280,8 @@ function displayEvents(date) {
 }
 
 /**
- * Displays the events from the date received for which the user signed up
- * and marks the element as the one containing the selected day.
+ * Displays the events from the date received and marks the element as the one
+ * containing the selected day.
  * @param {Date} date The date for which the events will be displayed.
  * @param {Element} dateElement The element containing the selected day.
  */
@@ -344,16 +348,16 @@ function getDateOfThePreviousMonth(date) {
  * Joins the event by sending the request to the server.
  * @param {String} eventId The id of the event that the user will join.
  */
-function joinEvent(eventId) {
+async function joinEvent(eventId) {
   const params = new URLSearchParams();
   params.append('event-id', eventId);
 
-  fetch('/joined-events', {method: 'POST', body: params});
+  await fetch('/joined-events', {method: 'POST', body: params});
 }
 
 /**
  * Loads the calendar associated with the current date and displays the events
- * of the current day for which the user signed up.
+ * of the current day.
  */
 function loadCalendar() {
   const currentDate = new Date();
@@ -361,7 +365,7 @@ function loadCalendar() {
 }
 
 /**
- * Fetches events for which the user signed up from the server.
+ * Fetches events from the server and stores them in the dictionary.
  */
 async function loadEvents() {
   const response = await fetch('/joined-events');
