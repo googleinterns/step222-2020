@@ -36,26 +36,6 @@ function createElement(elementType, className, innerText) {
 }
 
 /**
- * Gets the value of the cookie with the given name if it is set. Otherwise,
- * it will return null.
- * @param {String} cookieName The cookie name.
- * @return {String} The value associated with the cookie if it was set or null
- * otherwise.
- */
-function getCookie(cookieName) {
-  const cookies = document.cookies.split(';');
-
-  for (const cookie of cookies) {
-    const cookiePair = cookie.split('=');
-    if (cookieName === cookiePair[0].trim()) {
-      return decodeURIComponent(cookiePair[1]);
-    }
-  }
-
-  return null;
-}
-
-/**
  * Initializes the GoogleAuth object and checks if the user is on the
  * right page based on their login status. If not, redirects them to
  * the appropriate page.
