@@ -24,7 +24,7 @@ class Event {
    * @param {Date} end The end date of the event.
    */
   constructor(id, title, start, end) {
-    /** @private @const {LOng} */
+    /** @private @const {Long} */
     this.id_ = id;
     /** @private @const {String} */
     this.title_ = title;
@@ -42,10 +42,7 @@ class Event {
  * @return {Boolean} False if the two events should be switched.
  */
 function compareEventsByStartDate(firstEvent, secondEvent) {
-  const firstEventStartDate = firstEvent.start_;
-  const secondEventStartDate = secondEvent.start_;
-
-  return firstEventStartDate < secondEventStartDate;
+  return firstEvent.start_ < secondEvent.start_;
 }
 
 /**
