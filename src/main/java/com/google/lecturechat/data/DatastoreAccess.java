@@ -370,6 +370,19 @@ public class DatastoreAccess {
   }
 
   /**
+   * Gets all the events in a certain group that the user had joined already.
+   *
+   * @param groupId The id of the group.
+   * @param userId The id of the user.
+   * @return The list of events that the user had joined already.
+   */
+  public List<Event> getAllJoinedEventsFromGroup(long groupId, String userId) {
+    List<Event> events = getAllEventsFromGroup(groupId);
+    events.retainAll(getJoinedEvents(userId));
+    return events;
+  }
+
+  /**
    * Gets all the events in a certain group that the user didn't join yet.
    *
    * @param groupId The id of the group.
