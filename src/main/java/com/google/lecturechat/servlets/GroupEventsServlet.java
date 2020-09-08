@@ -79,7 +79,10 @@ public class GroupEventsServlet extends HttpServlet {
       long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
       long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
 
-      datastore.addEventToGroup(groupId, title, start, end, userId.get());
+      long eventId = datastore.addEventToGroup(groupId, title, start, end, userId.get());
+      if (eventId != 0) {
+        datastore.joinEvent(userId.get(), eventId);
+      }
     } catch (NumberFormatException e) {
       throw new BadRequestException(e.getMessage());
     }

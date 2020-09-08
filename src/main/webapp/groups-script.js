@@ -222,14 +222,22 @@ function joinGroup(groupId) {
 }
 
 /**
- * Fetches the events associated with the group from the server.
- * @param {Object} groupId The group id.
+ * Fetches events (from the group specified by the groupId) from the servlet
+ * and displays them in the given container. The hasJoined parameter can be
+ * used to fetch all the events that the user has joined or all the events that
+ * the user has not joined.
+ * @param {String} servlet The servlet from which the events will be fetched.
+ * @param {String} containerID The ID of the container that will display all
+ * the events.
+ * @param {long} groupId The ID of the group associated with the events.
+ * @param {Boolean} hasJoined Indicates whether or not the user has joined
+ * the events.
  */
-async function loadGroupEvents(groupId) {
-  const eventsContainer = document.getElementById('group-events');
+async function loadGroupEvents(servlet, containerID, groupId, hasJoined) {
+  const eventsContainer = document.getElementById(containerID);
   eventsContainer.innerHTML = '';
 
-  const url = new URL('/group-events', window.location.origin);
+  const url = new URL(servlet, window.location.origin);
   const params = new URLSearchParams();
   params.append('group-id', groupId);
   url.search = params;
@@ -242,14 +250,33 @@ async function loadGroupEvents(groupId) {
     const eventEndDate = new Date(event.endTime);
     const eventObject = new Event(event.id, event.title, eventStartTime,
         eventEndDate);
-    eventsContainer.appendChild(createEventElement(eventObject, false));
+    eventsContainer.appendChild(createEventElement(eventObject, hasJoined));
   });
 }
 
 /**
+ * Fetches the events joined by the user from the group specified by its ID.
+ * @param {long} groupId The group id.
+ */
+async function loadJoinedEventsFromGroup(groupId) {
+  await loadGroupEvents('/joined-events', 'joined-events-container',
+      groupId, true);
+}
+
+/**
+ * Fetches the events not joined by the user from the group specified by
+ * its ID.
+ * @param {long} groupId The group id.
+ */
+async function loadNotJoinedEventsFromGroup(groupId) {
+  await loadGroupEvents('/group-events', 'not-joined-events-container',
+      groupId, false);
+}
+
+/**
  * Fetches groups from the servlet and displays them in the given container.
- * The function assumes the user is either part of all the groups or none at
- * all.
+ * The isMember parameter can be used to fetch all the groups that the user has
+ * joined or all the groups that the user has not joined.
  * @param {String} servlet The servlet from which the groups will be fetched.
  * @param {String} containerID The ID of the container that will display all
  * the groups.
@@ -307,7 +334,8 @@ async function showListOfEvents(groupId) {
   changeContainerDisplay('list-of-events', 'initial');
   changeContainerDisplay('groups-section', 'none');
 
-  await loadGroupEvents(groupId);
+  await loadJoinedEventsFromGroup(groupId);
+  await loadNotJoinedEventsFromGroup(groupId);
 
   const eventForm = document.getElementById('new-event-form');
   eventForm.onsubmit = function() {

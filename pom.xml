@@ -16,6 +16,18 @@
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>libraries-bom</artifactId>
+        <version>9.1.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -75,6 +87,10 @@
     <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client-appengine</artifactId>
       <version>1.30.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-secretmanager</artifactId>
     </dependency>
   </dependencies>
 
