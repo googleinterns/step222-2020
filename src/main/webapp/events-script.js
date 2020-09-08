@@ -195,9 +195,11 @@ function addEventOptions(event, eventElement, hasJoined) {
  */
 function addJoinEventButton(eventId, eventOptionsElement, eventElement) {
   const joinEventButton = createElement('button', 'rounded-button', 'Join');
-  joinEventButton.addEventListener('click', function() {
-    joinEvent(eventId);
+  joinEventButton.addEventListener('click', async function() {
+    await joinEvent(eventId);
     eventElement.remove();
+    await loadEvents();
+    loadCalendar();
   });
   eventOptionsElement.appendChild(joinEventButton);
 }
@@ -251,6 +253,7 @@ function createCalendarOfTheMonth(date) {
   const calendarContainer = document.getElementById('calendar');
   const calendarTable = createElement('table', 'calendar-table', '');
 
+  calendarContainer.innerHTML = '';
   addHeaderOfTheMonth(calendarContainer, date);
   addWeekDaysToCalendar(calendarTable);
   addDaysOfTheMonth(calendarTable, date);
@@ -343,11 +346,11 @@ function getDateOfThePreviousMonth(date) {
  * Joins the event by sending the request to the server.
  * @param {String} eventId The id of the event that the user will join.
  */
-function joinEvent(eventId) {
+async function joinEvent(eventId) {
   const params = new URLSearchParams();
   params.append('event-id', eventId);
 
-  fetch('/joined-events', {method: 'POST', body: params});
+  await fetch('/joined-events', {method: 'POST', body: params});
 }
 
 /**
