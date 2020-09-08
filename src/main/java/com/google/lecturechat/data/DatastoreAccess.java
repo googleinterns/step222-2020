@@ -399,6 +399,7 @@ public class DatastoreAccess {
   /**
    * Gets all the events joined by the user whose start date is in the interval [beginningDate,
    * endingDate).
+   *
    * @param beginningDate The inclusive lower bound value of the interval used to filter the events
    *     by their start date.
    * @param endingDate The exclusive upper bound value of the interval used to filter the events by
