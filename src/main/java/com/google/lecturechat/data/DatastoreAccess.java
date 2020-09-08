@@ -61,26 +61,25 @@ public class DatastoreAccess {
    */
   public long addGroup(String university, String degree, int year) {
     Transaction transaction = datastore.beginTransaction();
-    long groupId;
     try {
-      Entity groupEntity = getExistingGroupEntity(university, degree, year);
-      if (groupEntity == null) {
-        groupEntity = new Entity(GroupEntity.KIND.getLabel());
-        groupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
-        groupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
-        groupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
-        groupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<Long>());
-        groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
-        datastore.put(groupEntity);
+      Optional<Entity> groupEntity = getExistingGroupEntity(university, degree, year);
+      if (!groupEntity.isPresent()) {
+        Entity newGroupEntity = new Entity(GroupEntity.KIND.getLabel());
+        newGroupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
+        newGroupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
+        newGroupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
+        newGroupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        newGroupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        datastore.put(newGroupEntity);
+        groupEntity = Optional.of(newGroupEntity);
       }
-      groupId = groupEntity.getKey().getId();
       transaction.commit();
+      return groupEntity.get().getKey().getId();
     } finally {
       if (transaction.isActive()) {
         transaction.rollback();
       }
     }
-    return groupId;
   }
 
   /**
@@ -91,7 +90,7 @@ public class DatastoreAccess {
    * @param year The year of the degree the new group is associated with.
    * @return The entity associated with the group if it exists or null otherwise.
    */
-  private Entity getExistingGroupEntity(String university, String degree, int year) {
+  private Optional<Entity> getExistingGroupEntity(String university, String degree, int year) {
     Query query = new Query(GroupEntity.KIND.getLabel());
     query.setFilter(
         new CompositeFilter(
@@ -103,7 +102,8 @@ public class DatastoreAccess {
                     GroupEntity.DEGREE_PROPERTY.getLabel(), FilterOperator.EQUAL, degree),
                 new FilterPredicate(
                     GroupEntity.YEAR_PROPERTY.getLabel(), FilterOperator.EQUAL, year))));
-    return datastore.prepare(query).asSingleEntity();
+    Entity groupEntity = datastore.prepare(query).asSingleEntity();
+    return ((groupEntity != null) ? Optional.of(groupEntity) : Optional.empty());
   }
 
   /**
