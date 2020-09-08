@@ -47,6 +47,8 @@ class Event {
  * displayed by default.
  * @param {Date} date The date for which the events will be added.
  * @param {Element} dateElement The element in which the events will be added.
+ * @param {Object} eventsDictionary A dictionary that contains the events that
+ * start in the given month.
  */
 function addEventsOfTheDay(date, dateElement, eventsDictionary) {
   const currentDate = new Date();
@@ -72,6 +74,8 @@ function addEventsOfTheDay(date, dateElement, eventsDictionary) {
  * Adds the days of the current month into the calendar table.
  * @param {Element} calendarTable The table that is part of the calendar.
  * @param {Date} date The date for whose month we will add the days.
+ * @param {Object} eventsDictionary A dictionary that contains the events that
+ * start in the given month.
  */
 function addDaysOfTheMonth(calendarTable, date, eventsDictionary) {
   const year = date.getFullYear();
@@ -256,6 +260,8 @@ async function createCalendarOfTheMonth(date) {
 /**
  * Displays the events happening on the given date for which the user signed up.
  * @param {Date} date The date for which the events will be displayed.
+ * @param {Object} eventsDictionary A dictionary that contains the events that
+ * start in the given month.
  */
 function displayEvents(date, eventsDictionary) {
   const events = eventsDictionary[date];
@@ -276,6 +282,8 @@ function displayEvents(date, eventsDictionary) {
  * and marks the element as the one containing the selected day.
  * @param {Date} date The date for which the events will be displayed.
  * @param {Element} dateElement The element containing the selected day.
+ * @param {Object} eventsDictionary A dictionary that contains the events that
+ * start in the given month.
  */
 function displayEventsAndMarkDay(date, dateElement, eventsDictionary) {
   displayEvents(date, eventsDictionary);
@@ -355,12 +363,16 @@ function loadCalendar() {
 }
 
 /**
- * Fetches events for which the user signed up from the server.
+ * Fetches events joined by the user that start in the month of the date
+ * received.
+ * @param {Date} date The date relative to whose month the events will be
+ * retrieved.
  */
 async function loadEvents(date) {
   const url = new URL('/joined-events', window.location.origin);
   const params = new URLSearchParams();
-  params.append('beginning-date', new Date(date.getFullYear(), date.getMonth()).getTime());
+  params.append('beginning-date', new Date(date.getFullYear(),
+      date.getMonth()).getTime());
   params.append('ending-date', getDateOfTheNextMonth(date).getTime());
   url.search = params;
 
