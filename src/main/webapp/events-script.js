@@ -21,9 +21,6 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
 const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
   'Friday', 'Saturday'];
 
-// Dictionary used to simply retrieve the events that start on a given day.
-const eventsDictionary = {};
-
 /** Class used to define the basic characteristics of an event. */
 class Event {
   /**
@@ -51,13 +48,13 @@ class Event {
  * @param {Date} date The date for which the events will be added.
  * @param {Element} dateElement The element in which the events will be added.
  */
-function addEventsOfTheDay(date, dateElement) {
+function addEventsOfTheDay(date, dateElement, eventsDictionary) {
   const currentDate = new Date();
   const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
       currentDate.getDate());
 
   if (date.getTime() == today.getTime()) {
-    displayEventsAndMarkDay(date, dateElement);
+    displayEventsAndMarkDay(date, dateElement, eventsDictionary);
   }
 
   const events = eventsDictionary[date];
@@ -67,7 +64,7 @@ function addEventsOfTheDay(date, dateElement) {
   events.sort(compareEventsByStartDate);
   dateElement.classList.add('day-with-events');
   dateElement.addEventListener('click', function() {
-    displayEventsAndMarkDay(date, dateElement);
+    displayEventsAndMarkDay(date, dateElement, eventsDictionary);
   });
 }
 
@@ -76,7 +73,7 @@ function addEventsOfTheDay(date, dateElement) {
  * @param {Element} calendarTable The table that is part of the calendar.
  * @param {Date} date The date for whose month we will add the days.
  */
-function addDaysOfTheMonth(calendarTable, date) {
+function addDaysOfTheMonth(calendarTable, date, eventsDictionary) {
   const year = date.getFullYear();
   const month = date.getMonth();
   const numberOfDaysInMonth = getNumberOfDaysInMonth(date);
@@ -98,7 +95,7 @@ function addDaysOfTheMonth(calendarTable, date) {
       currentRowElement = createElement('tr', '', '');
     }
     const dayElement = createElement('td', 'calendar-day', day);
-    addEventsOfTheDay(new Date(year, month, day), dayElement);
+    addEventsOfTheDay(new Date(year, month, day), dayElement, eventsDictionary);
     currentRowElement.appendChild(dayElement);
   }
 
@@ -243,13 +240,15 @@ function createEventElement(event, hasJoined) {
  * Creates the calendar associated with the date given.
  * @param {Date} date The date for which we want to display the calendar.
  */
-function createCalendarOfTheMonth(date) {
+async function createCalendarOfTheMonth(date) {
+  let eventsDictionary = await loadEvents(date);
+
   const calendarContainer = document.getElementById('calendar');
   const calendarTable = createElement('table', 'calendar-table', '');
 
   addHeaderOfTheMonth(calendarContainer, date);
   addWeekDaysToCalendar(calendarTable);
-  addDaysOfTheMonth(calendarTable, date);
+  addDaysOfTheMonth(calendarTable, date, eventsDictionary);
 
   calendarContainer.appendChild(calendarTable);
 }
@@ -258,7 +257,7 @@ function createCalendarOfTheMonth(date) {
  * Displays the events happening on the given date for which the user signed up.
  * @param {Date} date The date for which the events will be displayed.
  */
-function displayEvents(date) {
+function displayEvents(date, eventsDictionary) {
   const events = eventsDictionary[date];
   if (events === undefined) {
     return;
@@ -278,8 +277,8 @@ function displayEvents(date) {
  * @param {Date} date The date for which the events will be displayed.
  * @param {Element} dateElement The element containing the selected day.
  */
-function displayEventsAndMarkDay(date, dateElement) {
-  displayEvents(date);
+function displayEventsAndMarkDay(date, dateElement, eventsDictionary) {
+  displayEvents(date, eventsDictionary);
 
   const currentlySelectedDay = document.getElementById('selected-day');
   if (currentlySelectedDay !== null) {
@@ -358,9 +357,16 @@ function loadCalendar() {
 /**
  * Fetches events for which the user signed up from the server.
  */
-async function loadEvents() {
-  const response = await fetch('/joined-events');
+async function loadEvents(date) {
+  const url = new URL('/joined-events', window.location.origin);
+  const params = new URLSearchParams();
+  params.append('beginning-date', new Date(date.getFullYear(), date.getMonth()).getTime());
+  params.append('ending-date', getDateOfTheNextMonth(date).getTime());
+  url.search = params;
+
+  const response = await fetch(url);
   const events = await response.json();
+  const eventsDictionary = {};
 
   events.forEach((event) => {
     const eventStartDate = new Date(event.startTime);
@@ -376,6 +382,8 @@ async function loadEvents() {
       eventsDictionary[eventStartDay] = [eventObject];
     }
   });
+
+  return eventsDictionary;
 }
 
 /**

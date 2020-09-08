@@ -19,6 +19,7 @@ import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Event;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
@@ -32,6 +33,8 @@ import javax.ws.rs.BadRequestException;
 public class JoinedEventsServlet extends HttpServlet {
 
   private static final String EVENT_ID_PARAMETER = "event-id";
+  private static final String BEGINNING_DATE_PARAMETER = "beginning-date";
+  private static final String ENDING_DATE_PARAMETER = "ending-date";
   private static DatastoreAccess datastore;
 
   @Override
@@ -47,7 +50,21 @@ public class JoinedEventsServlet extends HttpServlet {
       return;
     }
 
-    List<Event> events = datastore.getJoinedEvents(userId.get());
+    List<Event> events;
+    String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
+    String endingDate = request.getParameter(ENDING_DATE_PARAMETER);
+
+    if (beginningDate == null || endingDate == null) {
+      return;
+    }
+
+    try {
+      events = datastore.getJoinedEventsThatStartBetweenDates(Long.parseLong(beginningDate),
+          Long.parseLong(endingDate), userId.get());
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
+    }
+
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
