@@ -57,27 +57,21 @@ public class JoinedEventsServlet extends HttpServlet {
     List<Event> events;
     String groupId = request.getParameter(GROUP_ID_PARAMETER);
 
-    if (groupId == null) {
-      events = datastore.getJoinedEvents(userId.get());
-      String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
-      String endingDate = request.getParameter(ENDING_DATE_PARAMETER);
+    try {
+      if (groupId != null) {
+        events = datastore.getAllJoinedEventsFromGroup(Long.parseLong(groupId),userId.get());
+      } else {
+        String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
+        String endingDate = request.getParameter(ENDING_DATE_PARAMETER);
 
-      if (beginningDate == null || endingDate == null) {
-        return;
-      }
-
-      try {
+        if (beginningDate == null || endingDate == null) {
+          return;
+        }
         events = datastore.getJoinedEventsThatStartBetweenDates(Long.parseLong(beginningDate),
             Long.parseLong(endingDate), userId.get());
-      } catch (NumberFormatException e) {
-        throw new BadRequestException(e.getMessage());
       }
-    } else {
-      try {
-        events = datastore.getAllJoinedEventsFromGroup(Long.parseLong(groupId), userId.get());
-      } catch (NumberFormatException e) {
-        throw new BadRequestException(e.getMessage());
-      }
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
 
     response.setContentType("application/json;");
