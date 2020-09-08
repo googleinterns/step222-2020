@@ -223,9 +223,9 @@ function joinGroup(groupId) {
 
 /**
  * Fetches events (from the group specified by the groupId) from the servlet
- * and displays them in the given container. The hasJoined can be used to fetch
- * all the events that the user has joined or all the events that the user has
- * not joined.
+ * and displays them in the given container. The hasJoined parameter can be
+ * used to fetch all the events that the user has joined or all the events
+ * that the user has not joined.
  * @param {String} servlet The servlet from which the events will be fetched.
  * @param {String} containerID The ID of the container that will display all
  * the events.
@@ -275,8 +275,8 @@ async function loadNotJoinedEventsFromGroup(groupId) {
 
 /**
  * Fetches groups from the servlet and displays them in the given container.
- * The isMember can be used to fetch all the groups that the user has joined
- * or all the groups that the user has not joined.
+ * The isMember parameter can be used to fetch all the groups that the user has
+ * joined or all the groups that the user has not joined.
  * @param {String} servlet The servlet from which the groups will be fetched.
  * @param {String} containerID The ID of the container that will display all
  * the groups.
