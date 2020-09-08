@@ -199,7 +199,6 @@ function addJoinEventButton(eventId, eventOptionsElement, eventElement) {
   joinEventButton.addEventListener('click', async function() {
     await joinEvent(eventId);
     eventElement.remove();
-    await loadEvents();
     loadCalendar();
   });
   eventOptionsElement.appendChild(joinEventButton);
@@ -251,7 +250,7 @@ function createEventElement(event, hasJoined) {
  * @param {Date} date The date for which we want to display the calendar.
  */
 async function createCalendarOfTheMonth(date) {
-  let eventsDictionary = await loadEvents(date);
+  const eventsDictionary = await loadEvents(date);
 
   const calendarContainer = document.getElementById('calendar');
   const calendarTable = createElement('table', 'calendar-table', '');
@@ -417,4 +416,4 @@ function loadNewMonth(date, functionToCreateNewMonth) {
   createCalendarOfTheMonth(newMonthDate);
 }
 
-export {createEventElement, Event, loadEvents, loadCalendar};
+export {createEventElement, Event, loadCalendar};

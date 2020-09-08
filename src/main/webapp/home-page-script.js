@@ -16,7 +16,7 @@
 
 import {initClient, loadProfileData, signOut} from './script.js';
 import {loadJoinedGroups, loadNotJoinedGroups} from './groups-script.js';
-import {loadEvents, loadCalendar} from './events-script.js';
+import {loadCalendar} from './events-script.js';
 
 /**
  * Gets the section ID from the option element.
