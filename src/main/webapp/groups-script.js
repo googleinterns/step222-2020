@@ -224,8 +224,8 @@ function joinGroup(groupId) {
 /**
  * Fetches events (from the group specified by the groupId) from the servlet
  * and displays them in the given container. The hasJoined parameter can be
- * used to fetch all the events that the user has joined or all the events
- * that the user has not joined.
+ * used to fetch all the events that the user has joined or all the events that
+ * the user has not joined.
  * @param {String} servlet The servlet from which the events will be fetched.
  * @param {String} containerID The ID of the container that will display all
  * the events.
