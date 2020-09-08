@@ -27,11 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for joining an event and listing all the events that the user joined. */
+/**
+ * Servlet for joining an event and listing all the events that the user joined from all the groups
+ * or from just one particular group specified by its id.
+ */
 @WebServlet("/joined-events")
 public class JoinedEventsServlet extends HttpServlet {
 
   private static final String EVENT_ID_PARAMETER = "event-id";
+  private static final String GROUP_ID_PARAMETER = "group-id";
   private static DatastoreAccess datastore;
 
   @Override
@@ -47,7 +51,20 @@ public class JoinedEventsServlet extends HttpServlet {
       return;
     }
 
-    List<Event> events = datastore.getJoinedEvents(userId.get());
+    List<Event> events;
+    String groupIdString = request.getParameter(GROUP_ID_PARAMETER);
+
+    if (groupIdString == null) {
+      events = datastore.getJoinedEvents(userId.get());
+    } else {
+      try {
+        long groupId = Long.parseLong(groupIdString);
+        events = datastore.getAllJoinedEventsFromGroup(groupId, userId.get());
+      } catch (NumberFormatException e) {
+        throw new BadRequestException(e.getMessage());
+      }
+    }
+
     response.setContentType("application/json;");
     response.setCharacterEncoding("UTF-8");
     Gson gson = new Gson();
