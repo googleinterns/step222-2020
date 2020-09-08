@@ -19,7 +19,6 @@ import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Event;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
