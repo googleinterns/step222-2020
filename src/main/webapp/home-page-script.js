@@ -49,7 +49,6 @@ function loadHomeClient() {
  */
 async function loadProfile() {
   await loadProfileData();
-  await loadEvents();
   loadCalendar();
   loadJoinedGroups();
   loadNotJoinedGroups();
