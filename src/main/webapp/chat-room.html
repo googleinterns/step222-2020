@@ -2,15 +2,19 @@
 <html>
   <head>
     <title>LectureChat</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chat-room.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant">
     <meta name="google-signin-client_id" content="764525537710-crtrm9pdut61dgijldb591jjjl5c2rfq.apps.googleusercontent.com">
-    <script src="script.js" type="module"></script>
+    <script src="chat-room-script.js" type="module"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
   </head>
-  <body>
-    <p class="headline">LectureChat</p>
-    <image class="sign-in-button" onclick="signIn()" src="/images/signin_button_icon.png"></image>
+  <body onload="loadEventData()">
+    <h1 id="title"></h1>
+    <div id="chat-container"></div>
+    <form id="message-form" onsubmit="sendMessage(); return false">
+      <input type="text" name="message" id="message-input"/>
+      <input type="submit"/>
+    </form>
   </body>
 </html>

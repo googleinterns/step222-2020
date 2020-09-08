@@ -28,13 +28,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-/** Servlet for joining an event and listing all the events that the user joined. */
+/**
+ * Servlet for joining an event and listing all the events that the user joined from all the groups
+ * or from just one particular group specified by its id.
+ */
 @WebServlet("/joined-events")
 public class JoinedEventsServlet extends HttpServlet {
 
   private static final String EVENT_ID_PARAMETER = "event-id";
   private static final String BEGINNING_DATE_PARAMETER = "beginning-date";
   private static final String ENDING_DATE_PARAMETER = "ending-date";
+  private static final String GROUP_ID_PARAMETER = "group-id";
   private static DatastoreAccess datastore;
 
   @Override
@@ -51,18 +55,29 @@ public class JoinedEventsServlet extends HttpServlet {
     }
 
     List<Event> events;
-    String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
-    String endingDate = request.getParameter(ENDING_DATE_PARAMETER);
+    String groupId = request.getParameter(GROUP_ID_PARAMETER);
 
-    if (beginningDate == null || endingDate == null) {
-      return;
-    }
+    if (groupId == null) {
+      events = datastore.getJoinedEvents(userId.get());
+      String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
+      String endingDate = request.getParameter(ENDING_DATE_PARAMETER);
 
-    try {
-      events = datastore.getJoinedEventsThatStartBetweenDates(Long.parseLong(beginningDate),
-          Long.parseLong(endingDate), userId.get());
-    } catch (NumberFormatException e) {
-      throw new BadRequestException(e.getMessage());
+      if (beginningDate == null || endingDate == null) {
+        return;
+      }
+
+      try {
+        events = datastore.getJoinedEventsThatStartBetweenDates(Long.parseLong(beginningDate),
+            Long.parseLong(endingDate), userId.get());
+      } catch (NumberFormatException e) {
+        throw new BadRequestException(e.getMessage());
+      }
+    } else {
+      try {
+        events = datastore.getAllJoinedEventsFromGroup(Long.parseLong(groupId), userId.get());
+      } catch (NumberFormatException e) {
+        throw new BadRequestException(e.getMessage());
+      }
     }
 
     response.setContentType("application/json;");

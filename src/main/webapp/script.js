@@ -14,8 +14,8 @@
 
 /* eslint-disable no-unused-vars */
 
-const API_KEY = '';
-const CLIENT_ID = '';
+const CLIENT_ID =
+    '764525537710-crtrm9pdut61dgijldb591jjjl5c2rfq.apps.googleusercontent.com';
 const SCOPE = 'profile email';
 const DISCOVERY_DOCS = [];
 
@@ -50,7 +50,6 @@ async function initClient() {
  */
 async function initGoogleAuthObject() {
   await gapi.auth2.init({
-    'apiKey': API_KEY,
     'clientId': CLIENT_ID,
     'discoveryDocs': DISCOVERY_DOCS,
     'scope': SCOPE,
