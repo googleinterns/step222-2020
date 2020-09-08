@@ -420,9 +420,7 @@ public class DatastoreAccess {
                     FilterOperator.GREATER_THAN_OR_EQUAL,
                     beginningDate),
                 new FilterPredicate(
-                    EventEntity.START_PROPERTY.getLabel(),
-                    FilterOperator.LESS_THAN,
-                    endingDate))));
+                    EventEntity.START_PROPERTY.getLabel(), FilterOperator.LESS_THAN, endingDate))));
     return StreamSupport.stream(datastore.prepare(query).asIterable().spliterator(), false)
         .map(entity -> Event.createEventFromEntity(entity))
         .filter(event -> joinedEvents.contains(event))

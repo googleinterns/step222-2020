@@ -66,8 +66,9 @@ public class JoinedEventsServlet extends HttpServlet {
         if (beginningDate == null || endingDate == null) {
           return;
         }
-        events = datastore.getJoinedEventsThatStartBetweenDates(
-            Long.parseLong(beginningDate), Long.parseLong(endingDate), userId.get());
+        events =
+            datastore.getJoinedEventsThatStartBetweenDates(
+                Long.parseLong(beginningDate), Long.parseLong(endingDate), userId.get());
       }
     } catch (NumberFormatException e) {
       throw new BadRequestException(e.getMessage());
