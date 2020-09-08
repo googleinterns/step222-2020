@@ -28,8 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
 /**
- * Servlet for joining an event and listing all the events that the user joined from all the groups
- * or from just one particular group specified by its id.
+ * Servlet for joining an event and listing all the events that satisfy a specific criteria:
+ * - All the events joined by the user that are associated with a given group.
+ * - All the events joined by the user whose start date is between two dates received.
  */
 @WebServlet("/joined-events")
 public class JoinedEventsServlet extends HttpServlet {
