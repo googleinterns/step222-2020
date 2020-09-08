@@ -271,8 +271,6 @@ public class DatastoreAccess {
       if (entitiesIds == null) {
         entitiesIds = new ArrayList<>();
       }
-      // TODO: The classes will be later modified such that the groupsIds and eventsIds
-      // will be stored as sets instead of lists.
       if (!entitiesIds.contains(entityId)) {
         entitiesIds.add(entityId);
       }
