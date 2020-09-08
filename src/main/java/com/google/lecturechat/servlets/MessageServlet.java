@@ -24,6 +24,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 /** Servlet for adding a chat message and getting all messages associated with an event. */
 @WebServlet("/messages")
@@ -52,7 +53,7 @@ public class MessageServlet extends HttpServlet {
       Gson gson = new Gson();
       response.getWriter().println(gson.toJson(messages));
     } catch (NumberFormatException e) {
-      e.printStackTrace();
+      throw new BadRequestException(e.getMessage());
     }
   }
 
@@ -68,7 +69,7 @@ public class MessageServlet extends HttpServlet {
       String message = request.getParameter(MESSAGE_PARAMETER);
       datastore.addMessage(eventId, message);
     } catch (NumberFormatException e) {
-      e.printStackTrace();
+      throw new BadRequestException(e.getMessage());
     }
   }
 }
