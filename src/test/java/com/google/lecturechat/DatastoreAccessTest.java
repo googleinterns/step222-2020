@@ -32,6 +32,7 @@ import org.junit.runners.JUnit4;
 public final class DatastoreAccessTest {
 
   private final String groupEntityLabel = "Group";
+  private final String eventEntityLable = "Event";
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private DatastoreAccess datastore;
@@ -93,5 +94,23 @@ public final class DatastoreAccessTest {
     List<Group> groups = datastore.getAllGroups();
 
     assertEquals(2, groups.size());
+  }
+
+  @Test
+  public void addEventAddsExactlyOneEvent() {
+    String university = "A";
+    String degree = "B";
+    int year = 1;
+    datastore.addGroup(university, degree, year);
+    List<Group> groups = datastore.getAllGroups();
+    long groupId = groups.get(0).getId();
+    String title = "A";
+    String creator = "A";
+    long startTime = 0;
+    long endTime = 0;
+
+    datastore.addEventToGroup(groupId, title, startTime, endTime, creator);
+
+    assertEquals(1, service.prepare(new Query(eventEntityLable)).countEntities());
   }
 }
