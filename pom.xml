@@ -122,6 +122,42 @@
            <executable>${project.basedir}/src/test/javascript/jasmine_setup.sh</executable>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.3</version>
+          <executions>
+            <execution>
+             <id>coverage-initialize</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>coverage-report</id>
+              <phase>post-integration-test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>coverage-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <rule>
+                    <excludes>
+                      <exclude>com.google.lecturechat.data.Event</exclude>
+                      <exclude>com.google.lecturechat.data.Group</exclude>
+                    </excludes>
+                  </rule>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
     </plugins>
   </build>
 </project>
