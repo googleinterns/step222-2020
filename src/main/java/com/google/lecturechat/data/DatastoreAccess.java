@@ -397,16 +397,18 @@ public class DatastoreAccess {
   }
 
   /**
-   * Gets all the events joined by the user whose start date is in the interval [beginningDate, endingDate).
+   * Gets all the events joined by the user whose start date is in the interval [beginningDate,
+   * endingDate).
    * @param beginningDate The inclusive lower bound value of the interval used to filter the events
-   * by their start date.
+   *     by their start date.
    * @param endingDate The exclusive upper bound value of the interval used to filter the events by
-   * their start date.
+   *     their start date.
    * @param userId The id of the user.
    * @return A list of the events joined by the user whose start date is in the interval
-   * [beginningDate, endingDate).
+   *     [beginningDate, endingDate).
    */
-  public List<Event> getJoinedEventsThatStartBetweenDates(long beginningDate, long endingDate, String userId) {
+  public List<Event> getJoinedEventsThatStartBetweenDates(
+      long beginningDate, long endingDate, String userId) {
     List<Event> joinedEvents = getJoinedEvents(userId);
     Query query = new Query(EventEntity.KIND.getLabel());
     query.setFilter(
@@ -414,16 +416,16 @@ public class DatastoreAccess {
             CompositeFilterOperator.AND,
             Arrays.asList(
                 new FilterPredicate(
-                    EventEntity.START_PROPERTY.getLabel(), FilterOperator.GREATER_THAN_OR_EQUAL, beginningDate),
+                    EventEntity.START_PROPERTY.getLabel(),
+                    FilterOperator.GREATER_THAN_OR_EQUAL,
+                    beginningDate),
                 new FilterPredicate(
-                    EventEntity.START_PROPERTY.getLabel(), FilterOperator.LESS_THAN, endingDate))));
+                    EventEntity.START_PROPERTY.getLabel(),
+                    FilterOperator.LESS_THAN,
+                    endingDate))));
     return StreamSupport.stream(datastore.prepare(query).asIterable().spliterator(), false)
-        .map(
-            entity ->
-                Event.createEventFromEntity(entity))
-        .filter(
-            event ->
-                joinedEvents.contains(event))
+        .map(entity -> Event.createEventFromEntity(entity))
+        .filter(event -> joinedEvents.contains(event))
         .collect(Collectors.toList());
   }
 
