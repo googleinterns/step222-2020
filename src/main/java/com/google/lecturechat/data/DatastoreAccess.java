@@ -218,7 +218,7 @@ public class DatastoreAccess {
    * @param groupId The id of the group.
    * @return The list of events.
    */
-  private List<Event> getAllEventsFromGroup(long groupId) {
+  public List<Event> getAllEventsFromGroup(long groupId) {
     Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
     List<Long> eventIds =
         (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));

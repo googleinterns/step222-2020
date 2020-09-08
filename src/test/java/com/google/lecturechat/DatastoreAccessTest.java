@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -31,12 +32,28 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public final class DatastoreAccessTest {
 
-  private final String groupEntityLabel = "Group";
-  private final String eventEntityLable = "Event";
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private DatastoreAccess datastore;
   private DatastoreService service;
+
+  // Parameters for arranging.
+  private final String UNIVERSITY_A = "A";
+  private final String UNIVERSITY_B = "B";
+  private final String UNIVERSITY_C = "C";
+  private final String DEGREE = "A";
+  private final int YEAR = 1;
+  private final String EVENT_TITLE_A = "A";
+  private final String EVENT_CREATOR = "A";
+  private final long START_TIME = 0;
+  private final long END_TIME = 0;
+  private final String USER_ID = "A";
+  private final String USER_NAME = "A";
+
+  // Constants since we don't have access to the constants files here.
+  private final String groupEntityLabel = "Group";
+  private final String eventEntityLabel = "Event";
+  private final String userEntityLabel = "User";
 
   @Before
   public void setUp() {
@@ -52,23 +69,16 @@ public final class DatastoreAccessTest {
 
   @Test
   public void addGroupAddsExactlyOneGroup() {
-    String university = "A";
-    String degree = "B";
-    int year = 1;
-
-    datastore.addGroup(university, degree, year);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
     assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
   }
 
   @Test
   public void addGroupDoesntAddAlreadyExistingGroup() {
-    String university = "A";
-    String degree = "B";
-    int year = 1;
-    datastore.addGroup(university, degree, year);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
-    datastore.addGroup(university, degree, year);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
     assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
   }
@@ -82,14 +92,8 @@ public final class DatastoreAccessTest {
 
   @Test
   public void getAllGroupsReturnsCorrectNumberOfGroups() {
-    String university1 = "A";
-    String degree1 = "B";
-    int year1 = 1;
-    String university2 = "C";
-    String degree2 = "D";
-    int year2 = 1;
-    datastore.addGroup(university1, degree1, year1);
-    datastore.addGroup(university2, degree2, year2);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+    datastore.addGroup(UNIVERSITY_B, DEGREE, YEAR);
 
     List<Group> groups = datastore.getAllGroups();
 
@@ -97,20 +101,52 @@ public final class DatastoreAccessTest {
   }
 
   @Test
-  public void addEventAddsExactlyOneEvent() {
-    String university = "A";
-    String degree = "B";
-    int year = 1;
-    datastore.addGroup(university, degree, year);
-    List<Group> groups = datastore.getAllGroups();
-    long groupId = groups.get(0).getId();
-    String title = "A";
-    String creator = "A";
-    long startTime = 0;
-    long endTime = 0;
+  public void addEventAddsExactlyOneEventToCorrectGroup() {
+    long groupId = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
-    datastore.addEventToGroup(groupId, title, startTime, endTime, creator);
+    datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+    List<Event> events = datastore.getAllEventsFromGroup(groupId);
 
-    assertEquals(1, service.prepare(new Query(eventEntityLable)).countEntities());
+    assertEquals(1, service.prepare(new Query(eventEntityLabel)).countEntities());
+    assertEquals(1, events.size());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void addEventToNonexistingGroupThrowsException() {
+    long groupId = 123L;
+
+    datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+  }
+
+  @Test
+  public void addUserAddsExactlyOneUser() {
+    datastore.addUser(USER_ID, USER_NAME);
+
+    assertEquals(1, service.prepare(new Query(userEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void addUserDoesntAddExistingUser() {
+    datastore.addUser(USER_ID, USER_NAME);
+
+    datastore.addUser(USER_ID, USER_NAME);
+
+    assertEquals(1, service.prepare(new Query(userEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void getCorrectNumberOfJoinedAndNotJoinedGroups() {
+    long groupA = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+    long groupB = datastore.addGroup(UNIVERSITY_B, DEGREE, YEAR);
+    long groupC = datastore.addGroup(UNIVERSITY_C, DEGREE, YEAR);
+    datastore.addUser(USER_ID, USER_NAME);
+    datastore.joinGroup(USER_ID, groupA);
+    datastore.joinGroup(USER_ID, groupB);
+
+    List<Group> joined = datastore.getJoinedGroups(USER_ID);
+    List<Group> notJoined = datastore.getNotJoinedGroups(USER_ID);
+
+    assertEquals(2, joined.size());
+    assertEquals(1, notJoined.size());
   }
 }
