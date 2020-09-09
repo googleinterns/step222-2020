@@ -154,9 +154,12 @@ public final class DatastoreAccessTest {
   @Test
   public void getCorrectNumberOfJoinedAndNotJoinedEvents() {
     long groupId = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
-    long eventA = datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
-    long eventB = datastore.addEventToGroup(groupId, EVENT_TITLE_B, START_TIME, END_TIME, EVENT_CREATOR);
-    long eventC = datastore.addEventToGroup(groupId, EVENT_TITLE_C, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventA =
+        datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventB =
+        datastore.addEventToGroup(groupId, EVENT_TITLE_B, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventC =
+        datastore.addEventToGroup(groupId, EVENT_TITLE_C, START_TIME, END_TIME, EVENT_CREATOR);
     datastore.addUser(USER_ID, USER_NAME);
     datastore.joinGroup(USER_ID, groupId);
     datastore.joinEvent(USER_ID, eventA);
