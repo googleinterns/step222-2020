@@ -43,6 +43,8 @@ public final class DatastoreAccessTest {
   private final String DEGREE = "Degree A";
   private final int YEAR = 1;
   private final String EVENT_TITLE_A = "Event A";
+  private final String EVENT_TITLE_B = "Event B";
+  private final String EVENT_TITLE_C = "Event C";
   private final String EVENT_CREATOR = "Creator A";
   private final long START_TIME = 0;
   private final long END_TIME = 0;
@@ -144,6 +146,24 @@ public final class DatastoreAccessTest {
 
     List<Group> joined = datastore.getJoinedGroups(USER_ID);
     List<Group> notJoined = datastore.getNotJoinedGroups(USER_ID);
+
+    assertEquals(2, joined.size());
+    assertEquals(1, notJoined.size());
+  }
+
+  @Test
+  public void getCorrectNumberOfJoinedAndNotJoinedEvents() {
+    long groupId = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+    long eventA = datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventB = datastore.addEventToGroup(groupId, EVENT_TITLE_B, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventC = datastore.addEventToGroup(groupId, EVENT_TITLE_C, START_TIME, END_TIME, EVENT_CREATOR);
+    datastore.addUser(USER_ID, USER_NAME);
+    datastore.joinGroup(USER_ID, groupId);
+    datastore.joinEvent(USER_ID, eventA);
+    datastore.joinEvent(USER_ID, eventB);
+
+    List<Event> joined = datastore.getAllJoinedEventsFromGroup(groupId, USER_ID);
+    List<Event> notJoined = datastore.getAllNotJoinedEventsFromGroup(groupId, USER_ID);
 
     assertEquals(2, joined.size());
     assertEquals(1, notJoined.size());
