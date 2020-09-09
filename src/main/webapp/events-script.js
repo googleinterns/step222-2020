@@ -21,6 +21,9 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
 const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
   'Friday', 'Saturday'];
 
+const FORMAT_OPTIONS = {weekday: 'long', year: 'numeric', month: 'long',
+  day: 'numeric'};
+
 // Dictionary used to simply retrieve the events that start on a given day.
 const eventsDictionary = {};
 
@@ -46,15 +49,24 @@ class Event {
 }
 
 /**
+ * Gets the date associated with the current day.
+ * @return The date of today.
+ */
+function getTodayDate() {
+  const currentDate = new Date();
+  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
+      currentDate.getDate());
+  return today;
+}
+
+/**
  * Adds the events associated with that date to the element. Today will be
  * displayed by default.
  * @param {Date} date The date for which the events will be added.
  * @param {Element} dateElement The element in which the events will be added.
  */
 function addEventsOfTheDay(date, dateElement) {
-  const currentDate = new Date();
-  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
-      currentDate.getDate());
+  const today = getTodayDate();
 
   if (date.getTime() == today.getTime()) {
     displayEventsAndMarkDay(date, dateElement);
@@ -245,7 +257,8 @@ function createEventElement(event, hasJoined) {
   eventElement.appendChild(createElement('div', 'event-title', event.title_));
   eventElement.appendChild(createElement('hr', '', ''));
   eventElement.appendChild(createElement('div', 'event-time',
-      event.start_ + ' - ' + event.end_));
+      event.start_.toLocaleDateString(undefined, FORMAT_OPTIONS) + ' - ' +
+      event.end_.toLocaleDateString(undefined, FORMAT_OPTIONS)));
   addEventOptions(event, eventElement, hasJoined);
 
   return eventElement;
@@ -272,14 +285,28 @@ function createCalendarOfTheMonth(date) {
  * @param {Date} date The date for which the events will be displayed.
  */
 function displayEvents(date) {
-  const events = eventsDictionary[date];
-  if (events === undefined) {
-    return;
+  const today = getTodayDate();
+  const eventsHeadline = document.getElementById('events-headline');
+  eventsHeadline.innerHTML = 'Your events ';
+  
+  if (date.getTime() === today.getTime()) {
+    eventsHeadline.innerHTML += 'today';
+  } else {
+    eventsHeadline.innerHTML += 'on ' + date.toLocaleDateString(undefined,
+        FORMAT_OPTIONS);
   }
 
   const eventsContainer = document.getElementById('events');
+  const events = eventsDictionary[date];
   eventsContainer.innerHTML = '';
 
+  if (events === undefined) {
+    eventsContainer.innerHTML = 'No events yet.';
+    eventsContainer.classList.add('no-events-container');
+    return;
+  }
+
+  eventsContainer.classList.remove('no-events-container');
   for (let i = 0; i < events.length; i++) {
     eventsContainer.appendChild(createEventElement(events[i], true));
   }
