@@ -31,11 +31,30 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public final class DatastoreAccessTest {
 
-  private final String groupEntityLabel = "Group";
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private DatastoreAccess datastore;
   private DatastoreService service;
+
+  // Parameters for arranging.
+  private final String UNIVERSITY_A = "Uni A";
+  private final String UNIVERSITY_B = "Uni B";
+  private final String UNIVERSITY_C = "Uni C";
+  private final String DEGREE = "Degree A";
+  private final int YEAR = 1;
+  private final String EVENT_TITLE_A = "Event A";
+  private final String EVENT_TITLE_B = "Event B";
+  private final String EVENT_TITLE_C = "Event C";
+  private final String EVENT_CREATOR = "Creator A";
+  private final long START_TIME = 0;
+  private final long END_TIME = 0;
+  private final String USER_ID = "User Id A";
+  private final String USER_NAME = "User Name A";
+
+  // Constants since we don't have access to the constants files here.
+  private final String groupEntityLabel = "Group";
+  private final String eventEntityLabel = "Event";
+  private final String userEntityLabel = "User";
 
   @Before
   public void setUp() {
@@ -51,23 +70,16 @@ public final class DatastoreAccessTest {
 
   @Test
   public void addGroupAddsExactlyOneGroup() {
-    String university = "A";
-    String degree = "B";
-    int year = 1;
-
-    datastore.addGroup(university, degree, year);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
     assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
   }
 
   @Test
   public void addGroupDoesntAddAlreadyExistingGroup() {
-    String university = "A";
-    String degree = "B";
-    int year = 1;
-    datastore.addGroup(university, degree, year);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
-    datastore.addGroup(university, degree, year);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
 
     assertEquals(1, service.prepare(new Query(groupEntityLabel)).countEntities());
   }
@@ -81,17 +93,82 @@ public final class DatastoreAccessTest {
 
   @Test
   public void getAllGroupsReturnsCorrectNumberOfGroups() {
-    String university1 = "A";
-    String degree1 = "B";
-    int year1 = 1;
-    String university2 = "C";
-    String degree2 = "D";
-    int year2 = 1;
-    datastore.addGroup(university1, degree1, year1);
-    datastore.addGroup(university2, degree2, year2);
+    datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+    datastore.addGroup(UNIVERSITY_B, DEGREE, YEAR);
 
     List<Group> groups = datastore.getAllGroups();
 
     assertEquals(2, groups.size());
+  }
+
+  @Test
+  public void addEventAddsExactlyOneEventToCorrectGroup() {
+    long groupId = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+
+    datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+    List<Event> events = datastore.getAllEventsFromGroup(groupId);
+
+    assertEquals(1, service.prepare(new Query(eventEntityLabel)).countEntities());
+    assertEquals(1, events.size());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void addEventToNonexistingGroupThrowsException() {
+    long groupId = 123L;
+
+    datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+  }
+
+  @Test
+  public void addUserAddsExactlyOneUser() {
+    datastore.addUser(USER_ID, USER_NAME);
+
+    assertEquals(1, service.prepare(new Query(userEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void addUserDoesntAddExistingUser() {
+    datastore.addUser(USER_ID, USER_NAME);
+
+    datastore.addUser(USER_ID, USER_NAME);
+
+    assertEquals(1, service.prepare(new Query(userEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void getCorrectNumberOfJoinedAndNotJoinedGroups() {
+    long groupA = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+    long groupB = datastore.addGroup(UNIVERSITY_B, DEGREE, YEAR);
+    long groupC = datastore.addGroup(UNIVERSITY_C, DEGREE, YEAR);
+    datastore.addUser(USER_ID, USER_NAME);
+    datastore.joinGroup(USER_ID, groupA);
+    datastore.joinGroup(USER_ID, groupB);
+
+    List<Group> joined = datastore.getJoinedGroups(USER_ID);
+    List<Group> notJoined = datastore.getNotJoinedGroups(USER_ID);
+
+    assertEquals(2, joined.size());
+    assertEquals(1, notJoined.size());
+  }
+
+  @Test
+  public void getCorrectNumberOfJoinedAndNotJoinedEvents() {
+    long groupId = datastore.addGroup(UNIVERSITY_A, DEGREE, YEAR);
+    long eventA =
+        datastore.addEventToGroup(groupId, EVENT_TITLE_A, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventB =
+        datastore.addEventToGroup(groupId, EVENT_TITLE_B, START_TIME, END_TIME, EVENT_CREATOR);
+    long eventC =
+        datastore.addEventToGroup(groupId, EVENT_TITLE_C, START_TIME, END_TIME, EVENT_CREATOR);
+    datastore.addUser(USER_ID, USER_NAME);
+    datastore.joinGroup(USER_ID, groupId);
+    datastore.joinEvent(USER_ID, eventA);
+    datastore.joinEvent(USER_ID, eventB);
+
+    List<Event> joined = datastore.getAllJoinedEventsFromGroup(groupId, USER_ID);
+    List<Event> notJoined = datastore.getAllNotJoinedEventsFromGroup(groupId, USER_ID);
+
+    assertEquals(2, joined.size());
+    assertEquals(1, notJoined.size());
   }
 }
