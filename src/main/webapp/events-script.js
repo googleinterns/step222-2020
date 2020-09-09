@@ -46,7 +46,7 @@ class Event {
 
 /**
  * Gets the date associated with the current day.
- * @return The date of today.
+ * @return {Date} The date of today.
  */
 function getTodayDate() {
   const currentDate = new Date();
@@ -115,7 +115,7 @@ function addDaysOfTheMonth(calendarTable, date, eventsDictionary) {
     });
     dayElement.addEventListener('mouseout', function() {
       dayElement.classList.remove('hovered-day');
-    })
+    });
     addEventsOfTheDay(new Date(year, month, day), dayElement, eventsDictionary);
     currentRowElement.appendChild(dayElement);
   }
@@ -291,7 +291,7 @@ function displayEvents(date, eventsDictionary) {
   const today = getTodayDate();
   const eventsHeadline = document.getElementById('events-headline');
   eventsHeadline.innerHTML = 'Your events ';
-  
+
   if (date.getTime() === today.getTime()) {
     eventsHeadline.innerHTML += 'today';
   } else {
