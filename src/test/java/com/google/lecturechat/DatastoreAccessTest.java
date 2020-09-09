@@ -37,17 +37,17 @@ public final class DatastoreAccessTest {
   private DatastoreService service;
 
   // Parameters for arranging.
-  private final String UNIVERSITY_A = "A";
-  private final String UNIVERSITY_B = "B";
-  private final String UNIVERSITY_C = "C";
-  private final String DEGREE = "A";
+  private final String UNIVERSITY_A = "Uni A";
+  private final String UNIVERSITY_B = "Uni B";
+  private final String UNIVERSITY_C = "Uni C";
+  private final String DEGREE = "Degree A";
   private final int YEAR = 1;
-  private final String EVENT_TITLE_A = "A";
-  private final String EVENT_CREATOR = "A";
+  private final String EVENT_TITLE_A = "Event A";
+  private final String EVENT_CREATOR = "Creator A";
   private final long START_TIME = 0;
   private final long END_TIME = 0;
-  private final String USER_ID = "A";
-  private final String USER_NAME = "A";
+  private final String USER_ID = "User Id A";
+  private final String USER_NAME = "User Name A";
 
   // Constants since we don't have access to the constants files here.
   private final String groupEntityLabel = "Group";

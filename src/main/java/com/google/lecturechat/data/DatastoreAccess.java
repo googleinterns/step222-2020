@@ -177,8 +177,8 @@ public class DatastoreAccess {
    */
   public long addEventToGroup(
       long groupId, String title, long startTime, long endTime, String creator) {
-    TransactionOptions options = TransactionOptions.Builder.withXG(true);
-    Transaction transaction = datastore.beginTransaction(options);
+    // Create cross-group transaction to make operations on both entity types atomic.
+    Transaction transaction = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
     long eventId = 0;
 
     try {
@@ -218,7 +218,7 @@ public class DatastoreAccess {
    * @param groupId The id of the group.
    * @return The list of events.
    */
-  public List<Event> getAllEventsFromGroup(long groupId) {
+  List<Event> getAllEventsFromGroup(long groupId) {
     Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
     List<Long> eventIds =
         (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
