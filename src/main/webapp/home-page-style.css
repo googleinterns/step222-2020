@@ -110,6 +110,11 @@ body {
   width: 50%;
 }
 
+.hovered-day {
+  background-color: #33b3a6;
+  color: white;
+}
+
 input {
   border: 3px solid #c0c0c0;
   box-sizing: border-box;
@@ -238,6 +243,7 @@ label {
 
 #selected-day {
   background-color: #008b8b;
+  color: white;
 }
 
 .submit-form {

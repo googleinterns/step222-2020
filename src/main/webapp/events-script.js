@@ -98,6 +98,12 @@ function addDaysOfTheMonth(calendarTable, date) {
       currentRowElement = createElement('tr', '', '');
     }
     const dayElement = createElement('td', 'calendar-day', day);
+    dayElement.addEventListener('mouseover', function() {
+      dayElement.classList.add('hovered-day');
+    });
+    dayElement.addEventListener('mouseout', function() {
+      dayElement.classList.remove('hovered-day');
+    })
     addEventsOfTheDay(new Date(year, month, day), dayElement);
     currentRowElement.appendChild(dayElement);
   }
