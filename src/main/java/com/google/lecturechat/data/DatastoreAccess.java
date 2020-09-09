@@ -27,6 +27,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
 import com.google.lecturechat.data.constants.UserEntity;
@@ -176,8 +177,10 @@ public class DatastoreAccess {
    */
   public long addEventToGroup(
       long groupId, String title, long startTime, long endTime, String creator) {
-    Transaction eventTransaction = datastore.beginTransaction();
+    // Create cross-group transaction to make operations on both entity types atomic.
+    Transaction transaction = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
     long eventId = 0;
+
     try {
       Entity eventEntity = new Entity(EventEntity.KIND.getLabel());
       eventEntity.setProperty(EventEntity.TITLE_PROPERTY.getLabel(), title);
@@ -186,16 +189,9 @@ public class DatastoreAccess {
       eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
       eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
       eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
-      eventId = datastore.put(eventEntity).getId();
-      eventTransaction.commit();
-    } finally {
-      if (eventTransaction.isActive()) {
-        eventTransaction.rollback();
-      }
-    }
-    if (eventId != 0) {
-      Transaction groupTransaction = datastore.beginTransaction();
-      try {
+      eventId = datastore.put(transaction, eventEntity).getId();
+
+      if (eventId != 0) {
         Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
         List<Long> eventIds =
             (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
@@ -204,12 +200,13 @@ public class DatastoreAccess {
         }
         eventIds.add(eventId);
         groupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), eventIds);
-        datastore.put(groupEntity);
-        groupTransaction.commit();
-      } finally {
-        if (groupTransaction.isActive()) {
-          groupTransaction.rollback();
-        }
+        datastore.put(transaction, groupEntity);
+        transaction.commit();
+      }
+
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
       }
     }
     return eventId;
@@ -221,7 +218,7 @@ public class DatastoreAccess {
    * @param groupId The id of the group.
    * @return The list of events.
    */
-  private List<Event> getAllEventsFromGroup(long groupId) {
+  List<Event> getAllEventsFromGroup(long groupId) {
     Entity groupEntity = getEntityById(GroupEntity.KIND.getLabel(), groupId);
     List<Long> eventIds =
         (ArrayList) (groupEntity.getProperty(GroupEntity.EVENTS_PROPERTY.getLabel()));
@@ -274,8 +271,6 @@ public class DatastoreAccess {
       if (entitiesIds == null) {
         entitiesIds = new ArrayList<>();
       }
-      // TODO: The classes will be later modified such that the groupsIds and eventsIds
-      // will be stored as sets instead of lists.
       if (!entitiesIds.contains(entityId)) {
         entitiesIds.add(entityId);
       }
