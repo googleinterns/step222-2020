@@ -28,13 +28,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
 /**
- * Servlet for joining an event and listing all the events that the user joined from all the groups
- * or from just one particular group specified by its id.
+ * Servlet for joining an event and listing all the events that satisfy a specific criteria (all the
+ * events joined by the user that are associated with a given group, all the events joined by the
+ * user whose start date is between two dates received).
  */
 @WebServlet("/joined-events")
 public class JoinedEventsServlet extends HttpServlet {
 
   private static final String EVENT_ID_PARAMETER = "event-id";
+  private static final String BEGINNING_DATE_PARAMETER = "beginning-date";
+  private static final String ENDING_DATE_PARAMETER = "ending-date";
   private static final String GROUP_ID_PARAMETER = "group-id";
   private static DatastoreAccess datastore;
 
@@ -52,17 +55,24 @@ public class JoinedEventsServlet extends HttpServlet {
     }
 
     List<Event> events;
-    String groupIdString = request.getParameter(GROUP_ID_PARAMETER);
+    String groupId = request.getParameter(GROUP_ID_PARAMETER);
 
-    if (groupIdString == null) {
-      events = datastore.getJoinedEvents(userId.get());
-    } else {
-      try {
-        long groupId = Long.parseLong(groupIdString);
-        events = datastore.getAllJoinedEventsFromGroup(groupId, userId.get());
-      } catch (NumberFormatException e) {
-        throw new BadRequestException(e.getMessage());
+    try {
+      if (groupId != null) {
+        events = datastore.getAllJoinedEventsFromGroup(Long.parseLong(groupId), userId.get());
+      } else {
+        String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
+        String endingDate = request.getParameter(ENDING_DATE_PARAMETER);
+
+        if (beginningDate == null || endingDate == null) {
+          return;
+        }
+        events =
+            datastore.getJoinedEventsThatStartBetweenDates(
+                Long.parseLong(beginningDate), Long.parseLong(endingDate), userId.get());
       }
+    } catch (NumberFormatException e) {
+      throw new BadRequestException(e.getMessage());
     }
 
     response.setContentType("application/json;");
