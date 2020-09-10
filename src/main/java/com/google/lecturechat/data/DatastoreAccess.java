@@ -20,8 +20,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -30,6 +32,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
+import com.google.lecturechat.data.constants.MessageEntity;
 import com.google.lecturechat.data.constants.UserEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -391,39 +394,46 @@ public class DatastoreAccess {
   }
 
   /**
-   * Gets all the messages in a certain group.
+   * Gets all the messages in a certain event.
    *
    * @param eventId The id of the group.
+   * @param eventId The maximum number of messages to return.
    * @return The list of messages.
    */
-  public List<String> getMessagesFromEvent(long eventId) {
-    Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
-    List<String> messages =
-        (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
-    if (messages == null) {
-      return new ArrayList<String>();
+  public List<Message> getMessagesFromEvent(long eventId, int limit) {
+    Query query = new Query(MessageEntity.KIND.getLabel());
+    query.addSort(MessageEntity.TIMESTAMP_PROPERTY.getLabel(), SortDirection.DESCENDING);
+    query.setFilter(
+        new FilterPredicate(
+            MessageEntity.EVENT_PROPERTY.getLabel(), FilterOperator.EQUAL, eventId));
+
+    PreparedQuery results = datastore.prepare(query);
+    FetchOptions maxMessages = FetchOptions.Builder.withLimit(limit);
+    List<Message> messages = new ArrayList<>();
+    for (Entity entity : results.asIterable(maxMessages)) {
+      messages.add(Message.createMessageFromEntity(entity));
     }
+
     return messages;
   }
 
   /**
-   * Retrieve all messages from a certain event.
+   * Adds a new message to an event (atomic).
    *
    * @param eventId The id of the event associated with the message.
-   * @param message The message that will be added.
+   * @param content The content of message that will be added.
+   * @param author The author of the message that will be added.
    */
-  public void addMessage(long eventId, String message) {
+  public void addMessage(long eventId, String content, String author) {
+    long timestamp = System.currentTimeMillis();
     Transaction transaction = datastore.beginTransaction();
     try {
-      Entity eventEntity = getEntityById(EventEntity.KIND.getLabel(), eventId);
-      List<String> messages =
-          (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
-      if (messages == null) {
-        messages = new ArrayList<>();
-      }
-      messages.add(message);
-      eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), messages);
-      datastore.put(eventEntity);
+      Entity messageEntity = new Entity(MessageEntity.KIND.getLabel());
+      messageEntity.setProperty(MessageEntity.CONTENT_PROPERTY.getLabel(), content);
+      messageEntity.setProperty(MessageEntity.TIMESTAMP_PROPERTY.getLabel(), timestamp);
+      messageEntity.setProperty(MessageEntity.AUTHOR_PROPERTY.getLabel(), author);
+      messageEntity.setProperty(MessageEntity.EVENT_PROPERTY.getLabel(), eventId);
+      datastore.put(messageEntity);
       transaction.commit();
     } finally {
       if (transaction.isActive()) {
