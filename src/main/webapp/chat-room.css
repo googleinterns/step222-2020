@@ -3,6 +3,7 @@ body {
   vertical-align: left;
   margin-left: 50px;
   margin-right: auto;
+  margin-top: 20px;
 }
 
 body,
@@ -26,6 +27,21 @@ input[type=submit] {
   font-weight: bold;
   opacity: 0.8;
   padding: 10px;
+}
+
+.back-button {
+  background-color: transparent;
+  border: solid;
+  border-color:  #008b8b;
+  border-radius: 15px;
+  color:  #008b8b;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.back-button:hover {
+  background-color: #008b8b;
+  color: white;
 }
 
 #title {
