@@ -20,6 +20,7 @@ public enum MessageEntity {
   CONTENT_PROPERTY("content"),
   TIMESTAMP_PROPERTY("timestamp"),
   AUTHOR_PROPERTY("author"),
+  EVENT_PROPERTY("event");
 
   /* Labels comments and properties of events in the database. */
   private final String label;
