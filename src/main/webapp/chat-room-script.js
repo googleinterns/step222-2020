@@ -65,12 +65,19 @@ async function showMessages() {
 
 /**
  * Creates html element to display a chat message.
- * @param {String} message The message content.
+ * @param {Object} message The message.
  * @return {Element} The element created.
  */
 function createMessageElement(message) {
-  const element = document.createElement('p');
-  element.innerText = message;
+  const element = document.createElement('div');
   element.className = 'message';
+  const author = document.createElement('p');
+  author.innerText = message.author;
+  author.className = 'author';
+  const content = document.createElement('p');
+  content.innerText = message.content;
+  content.className = 'content';
+  element.appendChild(author);
+  element.appendChild(content);
   return element;
 }

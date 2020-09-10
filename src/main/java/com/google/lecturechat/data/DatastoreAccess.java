@@ -402,7 +402,7 @@ public class DatastoreAccess {
    */
   public List<Message> getMessagesFromEvent(long eventId, int limit) {
     Query query = new Query(MessageEntity.KIND.getLabel());
-    query.addSort(MessageEntity.TIMESTAMP_PROPERTY.getLabel(), SortDirection.DESCENDING);
+    query.addSort(MessageEntity.TIMESTAMP_PROPERTY.getLabel(), SortDirection.ASCENDING);
     query.setFilter(
         new FilterPredicate(
             MessageEntity.EVENT_PROPERTY.getLabel(), FilterOperator.EQUAL, eventId));

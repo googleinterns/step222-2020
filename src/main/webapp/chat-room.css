@@ -10,6 +10,11 @@ html {
   height: 100%;
 }
 
+input[type=text] {
+  width: 25%;
+  margin-right: 10px;
+}
+
 input[type=submit] {
   background-color: #008b8b;
   border: none;
@@ -21,4 +26,17 @@ input[type=submit] {
   font-weight: bold;
   opacity: 0.8;
   padding: 10px;
+}
+
+#title {
+  color: #008b8b;
+}
+
+.message {
+  margin-bottom: 10px;
+  width: 50%;
+}
+
+.author {
+  font-weight: bold;
 }
