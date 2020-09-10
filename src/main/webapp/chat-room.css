@@ -32,9 +32,9 @@ input[type=submit] {
 .back-button {
   background-color: transparent;
   border: solid;
-  border-color:  #008b8b;
+  border-color: #008b8b;
   border-radius: 15px;
-  color:  #008b8b;
+  color: #008b8b;
   padding: 8px 16px;
   text-decoration: none;
 }

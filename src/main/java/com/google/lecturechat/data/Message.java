@@ -16,8 +16,6 @@ package com.google.lecturechat.data;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.lecturechat.data.constants.MessageEntity;
-import java.util.ArrayList;
-import java.util.List;
 
 /** A helper class for passing message data. */
 public final class Message {
@@ -28,8 +26,7 @@ public final class Message {
   private final String author;
   private final long event;
 
-  public Message(
-      long id, String content, long timestamp, String author, long event) {
+  public Message(long id, String content, long timestamp, String author, long event) {
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;
@@ -60,9 +57,12 @@ public final class Message {
   public static Message createMessageFromEntity(Entity messageEntity) {
     if (messageEntity.getKind().equals(MessageEntity.KIND.getLabel())) {
       long id = messageEntity.getKey().getId();
-      String content = (String) (messageEntity.getProperty(MessageEntity.CONTENT_PROPERTY.getLabel()));
-      long timestamp = (long) (messageEntity.getProperty(MessageEntity.TIMESTAMP_PROPERTY.getLabel()));
-      String author = (String) (messageEntity.getProperty(MessageEntity.AUTHOR_PROPERTY.getLabel()));
+      String content =
+          (String) (messageEntity.getProperty(MessageEntity.CONTENT_PROPERTY.getLabel()));
+      long timestamp =
+          (long) (messageEntity.getProperty(MessageEntity.TIMESTAMP_PROPERTY.getLabel()));
+      String author =
+          (String) (messageEntity.getProperty(MessageEntity.AUTHOR_PROPERTY.getLabel()));
       long event = (long) (messageEntity.getProperty(MessageEntity.EVENT_PROPERTY.getLabel()));
       return new Message(id, content, timestamp, author, event);
     } else {
@@ -71,7 +71,7 @@ public final class Message {
     }
   }
 
-   @Override
+  @Override
   public boolean equals(Object anotherObject) {
     if (!(anotherObject instanceof Message)) {
       return false;

@@ -33,12 +33,7 @@ public final class Event {
   private final List<Long> attendees;
 
   public Event(
-      long id,
-      String title,
-      long startTime,
-      long endTime,
-      String creator,
-      List<Long> attendees) {
+      long id, String title, long startTime, long endTime, String creator, List<Long> attendees) {
     this.id = id;
     this.title = title;
     this.startTime = startTime;

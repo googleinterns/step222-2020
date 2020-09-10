@@ -14,8 +14,8 @@
 
 package com.google.lecturechat.servlets;
 
-import com.google.gson.Gson;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.gson.Gson;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import com.google.lecturechat.data.Message;
