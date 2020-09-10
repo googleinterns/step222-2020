@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /** API class for methods that access and operate on the datastore database. */
 public class DatastoreAccess {
@@ -391,6 +392,38 @@ public class DatastoreAccess {
     List<Event> events = getAllEventsFromGroup(groupId);
     events.removeAll(getJoinedEvents(userId));
     return events;
+  }
+
+  /**
+   * Gets all the events joined by the user whose start date is in the interval [beginningDate,
+   * endingDate).
+   *
+   * @param beginningDate The inclusive lower bound value of the interval used to filter the events
+   *     by their start date.
+   * @param endingDate The exclusive upper bound value of the interval used to filter the events by
+   *     their start date.
+   * @param userId The id of the user.
+   * @return A list of the events joined by the user whose start date is in the interval
+   *     [beginningDate, endingDate).
+   */
+  public List<Event> getJoinedEventsThatStartBetweenDates(
+      long beginningDate, long endingDate, String userId) {
+    List<Event> joinedEvents = getJoinedEvents(userId);
+    Query query = new Query(EventEntity.KIND.getLabel());
+    query.setFilter(
+        new CompositeFilter(
+            CompositeFilterOperator.AND,
+            Arrays.asList(
+                new FilterPredicate(
+                    EventEntity.START_PROPERTY.getLabel(),
+                    FilterOperator.GREATER_THAN_OR_EQUAL,
+                    beginningDate),
+                new FilterPredicate(
+                    EventEntity.START_PROPERTY.getLabel(), FilterOperator.LESS_THAN, endingDate))));
+    return StreamSupport.stream(datastore.prepare(query).asIterable().spliterator(), false)
+        .map(entity -> Event.createEventFromEntity(entity))
+        .filter(event -> joinedEvents.contains(event))
+        .collect(Collectors.toList());
   }
 
   /**
