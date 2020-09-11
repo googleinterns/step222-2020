@@ -20,6 +20,8 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
 const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
   'Friday', 'Saturday'];
+const FORMAT_OPTIONS = {weekday: 'long', year: 'numeric', month: 'long',
+  day: 'numeric'};
 
 /** Class used to define the basic characteristics of an event. */
 class Event {
@@ -43,6 +45,14 @@ class Event {
 }
 
 /**
+ * Gets the date associated with the beginning of the current day.
+ * @return {Date} The start of today.
+ */
+function getStartOfToday() {
+  return (new Date()).setHours(0, 0, 0, 0);
+}
+
+/**
  * Adds the events associated with that date to the element. Today will be
  * displayed by default.
  * @param {Date} date The date for which the events will be added.
@@ -51,9 +61,7 @@ class Event {
  * start in the given month.
  */
 function addEventsOfTheDay(date, dateElement, eventsDictionary) {
-  const currentDate = new Date();
-  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
-      currentDate.getDate());
+  const today = getStartOfToday();
 
   if (date.getTime() == today.getTime()) {
     displayEventsAndMarkDay(date, dateElement, eventsDictionary);
@@ -99,6 +107,12 @@ function addDaysOfTheMonth(calendarTable, date, eventsDictionary) {
       currentRowElement = createElement('tr', '', '');
     }
     const dayElement = createElement('td', 'calendar-day', day);
+    dayElement.addEventListener('mouseover', function() {
+      dayElement.classList.add('hovered-day');
+    });
+    dayElement.addEventListener('mouseout', function() {
+      dayElement.classList.remove('hovered-day');
+    });
     addEventsOfTheDay(new Date(year, month, day), dayElement, eventsDictionary);
     currentRowElement.appendChild(dayElement);
   }
@@ -239,7 +253,8 @@ function createEventElement(event, hasJoined) {
   eventElement.appendChild(createElement('div', 'event-title', event.title_));
   eventElement.appendChild(createElement('hr', '', ''));
   eventElement.appendChild(createElement('div', 'event-time',
-      event.start_ + ' - ' + event.end_));
+      event.start_.toLocaleDateString(undefined, FORMAT_OPTIONS) + ' - ' +
+      event.end_.toLocaleDateString(undefined, FORMAT_OPTIONS)));
   addEventOptions(event, eventElement, hasJoined);
 
   return eventElement;
@@ -270,14 +285,28 @@ async function createCalendarOfTheMonth(date) {
  * start in the given month.
  */
 function displayEvents(date, eventsDictionary) {
-  const events = eventsDictionary[date];
-  if (events === undefined) {
-    return;
+  const today = getStartOfToday();
+  const eventsHeadline = document.getElementById('events-headline');
+  eventsHeadline.innerHTML = 'Your events ';
+
+  if (date.getTime() === today.getTime()) {
+    eventsHeadline.innerHTML += 'today';
+  } else {
+    eventsHeadline.innerHTML += 'on ' + date.toLocaleDateString(undefined,
+        FORMAT_OPTIONS);
   }
 
   const eventsContainer = document.getElementById('events');
+  const events = eventsDictionary[date];
   eventsContainer.innerHTML = '';
 
+  if (events === undefined) {
+    eventsContainer.innerHTML = 'No events yet.';
+    eventsContainer.classList.add('no-events-container');
+    return;
+  }
+
+  eventsContainer.classList.remove('no-events-container');
   for (let i = 0; i < events.length; i++) {
     eventsContainer.appendChild(createEventElement(events[i], true));
   }
