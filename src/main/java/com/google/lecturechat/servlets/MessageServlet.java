@@ -14,9 +14,11 @@
 
 package com.google.lecturechat.servlets;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.gson.Gson;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
+import com.google.lecturechat.data.Message;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +34,7 @@ public class MessageServlet extends HttpServlet {
 
   private static final String EVENT_ID_PARAMETER = "id";
   private static final String MESSAGE_PARAMETER = "message";
+  private static final int MESSAGE_LIMIT = 20;
   private static DatastoreAccess datastore;
 
   @Override
@@ -47,7 +50,7 @@ public class MessageServlet extends HttpServlet {
 
     try {
       long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
-      List<String> messages = datastore.getMessagesFromEvent(eventId);
+      List<Message> messages = datastore.getMessagesFromEvent(eventId, MESSAGE_LIMIT);
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
@@ -59,15 +62,17 @@ public class MessageServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Optional<String> userId = AuthStatus.getUserId(request);
-    if (!userId.isPresent()) {
+    Optional<Payload> userPayload = AuthStatus.getUserPayload(request);
+    if (!userPayload.isPresent()) {
       return;
     }
 
+    String name = (String) userPayload.get().get("name");
+
     try {
       long eventId = Long.parseLong(request.getParameter(EVENT_ID_PARAMETER));
-      String message = request.getParameter(MESSAGE_PARAMETER);
-      datastore.addMessage(eventId, message);
+      String content = request.getParameter(MESSAGE_PARAMETER);
+      datastore.addMessage(eventId, content, name);
     } catch (NumberFormatException e) {
       throw new BadRequestException(e.getMessage());
     }

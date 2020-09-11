@@ -30,23 +30,15 @@ public final class Event {
   private final long endTime;
 
   private final String creator;
-  private final List<Long> messages;
   private final List<Long> attendees;
 
   public Event(
-      long id,
-      String title,
-      long startTime,
-      long endTime,
-      String creator,
-      List<Long> messages,
-      List<Long> attendees) {
+      long id, String title, long startTime, long endTime, String creator, List<Long> attendees) {
     this.id = id;
     this.title = title;
     this.startTime = startTime;
     this.endTime = endTime;
     this.creator = creator;
-    this.messages = messages;
     this.attendees = attendees;
   }
 
@@ -70,10 +62,6 @@ public final class Event {
     return creator;
   }
 
-  public List<Long> getMessages() {
-    return messages;
-  }
-
   public List<Long> getAttendees() {
     return attendees;
   }
@@ -85,11 +73,9 @@ public final class Event {
       long startTime = (long) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
       long endTime = (long) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
       String creator = (String) (eventEntity.getProperty(EventEntity.CREATOR_PROPERTY.getLabel()));
-      List<Long> messages =
-          (ArrayList) (eventEntity.getProperty(EventEntity.MESSAGES_PROPERTY.getLabel()));
       List<Long> attendees =
           (ArrayList) (eventEntity.getProperty(EventEntity.ATTENDEES_PROPERTY.getLabel()));
-      return new Event(id, title, startTime, endTime, creator, messages, attendees);
+      return new Event(id, title, startTime, endTime, creator, attendees);
     } else {
       throw new IllegalArgumentException(
           "Attempted to create event object from entity that is not an event.");
