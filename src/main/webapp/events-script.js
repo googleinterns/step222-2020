@@ -45,14 +45,11 @@ class Event {
 }
 
 /**
- * Gets the date associated with the current day.
- * @return {Date} The date of today.
+ * Gets the date associated with the beginning of the current day.
+ * @return {Date} The start of today.
  */
-function getTodayDate() {
-  const currentDate = new Date();
-  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(),
-      currentDate.getDate());
-  return today;
+function getStartOfToday() {
+  return (new Date()).setHours(0, 0, 0, 0);
 }
 
 /**
@@ -64,7 +61,7 @@ function getTodayDate() {
  * start in the given month.
  */
 function addEventsOfTheDay(date, dateElement, eventsDictionary) {
-  const today = getTodayDate();
+  const today = getStartOfToday();
 
   if (date.getTime() == today.getTime()) {
     displayEventsAndMarkDay(date, dateElement, eventsDictionary);
@@ -288,7 +285,7 @@ async function createCalendarOfTheMonth(date) {
  * start in the given month.
  */
 function displayEvents(date, eventsDictionary) {
-  const today = getTodayDate();
+  const today = getStartOfToday();
   const eventsHeadline = document.getElementById('events-headline');
   eventsHeadline.innerHTML = 'Your events ';
 
