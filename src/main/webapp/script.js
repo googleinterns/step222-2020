@@ -125,8 +125,9 @@ function showHideSlideshow(slideshowId) {
     return;
   }
 
-  const currentSlideshows = document.getElementsByClassName('current-slideshow');
-  for (let currentSlideshow of currentSlideshows) {
+  const currentSlideshows = document.getElementsByClassName(
+      'current-slideshow');
+  for (const currentSlideshow of currentSlideshows) {
     currentSlideshow.classList.remove('current-slideshow');
   }
   slideshow.classList.add('current-slideshow');
