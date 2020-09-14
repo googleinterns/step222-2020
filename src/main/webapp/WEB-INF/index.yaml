@@ -1,0 +1,6 @@
+indexes:
+
+  - kind: Message 
+    properties:
+      - name: event
+      - name: timestamp

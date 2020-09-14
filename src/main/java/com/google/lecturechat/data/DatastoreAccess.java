@@ -459,19 +459,11 @@ public class DatastoreAccess {
    */
   public void addMessage(long eventId, String content, String author) {
     long timestamp = System.currentTimeMillis();
-    Transaction transaction = datastore.beginTransaction();
-    try {
-      Entity messageEntity = new Entity(MessageEntity.KIND.getLabel());
-      messageEntity.setProperty(MessageEntity.CONTENT_PROPERTY.getLabel(), content);
-      messageEntity.setProperty(MessageEntity.TIMESTAMP_PROPERTY.getLabel(), timestamp);
-      messageEntity.setProperty(MessageEntity.AUTHOR_PROPERTY.getLabel(), author);
-      messageEntity.setProperty(MessageEntity.EVENT_PROPERTY.getLabel(), eventId);
-      datastore.put(messageEntity);
-      transaction.commit();
-    } finally {
-      if (transaction.isActive()) {
-        transaction.rollback();
-      }
-    }
+    Entity messageEntity = new Entity(MessageEntity.KIND.getLabel());
+    messageEntity.setProperty(MessageEntity.CONTENT_PROPERTY.getLabel(), content);
+    messageEntity.setProperty(MessageEntity.TIMESTAMP_PROPERTY.getLabel(), timestamp);
+    messageEntity.setProperty(MessageEntity.AUTHOR_PROPERTY.getLabel(), author);
+    messageEntity.setProperty(MessageEntity.EVENT_PROPERTY.getLabel(), eventId);
+    datastore.put(messageEntity);
   }
 }
