@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /** A helper class used to access and retrieve the secrets (e.g. the OAuth 2.0 client ID). */
 public class AccessSecrets {
-  private static final String projectId = "lecturechat";
+  private static final String projectId = "764525537710";
   private static final String secretId = "client-id";
   private static final String versionId = "1";
 
