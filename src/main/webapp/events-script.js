@@ -49,7 +49,9 @@ class Event {
  * @return {Date} The start of today.
  */
 function getStartOfToday() {
-  return (new Date()).setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
 }
 
 /**
