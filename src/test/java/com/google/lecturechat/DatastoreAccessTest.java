@@ -50,11 +50,13 @@ public final class DatastoreAccessTest {
   private final long END_TIME = 0;
   private final String USER_ID = "User Id A";
   private final String USER_NAME = "User Name A";
+  private final String MESSAGE_CONTENT = "Message A";
 
   // Constants since we don't have access to the constants files here.
   private final String groupEntityLabel = "Group";
   private final String eventEntityLabel = "Event";
   private final String userEntityLabel = "User";
+  private final String messageEntityLabel = "Message";
 
   @Before
   public void setUp() {
@@ -170,5 +172,29 @@ public final class DatastoreAccessTest {
 
     assertEquals(2, joined.size());
     assertEquals(1, notJoined.size());
+  }
+
+  @Test
+  public void addAndRetrieveCorrectNumberOfMessages() {
+    long eventId = 123L;
+    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+
+    List<Message> messages = datastore.getMessagesFromEvent(eventId, 20);
+
+    assertEquals(3, service.prepare(new Query(messageEntityLabel)).countEntities());
+    assertEquals(3, messages.size());
+  }
+
+  @Test
+  public void addAndRetrieveCorrectNumberOfMessagesWithLimit() {
+    long eventId = 123L;
+    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+
+    List<Message> messages = datastore.getMessagesFromEvent(eventId, 1);
+
+    assertEquals(1, messages.size());
   }
 }
