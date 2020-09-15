@@ -22,12 +22,8 @@ printf "\t1. Copy the script to the folder where you want to build the Jasmine p
 printf "\t2. Copy all the files that need to be tested(make sure they have the extension .mjs).\n"
 printf "\t3. Copy all the files containing tests (make sure they follow the convention *[sS]pec.js).\n\n"
 
-printf "\n[DELETE OPTION]\n"
-printf "\tThe script can also delete the Jasmine project afterwards if you want to.\n\n"
-printf "\nDo you want to delete it? [y/n] followed by [ENTER]\n"
-
-read delete_option
-printf "\n"
+printf "\n[DELETE]\n"
+printf "\tThe script will delete the Jasmine project afterwards.\n"
 
 cd src/test/javascript
 
@@ -51,10 +47,8 @@ jasmine
 
 cd ..
 
-if [ $delete_option == "y" ]; then
-    print_status_message "Deleting the duplicated files."
-    rm -rf jasmine
-fi
+print_status_message "Deleting the duplicated files."
+rm -rf jasmine
 
 print_status_message "The script was completed."
 printf "\t-----------\n"
