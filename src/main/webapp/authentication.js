@@ -62,7 +62,7 @@ function loadClient() {
 /**
  * Loads the profile data associated with the currently logged in user.
  */
-async function loadProfileData() {
+function loadProfileData() {
   const googleAuth = gapi.auth2.getAuthInstance();
   if (!googleAuth.isSignedIn.get()) {
     return;
@@ -104,8 +104,7 @@ async function signIn() {
  * Signs out the user, deletes the cookie and redirects them to the start page.
  */
 function signOut() {
-  const googleAuth = gapi.auth2.getAuthInstance();
-  googleAuth.signOut();
+  gapi.auth2.getAuthInstance().signOut();
   document.cookie = 'id_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   window.location.href = 'index.html';
 }
