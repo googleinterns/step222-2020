@@ -15,16 +15,15 @@
 package com.google.lecturechat.servlets;
 
 import com.google.lecturechat.data.DatastoreAccess;
-import com.google.lecturechat.data.Message;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet for deleting all chat messages before a certain time. Only to be called by a cron job. */
+/** 
+ * Servlet for deleting all chat messages before a certain time. Only to be called by a cron job. 
+ */
 @WebServlet("/delete-messages")
 public class DeleteMessagesCronServlet extends HttpServlet {
 

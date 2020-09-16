@@ -35,8 +35,8 @@ import com.google.lecturechat.data.constants.GroupEntity;
 import com.google.lecturechat.data.constants.MessageEntity;
 import com.google.lecturechat.data.constants.UserEntity;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -489,8 +489,6 @@ public class DatastoreAccess {
     for (Entity entity : results.asIterable()) {
       messagesToBeDeleted.add(entity.getKey());
     }
-    
     datastore.delete(messagesToBeDeleted);
   }
 }
-
