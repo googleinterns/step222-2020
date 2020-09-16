@@ -14,7 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {getLoginStatus, initClient, loadProfileData, signOut} from './authentication.js';
+import {getLoginStatus, initClient, loadProfileData, signOut} from
+  './authentication.js';
 import {loadJoinedGroups, loadNotJoinedGroups} from './groups-script.js';
 import {loadCalendar} from './events-script.js';
 import {showSection} from './menu-script.js';

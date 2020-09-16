@@ -109,4 +109,5 @@ function signOut() {
   window.location.href = 'index.html';
 }
 
-export {getLoginStatus, initClient, initGoogleAuthObject, loadClient, loadProfileData, signIn, signOut};
+export {getLoginStatus, initClient, initGoogleAuthObject, loadClient,
+  loadProfileData, signIn, signOut};
