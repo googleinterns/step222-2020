@@ -321,7 +321,8 @@ public class DatastoreAccess {
   }
 
   /**
-   * Joins the given group by adding the group id to the user's list of groups.
+   * Joins the given group by adding the group id to the user's list of groups. The list of
+   * students associated with the group should also be updated by including the new user.
    *
    * @param userId The id of the user that joins the group.
    * @param groupId The id of the group that the user joined.
@@ -333,7 +334,8 @@ public class DatastoreAccess {
   }
 
   /**
-   * Joins the given event by adding the event id to the user's list of events.
+   * Joins the given event by adding the event id to the user's list of events. The list of
+   * attendees associated with the event should also be updated by including the new user.
    *
    * @param userId The id of the user that joins the event.
    * @param eventId The id of the event that the user joined.
