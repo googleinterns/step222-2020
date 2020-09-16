@@ -73,7 +73,7 @@ public class DatastoreAccess {
         newGroupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
         newGroupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
         newGroupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
-        newGroupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        newGroupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<String>());
         newGroupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
         datastore.put(newGroupEntity);
         groupEntity = Optional.of(newGroupEntity);
@@ -192,7 +192,7 @@ public class DatastoreAccess {
       eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTime);
       eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
       eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
-      eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
+      eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<String>());
       eventId = datastore.put(transaction, eventEntity).getId();
 
       if (eventId != 0) {
@@ -289,6 +289,38 @@ public class DatastoreAccess {
   }
 
   /**
+   * Adds the user to the list of users of the entity with the given id and kind. The list of
+   * users ids is associated with the property that has the name propertyName.
+   *
+   * @param userId The id of the user that will be added to the entity.
+   * @param entityId The id of the entity to which the user will be added.
+   * @param entityKind The entity kind label (e.g. group, event).
+   * @param propertyName The name of the property that contains the users ids.
+   */
+  public void addUserToEntity(
+      String userId, long entityId, String entityKind, String propertyName) {
+    Transaction transaction = datastore.beginTransaction();
+
+    try {
+      Entity entity = getEntityById(entityKind, entityId);
+      List<String> usersIds = (ArrayList) (entity.getProperty(propertyName));
+      if (usersIds == null) {
+        usersIds = new ArrayList<>();
+      }
+      if (!usersIds.contains(userId)) {
+        usersIds.add(userId);
+      }
+      entity.setProperty(propertyName, usersIds);
+      datastore.put(transaction, entity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  /**
    * Joins the given group by adding the group id to the user's list of groups.
    *
    * @param userId The id of the user that joins the group.
@@ -296,6 +328,8 @@ public class DatastoreAccess {
    */
   public void joinGroup(String userId, long groupId) {
     joinEntity(userId, groupId, UserEntity.GROUPS_PROPERTY.getLabel());
+    addUserToEntity(userId, groupId, GroupEntity.KIND.getLabel(),
+      GroupEntity.STUDENTS_PROPERTY.getLabel());
   }
 
   /**
@@ -306,6 +340,8 @@ public class DatastoreAccess {
    */
   public void joinEvent(String userId, long eventId) {
     joinEntity(userId, eventId, UserEntity.EVENTS_PROPERTY.getLabel());
+    addUserToEntity(userId, eventId, EventEntity.KIND.getLabel(),
+      EventEntity.ATTENDEES_PROPERTY.getLabel());
   }
 
   /**
