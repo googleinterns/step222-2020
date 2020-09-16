@@ -73,7 +73,8 @@ public class DatastoreAccess {
         newGroupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
         newGroupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
         newGroupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
-        newGroupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<String>());
+        newGroupEntity.setProperty(
+            GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<String>());
         newGroupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
         datastore.put(newGroupEntity);
         groupEntity = Optional.of(newGroupEntity);
@@ -289,8 +290,8 @@ public class DatastoreAccess {
   }
 
   /**
-   * Adds the user to the list of users of the entity with the given id and kind. The list of
-   * users ids is associated with the property that has the name propertyName.
+   * Adds the user to the list of users of the entity with the given id and kind. The list of users
+   * ids is associated with the property that has the name propertyName.
    *
    * @param userId The id of the user that will be added to the entity.
    * @param entityId The id of the entity to which the user will be added.
@@ -321,16 +322,16 @@ public class DatastoreAccess {
   }
 
   /**
-   * Joins the given group by adding the group id to the user's list of groups. The list of
-   * students associated with the group should also be updated by including the new user.
+   * Joins the given group by adding the group id to the user's list of groups. The list of students
+   * associated with the group should also be updated by including the new user.
    *
    * @param userId The id of the user that joins the group.
    * @param groupId The id of the group that the user joined.
    */
   public void joinGroup(String userId, long groupId) {
     joinEntity(userId, groupId, UserEntity.GROUPS_PROPERTY.getLabel());
-    addUserToEntity(userId, groupId, GroupEntity.KIND.getLabel(),
-      GroupEntity.STUDENTS_PROPERTY.getLabel());
+    addUserToEntity(
+        userId, groupId, GroupEntity.KIND.getLabel(), GroupEntity.STUDENTS_PROPERTY.getLabel());
   }
 
   /**
@@ -342,8 +343,8 @@ public class DatastoreAccess {
    */
   public void joinEvent(String userId, long eventId) {
     joinEntity(userId, eventId, UserEntity.EVENTS_PROPERTY.getLabel());
-    addUserToEntity(userId, eventId, EventEntity.KIND.getLabel(),
-      EventEntity.ATTENDEES_PROPERTY.getLabel());
+    addUserToEntity(
+        userId, eventId, EventEntity.KIND.getLabel(), EventEntity.ATTENDEES_PROPERTY.getLabel());
   }
 
   /**
@@ -515,8 +516,8 @@ public class DatastoreAccess {
    * @param propertyName The name of the property that could contain the user id.
    * @return True if the user is part of the property.
    */
-  public boolean isPartOfEntity(String userId, long entityId, String entityKind,
-      String propertyName) {
+  public boolean isPartOfEntity(
+      String userId, long entityId, String entityKind, String propertyName) {
     Entity entity = getEntityById(entityKind, entityId);
     List<String> usersIds = (ArrayList) (entity.getProperty(propertyName));
     return (usersIds != null) && usersIds.contains(userId);
@@ -530,14 +531,13 @@ public class DatastoreAccess {
    * @return True if the user is a member of the group.
    */
   public boolean isMemberOfGroup(String userId, long groupId) {
-    return isPartOfEntity(userId, groupId, GroupEntity.KIND.getLabel(),
-      GroupEntity.STUDENTS_PROPERTY.getLabel());
+    return isPartOfEntity(
+        userId, groupId, GroupEntity.KIND.getLabel(), GroupEntity.STUDENTS_PROPERTY.getLabel());
   }
 
   /**
    * TODO: It will be later used in a different pull request to restrict the users access to the
    * chat rooms. Implemented now since it uses the same logic as the isMemberOfGroup function.
-   *
    * Checks if the user is an attendee of the specified event.
    *
    * @param userId The id of the user.
@@ -545,7 +545,7 @@ public class DatastoreAccess {
    * @return True if the user is an attendee of the event.
    */
   public boolean isAttendeeOfEvent(String userId, long eventId) {
-    return isPartOfEntity(userId, eventId, EventEntity.KIND.getLabel(),
-      EventEntity.ATTENDEES_PROPERTY.getLabel());
+    return isPartOfEntity(
+        userId, eventId, EventEntity.KIND.getLabel(), EventEntity.ATTENDEES_PROPERTY.getLabel());
   }
 }

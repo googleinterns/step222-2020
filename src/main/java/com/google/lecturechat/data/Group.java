@@ -30,7 +30,12 @@ public final class Group {
   private final List<Long> events;
 
   public Group(
-      long id, String university, String degree, int year, List<String> students, List<Long> events) {
+      long id,
+      String university,
+      String degree,
+      int year,
+      List<String> students,
+      List<Long> events) {
     this.id = id;
     this.university = university;
     this.degree = degree;
