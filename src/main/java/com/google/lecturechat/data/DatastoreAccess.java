@@ -533,6 +533,9 @@ public class DatastoreAccess {
   }
 
   /**
+   * TODO: It will be later used in a different pull request to restrict the users access to the
+   * chat rooms. Implemented now since it uses the same logic as the isMemberOfGroup function.
+   *
    * Checks if the user is an attendee of the specified event.
    *
    * @param userId The id of the user.
