@@ -55,11 +55,15 @@ public class JoinedEventsServlet extends HttpServlet {
     }
 
     List<Event> events;
-    String groupId = request.getParameter(GROUP_ID_PARAMETER);
+    String groupIdString = request.getParameter(GROUP_ID_PARAMETER);
 
     try {
-      if (groupId != null) {
-        events = datastore.getAllJoinedEventsFromGroup(Long.parseLong(groupId), userId.get());
+      if (groupIdString != null) {
+        long groupId = Long.parseLong(groupIdString);
+        if (!datastore.isMemberOfGroup(userId.get(), groupId)) {
+          return;
+        }
+        events = datastore.getAllJoinedEventsFromGroup(groupId, userId.get());
       } else {
         String beginningDate = request.getParameter(BEGINNING_DATE_PARAMETER);
         String endingDate = request.getParameter(ENDING_DATE_PARAMETER);

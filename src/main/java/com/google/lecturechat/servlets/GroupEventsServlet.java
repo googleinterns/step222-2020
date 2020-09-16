@@ -55,6 +55,10 @@ public class GroupEventsServlet extends HttpServlet {
 
     try {
       long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      if (!datastore.isMemberOfGroup(userId.get(), groupId)) {
+        return;
+      }
+
       List<Event> events = datastore.getAllNotJoinedEventsFromGroup(groupId, userId.get());
       response.setContentType("application/json;");
       response.setCharacterEncoding("UTF-8");
@@ -75,6 +79,10 @@ public class GroupEventsServlet extends HttpServlet {
 
     try {
       long groupId = Long.parseLong(request.getParameter(GROUP_ID_PARAMETER));
+      if (!datastore.isMemberOfGroup(userId.get(), groupId)) {
+        return;
+      }
+
       String title = (String) request.getParameter(TITLE_PARAMETER);
       long start = Long.parseLong(request.getParameter(START_DATE_PARAMETER));
       long end = Long.parseLong(request.getParameter(END_DATE_PARAMETER));
