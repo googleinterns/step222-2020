@@ -38,16 +38,35 @@ public class AddUserServlet extends HttpServlet {
     datastore = DatastoreAccess.getDatastoreAccess();
   }
 
+  public void addUserFromPayload(Payload userPayload) {
+    String userId = userPayload.getSubject();
+    String name = (String) userPayload.get("name");
+    datastore.addUser(userId, name);
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Optional<Payload> userPayload = AuthStatus.getUserPayload(request);
 
     if (!userPayload.isPresent()) {
+      response.sendRedirect(request.getContextPath() + "/index.html");
       return;
     }
 
-    String userId = userPayload.get().getSubject();
-    String name = (String) userPayload.get().get("name");
-    datastore.addUser(userId, name);
+    addUserFromPayload(userPayload.get());
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Optional<Payload> userPayload = AuthStatus.getUserPayload(request);
+
+    if (userPayload.isPresent()) {
+      addUserFromPayload(userPayload.get());
+    }
+
+    response.setContentType("application/json;");
+    response.setCharacterEncoding("UTF-8");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(userPayload.isPresent()));
   }
 }
