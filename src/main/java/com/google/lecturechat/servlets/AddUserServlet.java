@@ -15,8 +15,8 @@
 
 package com.google.lecturechat.servlets;
 
-import com.google.gson.Gson;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.gson.Gson;
 import com.google.lecturechat.data.AuthStatus;
 import com.google.lecturechat.data.DatastoreAccess;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
 
 /** Servlet for adding a new user to the database (if they are not already registered). */
 @WebServlet("/add-user")
