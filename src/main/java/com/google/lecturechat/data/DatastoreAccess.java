@@ -502,4 +502,45 @@ public class DatastoreAccess {
     messageEntity.setProperty(MessageEntity.EVENT_PROPERTY.getLabel(), eventId);
     datastore.put(messageEntity);
   }
+
+  /**
+   * Checks if the user is part of the given property associated with the entity identified by its
+   * type and its id.
+   *
+   * @param userId The id of the user.
+   * @param entityId The id of the entity.
+   * @param entityKind The entity kind label (e.g. group, event).
+   * @param propertyName The name of the property that could contain the user id.
+   * @return True if the user is part of the property.
+   */
+  public boolean isPartOfEntity(String userId, long entityId, String entityKind,
+      String propertyName) {
+    Entity entity = getEntityById(entityKind, entityId);
+    List<String> usersIds = (ArrayList) (entity.getProperty(propertyName));
+    return (usersIds != null) && usersIds.contains(userId);
+  }
+
+  /**
+   * Checks if the user is a member of the specified group.
+   *
+   * @param userId The id of the user.
+   * @param groupId The id of the group.
+   * @return True if the user is a member of the group.
+   */
+  public boolean isMemberOfGroup(String userId, long groupId) {
+    return isPartOfEntity(userId, groupId, GroupEntity.KIND.getLabel(),
+      GroupEntity.STUDENTS_PROPERTY.getLabel());
+  }
+
+  /**
+   * Checks if the user is an attendee of the specified event.
+   *
+   * @param userId The id of the user.
+   * @param eventId The id of the event.
+   * @return True if the user is an attendee of the event.
+   */
+  public boolean isAttendeeOfEvent(String userId, long eventId) {
+    return isPartOfEntity(userId, eventId, EventEntity.KIND.getLabel(),
+      EventEntity.ATTENDEES_PROPERTY.getLabel());
+  }
 }
