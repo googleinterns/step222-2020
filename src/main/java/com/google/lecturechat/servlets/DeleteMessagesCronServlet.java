@@ -26,8 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /** Servlet for deleting all chat messages before a certain time. Only to be called by a cron job. */
 @WebServlet("/delete-messages")
-public class MessageServlet extends HttpServlet {
+public class DeleteMessagesCronServlet extends HttpServlet {
 
+  // Delete all messages older than 24 hours.
   private static final int TIMEFRAME_MESSAGES_TO_KEEP = 24;
   private static DatastoreAccess datastore;
 

@@ -51,6 +51,7 @@ public final class DatastoreAccessTest {
   private final String USER_ID = "User Id A";
   private final String USER_NAME = "User Name A";
   private final String MESSAGE_CONTENT = "Message A";
+  private final long EVENT_ID = 123L;
 
   // Constants since we don't have access to the constants files here.
   private final String groupEntityLabel = "Group";
@@ -176,12 +177,11 @@ public final class DatastoreAccessTest {
 
   @Test
   public void addAndRetrieveCorrectNumberOfMessages() {
-    long eventId = 123L;
-    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
-    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
-    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
 
-    List<Message> messages = datastore.getMessagesFromEvent(eventId, 20);
+    List<Message> messages = datastore.getMessagesFromEvent(EVENT_ID, 20);
 
     assertEquals(3, service.prepare(new Query(messageEntityLabel)).countEntities());
     assertEquals(3, messages.size());
@@ -189,12 +189,33 @@ public final class DatastoreAccessTest {
 
   @Test
   public void addAndRetrieveCorrectNumberOfMessagesWithLimit() {
-    long eventId = 123L;
-    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
-    datastore.addMessage(eventId, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
 
-    List<Message> messages = datastore.getMessagesFromEvent(eventId, 1);
+    List<Message> messages = datastore.getMessagesFromEvent(EVENT_ID, 1);
 
     assertEquals(1, messages.size());
+  }
+
+  @Test
+  public void deleteOldMessagesDeletesAllMessagesWhenTimeframeHoursAreZero() {
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+
+    datastore.deleteMessagesOlderThan(0);
+
+    assertEquals(0, service.prepare(new Query(messageEntityLabel)).countEntities());
+  }
+
+  @Test
+  public void deleteOldMessagesDoesntDeleteMessagesNewerThanTimeframe() {
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+    datastore.addMessage(EVENT_ID, MESSAGE_CONTENT, USER_NAME);
+
+    datastore.deleteMessagesOlderThan(24);
+
+    assertEquals(3, service.prepare(new Query(messageEntityLabel)).countEntities());
   }
 }

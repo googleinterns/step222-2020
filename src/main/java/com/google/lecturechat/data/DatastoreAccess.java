@@ -34,6 +34,9 @@ import com.google.lecturechat.data.constants.EventEntity;
 import com.google.lecturechat.data.constants.GroupEntity;
 import com.google.lecturechat.data.constants.MessageEntity;
 import com.google.lecturechat.data.constants.UserEntity;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -466,4 +469,28 @@ public class DatastoreAccess {
     messageEntity.setProperty(MessageEntity.EVENT_PROPERTY.getLabel(), eventId);
     datastore.put(messageEntity);
   }
+
+  /**
+   * Deletes all messages older than a certain timeframe.
+   *
+   * @param hours The length of the timeframe where messages should be kept in hours.
+   */
+  public void deleteMessagesOlderThan(int hours) {
+    ZonedDateTime currentTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
+    long timeFrameLimit = currentTime.minusHours(hours).toInstant().toEpochMilli();
+
+    Query query = new Query(MessageEntity.KIND.getLabel());
+    query.setFilter(
+        new FilterPredicate(
+            MessageEntity.TIMESTAMP_PROPERTY.getLabel(), FilterOperator.LESS_THAN, timeFrameLimit));
+
+    PreparedQuery results = datastore.prepare(query);
+    List<Key> messagesToBeDeleted = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      messagesToBeDeleted.add(entity.getKey());
+    }
+    
+    datastore.delete(messagesToBeDeleted);
+  }
 }
+
