@@ -197,7 +197,7 @@ function addEventOptions(event, eventElement, hasJoined) {
   if (hasJoined) {
     addChatroomButton(event, eventOptionsElement);
   } else {
-    addJoinEventButton(event.id_, eventOptionsElement, eventElement);
+    addJoinEventButton(event, eventOptionsElement, eventElement);
   }
 
   eventElement.appendChild(eventOptionsElement);
@@ -205,16 +205,21 @@ function addEventOptions(event, eventElement, hasJoined) {
 
 /**
  * Adds a join button through which the user can join that event.
- * @param {Object} eventId The id of the event that will be joined by the user.
+ * @param {Object} event The object containing the data associated with that
+ * event.
  * @param {Element} eventOptionsElement The element that will include this
  * button.
  * @param {Element} eventElement The element associated with this event.
  */
-function addJoinEventButton(eventId, eventOptionsElement, eventElement) {
+function addJoinEventButton(event, eventOptionsElement, eventElement) {
   const joinEventButton = createElement('button', 'rounded-button', 'Join');
   joinEventButton.addEventListener('click', async function() {
-    await joinEvent(eventId);
+    await joinEvent(event.id_);
     eventElement.remove();
+
+    const joinedEventsList = document.getElementById('joined-events-container');
+    joinedEventsList.prepend(createEventElement(event, true));
+
     loadCalendar();
   });
   eventOptionsElement.appendChild(joinEventButton);
