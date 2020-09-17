@@ -47,7 +47,7 @@ class Event {
  * weekday, the year, the month, the day, the hour and the minute.
  *
  * @param {Date} date The date for which we want to obtain the string.
- * @return The string generated from the date received.
+ * @return {String} The string generated from the date received.
  */
 function getLongFormatDate(date) {
   return date.toLocaleDateString(navigator.language, {
@@ -56,7 +56,7 @@ function getLongFormatDate(date) {
     month: 'long',
     day: 'numeric',
     hour: 'numeric',
-    minute: 'numeric'
+    minute: 'numeric',
   });
 }
 
@@ -65,14 +65,14 @@ function getLongFormatDate(date) {
  * weekday, the year, the month and the day.
  *
  * @param {Date} date The date for which we want to obtain the string.
- * @return The string generated from the date received.
+ * @return {String} The string generated from the date received.
  */
 function getShortFormatDate(date) {
   return date.toLocaleDateString(navigator.language, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 }
 
