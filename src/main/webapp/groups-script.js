@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {createElement} from './script.js';
+import {createElement} from './menu-script.js';
 import {createEventElement, Event} from './events-script.js';
 
 /** Class used to define the basic characteristics of a group. */

@@ -1,0 +1,4 @@
+cron:
+- description: "delete messages older than 24 hours"
+  url: /delete-messages
+  schedule: every day 00:00

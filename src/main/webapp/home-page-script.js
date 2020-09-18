@@ -14,7 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {initClient, loadProfileData, signOut} from './script.js';
+import {getLoginStatus, initClient, loadProfileData, signOut} from
+  './authentication.js';
 import {loadJoinedGroups, loadNotJoinedGroups} from './groups-script.js';
 import {loadCalendar} from './events-script.js';
 import {showSection} from './menu-script.js';
@@ -40,7 +41,13 @@ function loadHomeClient() {
  * Loads the data associated with the user profile.
  */
 async function loadProfile() {
-  await loadProfileData();
+  const loginStatus = await getLoginStatus();
+  if (!loginStatus) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  loadProfileData();
   loadCalendar();
   loadJoinedGroups();
   loadNotJoinedGroups();
