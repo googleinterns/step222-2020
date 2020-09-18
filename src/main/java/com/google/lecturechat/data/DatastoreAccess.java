@@ -516,7 +516,7 @@ public class DatastoreAccess {
    * @param propertyName The name of the property that could contain the user id.
    * @return True if the user is part of the property.
    */
-  public boolean isPartOfEntity(
+  private boolean isPartOfEntity(
       String userId, long entityId, String entityKind, String propertyName) {
     Entity entity = getEntityById(entityKind, entityId);
     List<String> usersIds = (ArrayList) (entity.getProperty(propertyName));
