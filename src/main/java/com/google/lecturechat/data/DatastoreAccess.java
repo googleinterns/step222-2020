@@ -76,7 +76,8 @@ public class DatastoreAccess {
         newGroupEntity.setProperty(GroupEntity.UNIVERSITY_PROPERTY.getLabel(), university);
         newGroupEntity.setProperty(GroupEntity.DEGREE_PROPERTY.getLabel(), degree);
         newGroupEntity.setProperty(GroupEntity.YEAR_PROPERTY.getLabel(), year);
-        newGroupEntity.setProperty(GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<Long>());
+        newGroupEntity.setProperty(
+            GroupEntity.STUDENTS_PROPERTY.getLabel(), new ArrayList<String>());
         newGroupEntity.setProperty(GroupEntity.EVENTS_PROPERTY.getLabel(), new ArrayList<Long>());
         datastore.put(newGroupEntity);
         groupEntity = Optional.of(newGroupEntity);
@@ -195,7 +196,7 @@ public class DatastoreAccess {
       eventEntity.setProperty(EventEntity.END_PROPERTY.getLabel(), endTime);
       eventEntity.setProperty(EventEntity.CREATOR_PROPERTY.getLabel(), creator);
       eventEntity.setProperty(EventEntity.MESSAGES_PROPERTY.getLabel(), new ArrayList<Long>());
-      eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<Long>());
+      eventEntity.setProperty(EventEntity.ATTENDEES_PROPERTY.getLabel(), new ArrayList<String>());
       eventId = datastore.put(transaction, eventEntity).getId();
 
       if (eventId != 0) {
@@ -292,23 +293,61 @@ public class DatastoreAccess {
   }
 
   /**
-   * Joins the given group by adding the group id to the user's list of groups.
+   * Adds the user to the list of users of the entity with the given id and kind. The list of users
+   * ids is associated with the property that has the name propertyName.
+   *
+   * @param userId The id of the user that will be added to the entity.
+   * @param entityId The id of the entity to which the user will be added.
+   * @param entityKind The entity kind label (e.g. group, event).
+   * @param propertyName The name of the property that contains the users ids.
+   */
+  public void addUserToEntity(
+      String userId, long entityId, String entityKind, String propertyName) {
+    Transaction transaction = datastore.beginTransaction();
+
+    try {
+      Entity entity = getEntityById(entityKind, entityId);
+      List<String> usersIds = (ArrayList) (entity.getProperty(propertyName));
+      if (usersIds == null) {
+        usersIds = new ArrayList<>();
+      }
+      if (!usersIds.contains(userId)) {
+        usersIds.add(userId);
+      }
+      entity.setProperty(propertyName, usersIds);
+      datastore.put(transaction, entity);
+      transaction.commit();
+    } finally {
+      if (transaction.isActive()) {
+        transaction.rollback();
+      }
+    }
+  }
+
+  /**
+   * Joins the given group by adding the group id to the user's list of groups. The list of students
+   * associated with the group should also be updated by including the new user.
    *
    * @param userId The id of the user that joins the group.
    * @param groupId The id of the group that the user joined.
    */
   public void joinGroup(String userId, long groupId) {
     joinEntity(userId, groupId, UserEntity.GROUPS_PROPERTY.getLabel());
+    addUserToEntity(
+        userId, groupId, GroupEntity.KIND.getLabel(), GroupEntity.STUDENTS_PROPERTY.getLabel());
   }
 
   /**
-   * Joins the given event by adding the event id to the user's list of events.
+   * Joins the given event by adding the event id to the user's list of events. The list of
+   * attendees associated with the event should also be updated by including the new user.
    *
    * @param userId The id of the user that joins the event.
    * @param eventId The id of the event that the user joined.
    */
   public void joinEvent(String userId, long eventId) {
     joinEntity(userId, eventId, UserEntity.EVENTS_PROPERTY.getLabel());
+    addUserToEntity(
+        userId, eventId, EventEntity.KIND.getLabel(), EventEntity.ATTENDEES_PROPERTY.getLabel());
   }
 
   /**
@@ -468,6 +507,49 @@ public class DatastoreAccess {
     messageEntity.setProperty(MessageEntity.AUTHOR_PROPERTY.getLabel(), author);
     messageEntity.setProperty(MessageEntity.EVENT_PROPERTY.getLabel(), eventId);
     datastore.put(messageEntity);
+  }
+
+  /**
+   * Checks if the user is part of the given property associated with the entity identified by its
+   * type and its id.
+   *
+   * @param userId The id of the user.
+   * @param entityId The id of the entity.
+   * @param entityKind The entity kind label (e.g. group, event).
+   * @param propertyName The name of the property that could contain the user id.
+   * @return True if the user is part of the property.
+   */
+  private boolean isPartOfEntity(
+      String userId, long entityId, String entityKind, String propertyName) {
+    Entity entity = getEntityById(entityKind, entityId);
+    List<String> usersIds = (ArrayList) (entity.getProperty(propertyName));
+    return (usersIds != null) && usersIds.contains(userId);
+  }
+
+  /**
+   * Checks if the user is a member of the specified group.
+   *
+   * @param userId The id of the user.
+   * @param groupId The id of the group.
+   * @return True if the user is a member of the group.
+   */
+  public boolean isMemberOfGroup(String userId, long groupId) {
+    return isPartOfEntity(
+        userId, groupId, GroupEntity.KIND.getLabel(), GroupEntity.STUDENTS_PROPERTY.getLabel());
+  }
+
+  /**
+   * TODO: It will be later used in a different pull request to restrict the users access to the
+   * chat rooms. Implemented now since it uses the same logic as the isMemberOfGroup function.
+   * Checks if the user is an attendee of the specified event.
+   *
+   * @param userId The id of the user.
+   * @param eventId The id of the event.
+   * @return True if the user is an attendee of the event.
+   */
+  public boolean isAttendeeOfEvent(String userId, long eventId) {
+    return isPartOfEntity(
+        userId, eventId, EventEntity.KIND.getLabel(), EventEntity.ATTENDEES_PROPERTY.getLabel());
   }
 
   /**

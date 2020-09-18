@@ -30,10 +30,10 @@ public final class Event {
   private final long endTime;
 
   private final String creator;
-  private final List<Long> attendees;
+  private final List<String> attendees;
 
   public Event(
-      long id, String title, long startTime, long endTime, String creator, List<Long> attendees) {
+      long id, String title, long startTime, long endTime, String creator, List<String> attendees) {
     this.id = id;
     this.title = title;
     this.startTime = startTime;
@@ -62,7 +62,7 @@ public final class Event {
     return creator;
   }
 
-  public List<Long> getAttendees() {
+  public List<String> getAttendees() {
     return attendees;
   }
 
@@ -73,7 +73,7 @@ public final class Event {
       long startTime = (long) (eventEntity.getProperty(EventEntity.START_PROPERTY.getLabel()));
       long endTime = (long) (eventEntity.getProperty(EventEntity.END_PROPERTY.getLabel()));
       String creator = (String) (eventEntity.getProperty(EventEntity.CREATOR_PROPERTY.getLabel()));
-      List<Long> attendees =
+      List<String> attendees =
           (ArrayList) (eventEntity.getProperty(EventEntity.ATTENDEES_PROPERTY.getLabel()));
       return new Event(id, title, startTime, endTime, creator, attendees);
     } else {
