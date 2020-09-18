@@ -476,7 +476,7 @@ public class DatastoreAccess {
    * @param hours The length of the timeframe where messages should be kept in hours.
    */
   public void deleteMessagesOlderThan(int hours) {
-    ZonedDateTime currentTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
+    ZonedDateTime currentTime = LocalDateTime.now().atZone(ZoneId.of("UTC"));
     long timeFrameLimit = currentTime.minusHours(hours).toInstant().toEpochMilli();
 
     Query query = new Query(MessageEntity.KIND.getLabel());

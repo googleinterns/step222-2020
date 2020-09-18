@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/delete-messages")
 public class DeleteMessagesCronServlet extends HttpServlet {
 
-  // Delete all messages older than 24 hours.
   private static final int TIMEFRAME_MESSAGES_TO_KEEP = 24;
   private static DatastoreAccess datastore;
 
