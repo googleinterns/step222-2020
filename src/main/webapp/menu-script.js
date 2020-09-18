@@ -15,6 +15,22 @@
 // limitations under the License.
 
 /**
+ * Creates a new element with a specified type, class and innerText.
+ * @param {string} elementType The type of the element that will be created.
+ * @param {string} className The class of the element that will be created.
+ * @param {string} innerText The innerText of the element that will be
+ * created.
+ * @return {element} The element created.
+ */
+function createElement(elementType, className, innerText) {
+  const newElement = document.createElement(elementType);
+  newElement.className = className;
+  newElement.innerText = innerText;
+
+  return newElement;
+}
+
+/**
  * Gets the section ID from the option element.
  * @param {Element} option The menu option associated with the section.
  * @return {String} The section ID.
@@ -43,4 +59,4 @@ function showSection(activeOption) {
   activeSection.classList.add('active-section');
 }
 
-export {getSectionIdFromOption, showSection};
+export {createElement, getSectionIdFromOption, showSection};
