@@ -20,8 +20,6 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
 const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
   'Friday', 'Saturday'];
-const FORMAT_OPTIONS = {weekday: 'long', year: 'numeric', month: 'long',
-  day: 'numeric'};
 
 /** Class used to define the basic characteristics of an event. */
 class Event {
@@ -42,6 +40,40 @@ class Event {
     /** @private @const {String} */
     this.end_ = end;
   }
+}
+
+/**
+ * Gets the string associated with the date that contains information about the
+ * weekday, the year, the month, the day, the hour and the minute.
+ *
+ * @param {Date} date The date for which we want to obtain the string.
+ * @return {String} The string generated from the date received.
+ */
+function getLongFormatDate(date) {
+  return date.toLocaleDateString(navigator.language, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+}
+
+/**
+ * Gets the string associated with the date that contains information about the
+ * weekday, the year, the month and the day.
+ *
+ * @param {Date} date The date for which we want to obtain the string.
+ * @return {String} The string generated from the date received.
+ */
+function getShortFormatDate(date) {
+  return date.toLocaleDateString(navigator.language, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 /**
@@ -252,6 +284,8 @@ function compareEventsByStartDate(firstEvent, secondEvent) {
  * @param {Object} event The event for which we will create a new element.
  * @param {Boolean} hasJoined Indicates whether or not the user has joined
  * the event.
+ * @param {object} dateFormat The format used to display the start date and the
+ * end date of the event.
  * @return {Element} The element created.
  */
 function createEventElement(event, hasJoined) {
@@ -260,8 +294,7 @@ function createEventElement(event, hasJoined) {
   eventElement.appendChild(createElement('div', 'event-title', event.title_));
   eventElement.appendChild(createElement('hr', '', ''));
   eventElement.appendChild(createElement('div', 'event-time',
-      event.start_.toLocaleDateString(undefined, FORMAT_OPTIONS) + ' - ' +
-      event.end_.toLocaleDateString(undefined, FORMAT_OPTIONS)));
+      getLongFormatDate(event.start_) + ' - ' + getLongFormatDate(event.end_)));
   addEventOptions(event, eventElement, hasJoined);
 
   return eventElement;
@@ -299,8 +332,7 @@ function displayEvents(date, eventsDictionary) {
   if (date.getTime() === today.getTime()) {
     eventsHeadline.innerHTML += 'today';
   } else {
-    eventsHeadline.innerHTML += 'on ' + date.toLocaleDateString(undefined,
-        FORMAT_OPTIONS);
+    eventsHeadline.innerHTML += 'on ' + getShortFormatDate(date);
   }
 
   const eventsContainer = document.getElementById('events');
